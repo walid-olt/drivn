@@ -12,6 +12,10 @@ local car rental agencies frequently operate without a dedicated digital presenc
 
 a unified, multi-tenant b2b2c marketplace that standardizes the rental process. small and mid-sized agencies get a dedicated dashboard to manage and list their fleets, while customers gain access to a centralized portal to search, compare, and request vehicle reservations.
 
+### 1.3 use cases
+
+![use-case-diagram](./drivn-[use-case].svg)
+
 ### 1.3 mvp scope guardrails
 
 - **no online payments:** bookings use an approval-based reservation system. financial transactions occur offline (cash/card at counter) during vehicle pickup.
