@@ -1,5 +1,5 @@
 {
-  "name": "drivn",
+  "name": "@drivn",
   "private": true,
   "scripts": {
     "build": "turbo run build",

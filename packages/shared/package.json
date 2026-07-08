@@ -1,0 +1,24 @@
+{
+  "name": "@drivn/shared",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsdown src/index.ts --format cjs,esm --dts --clean",
+    "dev": "tsdown src/index.ts --format cjs,esm --watch --dts",
+    "lint": "eslint src/"
+  },
+  "devDependencies": {
+    "tsdown": "^0.22.4",
+    "typescript": "^5.7.3",
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "zod": "^4.4.3"
+  },
+  "dependencies": {
+    "libphonenumber-js": "^1.13.8"
+  }
+}
