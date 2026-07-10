@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppConfigModule } from './config/';
 import { Env } from './config/env';
@@ -16,7 +14,5 @@ import { ConfigService } from '@nestjs/config';
       }),
     }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
