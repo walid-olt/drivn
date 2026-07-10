@@ -1,3 +1,2 @@
-import phoneNumberSchema from "./phone.schema";
 export * from "./user.schema";
-export { phoneNumberSchema };
+export * from "./phone.schema";

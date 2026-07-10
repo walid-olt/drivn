@@ -20,6 +20,13 @@ export const userSchema = z.object({
   email: z
     .email("email must be a valid email address")
     .nonempty("Email is required"),
+
+  password: z
+    .string()
+    .nonempty("Password is required")
+    .min(8, "Password must be at least 8 characters long")
+    .max(50, "Password must be at most 50 characters long"),
+
   phone: phoneNumberSchema,
   country: z
     .string()
@@ -28,16 +35,7 @@ export const userSchema = z.object({
     .max(50, "Country must be at most 50 characters long"),
 });
 
-// response schema for user validation
-export const userResponseSchema = userSchema.extend({
-  id: z.string().length(24, "Invalid user id"),
-});
-
-// user creation schema for user validation
-export const creatUserSchema = userSchema.extend({
-  password: z
-    .string()
-    .nonempty("Password is required")
-    .min(8, "Password must be at least 8 characters long")
-    .max(50, "Password must be at most 50 characters long"),
-});
+// response schema for frontend to omit password and include id
+export const userResponseSchema = userSchema
+  .extend({ id: z.string().length(24, "Invalid user id") })
+  .omit({ password: true });

@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@anatine/zod-nestjs": "^2.0.12",
     "@drivn/shared": "workspace:*",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.4",
