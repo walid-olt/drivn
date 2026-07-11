@@ -3,7 +3,7 @@ services:
     image: mongo
     hostname: mongodb
     env_file:
-      - .env.development
+      - .env
     ports:
       - 27017:27017
     volumes:
