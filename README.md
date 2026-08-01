@@ -35,16 +35,15 @@ Drivn aims to solve these problems by creating a centralized platform that conne
 * `apps/api/` - Node.js/Express backend API.
 * `apps/client/` - React/React router frontend application.
 * `packages/shared/` - Shared TypeScript types, validation schemas (zod), utility functions, and constants.
-notes:
 - the `packages/shared` package is used to share code between the frontend and backend, ensuring consistency and reducing duplication.
 - each application (api and client) has its own `README.md` for documentation specific to that application.
 
 # Getting Started
 ## Prerequisites
-- Node.js (v22 or later)
-- pnpm (idealy v9 or later) # could also use npm but pnpm is recommended for monorepo
+- Node.js (v24 or later)
+- pnpm (v11 or later), you could also use npm or other package managers but pnpm is recommended
 - turborepo (for monorepo management)
-- Docker (for containerization, and db setup) 
+- Docker 
 
 ## Installation and running
 1. Clone the repository:
