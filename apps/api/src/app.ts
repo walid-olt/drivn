@@ -9,9 +9,12 @@ export function createApp(): express.Express {
 	app.use(morgan('dev'));
 	app.use(express.json());
 
-  app.use("/health", handler(async ()=>{
-    return {status: "ok"}
-  }))
+	app.use(
+		'/health',
+		handler(async () => {
+			return { status: 'ok' };
+		}),
+	);
 	app.use(errorHandler);
 
 	return app;
