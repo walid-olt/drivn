@@ -43,10 +43,10 @@ export class BadRequestException extends HttpException {
 }
 
 export class UnauthorizedException extends HttpException {
-	constructor(message = 'Unauthorized') {
+	constructor(message = 'Unauthorized', code: ApiErrorCode = ApiErrorCode.AUTH_EXPIRATION) {
 		super(message, {
 			status: ApiStatusCode.UNAUTHORIZED,
-			code: ApiErrorCode.AUTH_EXPIRATION,
+			code,
 		});
 		this.name = 'UnauthorizedException';
 	}

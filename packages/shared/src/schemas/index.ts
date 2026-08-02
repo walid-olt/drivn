@@ -1,3 +1,3 @@
-import phoneNumberSchema from './phone.schema';
-export * from './user.schema';
+import phoneNumberSchema from './phone.schema.ts';
+export * from './user.schema.ts';
 export { phoneNumberSchema };

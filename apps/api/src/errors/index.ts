@@ -9,4 +9,4 @@ export {
 	TooManyRequestsException,
 	InternalServerErrorException,
 	ServiceUnavailableException,
-} from './http.exception.js';
+} from './http.exception.ts';

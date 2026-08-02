@@ -1,7 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
-import { errorHandler } from './middleware/error.middleware.js';
-import { handler } from './lib/handler.js';
+import { errorHandler } from './middleware/error.middleware.ts';
+import { handler } from './lib/handler.ts';
 
 export function createApp(): express.Express {
 	const app = express();

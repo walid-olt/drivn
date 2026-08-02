@@ -1,5 +1,5 @@
-import { ApiResponse } from '@drivn/shared';
-import { Request, Response, NextFunction, RequestHandler } from 'express';
+import type { ApiResponse } from '@drivn/shared';
+import type { Request, Response, NextFunction, RequestHandler } from 'express';
 
 /**
  * @desc This type represents the possible return values of a controller function.

@@ -1,7 +1,8 @@
 import { z } from 'zod';
-import phoneNumberSchema from './phone.schema';
+import phoneNumberSchema from './phone.schema.ts';
 // base schema for user validation
 export const userSchema = z.object({
+	id: z.string().length(24, 'Invalid user id'),
 	firstName: z
 		.string()
 		.nonempty('First name is required')
@@ -26,13 +27,8 @@ export const userSchema = z.object({
 		.max(50, 'Country must be at most 50 characters long'),
 });
 
-// response schema for user validation
-export const userResponseSchema = userSchema.extend({
-	id: z.string().length(24, 'Invalid user id'),
-});
-
 // user creation schema for user validation
-export const creatUserSchema = userSchema.extend({
+export const creatUserSchema = userSchema.omit({ id: true }).extend({
 	password: z
 		.string()
 		.nonempty('Password is required')
