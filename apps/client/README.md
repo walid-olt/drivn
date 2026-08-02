@@ -98,4 +98,5 @@ import { cn } from '@/lib/utils';
 | `pnpm dev` | Start Vite dev server |
 | `pnpm build` | Type-check + production build |
 | `pnpm preview` | Preview production build |
-| `pnpm lint` | Lint with ESLint |
+| `pnpm lint` | Lint with oxlint |
+| `pnpm format` | Format with oxfmt |

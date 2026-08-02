@@ -1,8 +1,8 @@
-import z from "zod";
-import { isValidPhoneNumber } from "libphonenumber-js";
+import z from 'zod';
+import { isValidPhoneNumber } from 'libphonenumber-js';
 
 const phoneNumberSchema = z.string().refine(isValidPhoneNumber, {
-  message: "invalid phone number",
+	message: 'invalid phone number',
 });
 
 export default phoneNumberSchema;

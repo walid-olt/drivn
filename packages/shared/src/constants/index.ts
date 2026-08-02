@@ -1,3 +1,3 @@
-import cities from "./cities";
+import cities from './cities';
 
 export { cities };
