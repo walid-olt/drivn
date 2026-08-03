@@ -5,12 +5,9 @@ import {
   type ApiError,
 } from "@drivn/shared";
 
-import jwt, {
-  JsonWebTokenError,
-  NotBeforeError,
-  TokenExpiredError,
-  type SignOptions,
-} from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+
+const { JsonWebTokenError, NotBeforeError, TokenExpiredError } = jwt;
 
 export class HttpException extends Error {
   readonly status: ApiStatusCode;

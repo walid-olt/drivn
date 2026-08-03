@@ -54,13 +54,11 @@ Loaded from `.env.development` at repo root. Required variables:
 
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
-| `MONGO_URI` | URL | - | MongoDB connection string |
-| `MONGO_INITDB_ROOT_USERNAME` | string | - | MongoDB username |
-| `MONGO_INITDB_ROOT_PASSWORD` | string (min 8) | - | MongoDB password |
-| `MONGO_INITDB_DATABASE` | string | `drivn` | Database name |
-| `MONGO_INITDB_PORT` | number | `27017` | MongoDB port |
-| `JWT_SECRET` | string (min 32) | - | JWT signing secret |
+| `MONGODB_URI` | URL | - | MongoDB connection string |
+| `MONGODB_DBNAME` | string | `drivn-dev` | Database name |
 | `PORT` | number | `3000` | Server port |
+| `BETTER_AUTH_URL` | URL | `http://localhost:3000` | Better Auth server base URL |
+| `BETTER_AUTH_SECRET` | string (min 32) | - | Better Auth secret for signing tokens |
 | `NODE_ENV` | `development` \| `production` \| `test` | `development` | Environment |
 
 ## API Conventions

@@ -3,9 +3,9 @@ import z from 'zod';
 export const envSchema = z.object({
 	MONGODB_URI: z.url(),
 	MONGODB_DBNAME: z.string().default('drivn-dev'),
-	JWT_SECRET: z.string().min(32, { error: 'JWT_SECRET too short, use a stronger one' }),
-	JWT_EXPIRE_IN: z.string().default('1w'),
 	PORT: z.coerce.number().default(3000),
+	BETTER_AUTH_URL: z.url().default('http://localhost:3000'),
+	BETTER_AUTH_SECRET: z.string().min(32, { error: 'BETTER_AUTH_SECRET too short, use a stronger one' }),
 	NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 });
 
