@@ -57,7 +57,8 @@ Loaded from `.env.development` at repo root. Required variables:
 | `MONGODB_URI` | URL | - | MongoDB connection string |
 | `MONGODB_DBNAME` | string | `drivn-dev` | Database name |
 | `PORT` | number | `3000` | Server port |
-| `BETTER_AUTH_URL` | URL | `http://localhost:3000` | Better Auth server base URL |
+| `BACKEND_URL` | URL | `http://localhost:3000` | Public URL of the API (also used as Better Auth base URL) |
+| `FRONTEND_URL` | URL | `http://localhost:5173` | Public URL of the client (CORS allowlist) |
 | `BETTER_AUTH_SECRET` | string (min 32) | - | Better Auth secret for signing tokens |
 | `NODE_ENV` | `development` \| `production` \| `test` | `development` | Environment |
 

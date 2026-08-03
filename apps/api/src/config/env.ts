@@ -4,8 +4,11 @@ export const envSchema = z.object({
 	MONGODB_URI: z.url(),
 	MONGODB_DBNAME: z.string().default('drivn-dev'),
 	PORT: z.coerce.number().default(3000),
-	BETTER_AUTH_URL: z.url().default('http://localhost:3000'),
-	BETTER_AUTH_SECRET: z.string().min(32, { error: 'BETTER_AUTH_SECRET too short, use a stronger one' }),
+	BACKEND_URL: z.url().default('http://localhost:3000'),
+	FRONTEND_URL: z.url().default('http://localhost:5173'),
+	BETTER_AUTH_SECRET: z
+		.string()
+		.min(32, { error: 'BETTER_AUTH_SECRET too short, use a stronger one' }),
 	NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 });
 
