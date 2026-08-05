@@ -56,7 +56,7 @@ Drivn aims to solve these problems by creating a centralized platform that conne
    pnpm install # or npm install 
    ```
 3. Set up environment variables:
-   - Create a `.env` file in the root directory and add the necessary environment variables (see `.env.example` for reference).
+   - Create a `.env.development` file in the root directory and add the necessary environment variables (see `.env.example` for reference). Tests use `.env.test` and an in-memory MongoDB, so no setup is needed for them.
 4. Start the MongoDB database using Docker:
    ```bash
    docker-compose up -d
