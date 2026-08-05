@@ -9,12 +9,10 @@ import { auth } from './lib/auth.ts';
 
 export function createApp(db: mongo.Db): express.Express {
 	const app = express();
-
 	app.use(cors({ origin: process.env.FRONTEND_URL }));
 	app.all('/api/auth/{*any}', toNodeHandler(auth(db)));
 	app.use(morgan('dev'));
 	app.use(express.json());
-
 	app.use(
 		'/health',
 		handler(async () => {
