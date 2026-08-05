@@ -4,10 +4,12 @@ import { createApp } from '../../src/app';
 import request from 'supertest';
 
 describe('[AUTH]', () => {
+	const AUTH_BASE_URL = '/api/auth';
 	const app = () => createApp(mongoose.connection.db!);
 	describe('sign-up', () => {
+		const SIGN_UP_URL = `${AUTH_BASE_URL}/sign-up/email`;
 		it("should return 400 when sign-up data aren't valid", async () => {
-			const response = await request(app()).post('/api/auth/sign-up/email').send({}).expect(400);
+			const response = await request(app()).post(SIGN_UP_URL).send({}).expect(400);
 			expect(response.body).toMatchObject({
 				code: 'VALIDATION_ERROR',
 			});
@@ -15,7 +17,7 @@ describe('[AUTH]', () => {
 
 		it('should create a user and return a session', async () => {
 			const response = await request(app())
-				.post('/api/auth/sign-up/email')
+				.post(SIGN_UP_URL)
 				.send({
 					email: 'test@example.com',
 					password: 'password123',
