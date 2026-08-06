@@ -8,7 +8,9 @@
       "outputs": ["dist/**"]
     },
     "format":{},
-    "test": {},
+    "test": {
+      "cache":false
+    },
     "lint":{
       "cache":false,
     },
