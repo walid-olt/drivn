@@ -10,6 +10,7 @@ export const auth = (db: mongo.Db) =>
 			enabled: true,
 			maxPasswordLength: 255,
 			minPasswordLength: 8,
+
 			// might add it later
 			requireEmailVerification: false,
 		},
