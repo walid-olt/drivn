@@ -1,29 +1,18 @@
+import { validateEnv } from './config/env.ts';
+import { createApp } from './app.ts';
+import { connectDB } from './lib/mongodb.ts';
 import mongoose from 'mongoose';
-import { config } from 'dotenv';
-import { resolve } from 'node:path';
-import { validateEnv } from './config/env.js';
-import { createApp } from './app.js';
 
 async function bootstrap() {
 	console.info('Bootstrapping app...');
-	config({ path: resolve(process.cwd(), '../../', '.env.development'), quiet: true });
 
-	const env = validateEnv(process.env);
+	validateEnv();
+	await connectDB();
 
-	const app = createApp();
+	const app = createApp(mongoose.connection.db!);
 
-	await mongoose
-		.connect(env.MONGODB_URI, {
-			dbName: env.MONGODB_DBNAME,
-		})
-		.then(() => console.log('Mongodb connected'))
-		.catch((e) => {
-			console.error("Couldn't connect to Mongodb", e);
-			process.exit(1);
-		});
-
-	app.listen(env.PORT, () => {
-		console.log(`Server running on http://localhost:${env.PORT}`);
+	app.listen(process.env.PORT, () => {
+		console.log(`Server running on ${process.env.BACKEND_URL}`);
 	});
 }
 

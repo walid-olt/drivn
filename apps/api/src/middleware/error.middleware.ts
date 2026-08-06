@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { HttpException } from '../errors/http.exception.js';
+import { HttpException } from '../errors/http.exception.ts';
 import { ApiStatusCode, ApiErrorCode } from '@drivn/shared';
 
 export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction): void {

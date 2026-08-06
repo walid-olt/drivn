@@ -50,17 +50,24 @@ The server starts on `http://localhost:3000` by default.
 
 ### Environment Variables
 
-Loaded from `.env.development` at repo root. Required variables:
+Loaded from the env file matching what you're doing (all at repo root, see `.env.example`):
+
+| Mode | File | How it's loaded |
+|------|------|-----------------|
+| `dev` | `.env.development` | `tsx --env-file` in the `dev` script |
+| `test` | `.env.test` | loaded by `test/test-setup.ts`; DB comes from `mongodb-memory-server`, so no external MongoDB needed |
+| `production` | `.env.production` | usually injected by the platform instead of a file |
+
+Required variables:
 
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
-| `MONGO_URI` | URL | - | MongoDB connection string |
-| `MONGO_INITDB_ROOT_USERNAME` | string | - | MongoDB username |
-| `MONGO_INITDB_ROOT_PASSWORD` | string (min 8) | - | MongoDB password |
-| `MONGO_INITDB_DATABASE` | string | `drivn` | Database name |
-| `MONGO_INITDB_PORT` | number | `27017` | MongoDB port |
-| `JWT_SECRET` | string (min 32) | - | JWT signing secret |
+| `MONGODB_URI` | URL | - | MongoDB connection string |
+| `MONGODB_DBNAME` | string | `drivn-dev` | Database name |
 | `PORT` | number | `3000` | Server port |
+| `BACKEND_URL` | URL | `http://localhost:3000` | Public URL of the API (also used as Better Auth base URL) |
+| `FRONTEND_URL` | URL | `http://localhost:5173` | Public URL of the client (CORS allowlist) |
+| `BETTER_AUTH_SECRET` | string (min 32) | - | Better Auth secret for signing tokens |
 | `NODE_ENV` | `development` \| `production` \| `test` | `development` | Environment |
 
 ## API Conventions
@@ -112,8 +119,8 @@ Available exceptions: `BadRequestException`, `UnauthorizedException`, `Forbidden
 
 | Command | Description |
 |---------|-------------|
-| `pnpm dev` | Start dev server with hot reload |
+| `pnpm dev` | Start dev server with hot reload (loads `.env.development`) |
 | `pnpm build` | Build for production |
-| `pnpm test` | Run tests |
+| `pnpm test` | Run tests (loads `.env.test`, uses in-memory MongoDB) |
 | `pnpm lint` | Lint with oxlint |
 | `pnpm format` | Format with oxfmt |

@@ -2,6 +2,7 @@
   "name": "@drivn/shared",
   "version": "0.0.2",
   "private": true,
+  "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
@@ -20,9 +21,12 @@
   "scripts": {
     "build": "tsdown src/index.ts --format cjs,esm --dts --clean",
     "dev": "tsdown src/index.ts --format cjs,esm --dts --no-clean",
-    "lint": "eslint src/"
+    "format": "oxfmt src/ --write",
+    "lint": "oxlint src/"
   },
   "devDependencies": {
+    "oxfmt": "^0.58.0",
+    "oxlint": "^1.73.0",
     "tsdown": "^0.22.4",
     "typescript": "^5.7.3",
     "zod": "^4.4.3"
