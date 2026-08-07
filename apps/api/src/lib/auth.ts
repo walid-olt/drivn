@@ -1,4 +1,5 @@
 import { betterAuth } from 'better-auth';
+import { organization } from 'better-auth/plugins/organization';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import { mongo } from 'mongoose';
 
@@ -14,4 +15,5 @@ export const auth = (db: mongo.Db) =>
 			// might add it later
 			requireEmailVerification: false,
 		},
+		plugins: [organization({})],
 	});
