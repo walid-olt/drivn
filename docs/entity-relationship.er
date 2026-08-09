@@ -1,0 +1,114 @@
+notation crows-foot
+title Auth, Organization & Agency Data Model
+
+user [icon: user, color: blue] {
+  id string pk
+  name string
+  email string
+  emailVerified boolean
+  image string
+  createdAt datetime
+  updatedAt datetime
+}
+
+session [icon: key, color: purple] {
+  id string pk
+  userId string fk
+  token string
+  expiresAt datetime
+  ipAddress string
+  userAgent string
+  createdAt datetime
+  updatedAt datetime
+}
+
+account [icon: lock, color: purple] {
+  id string pk
+  userId string fk
+  accountId string
+  providerId string
+  password string
+  createdAt datetime
+  updatedAt datetime
+}
+
+verification [icon: check-circle, color: gray] {
+  id string pk
+  identifier string
+  value string
+  expiresAt datetime
+  createdAt datetime
+  updatedAt datetime
+}
+
+organization [icon: briefcase, color: green] {
+  id string pk
+  name string
+  slug string
+  logo string
+  metadata string
+  createdAt datetime
+}
+
+member [icon: users, color: orange] {
+  id string pk
+  organizationId string fk
+  userId string fk
+  role string
+  createdAt datetime
+}
+
+invitation [icon: mail, color: yellow] {
+  id string pk
+  organizationId string fk
+  email string
+  role string
+  status string
+  expiresAt datetime
+  inviterId string fk
+}
+
+profile [icon: id-card, color: blue] {
+  _id string pk
+  userId string fk
+  firstName string
+  lastName string
+  birthDate date
+  phone string
+  country string
+}
+
+agency [icon: house, color: red] {
+  _id string pk
+  organizationId string fk
+  name string
+  slug string
+  logo string
+  banner string
+  summary string
+  supportEmail string
+  supportPhone string
+  address: { city, country, addressLine1, zipCode } {}
+}
+
+location [icon: map-pin, color: teal] {
+  _id string pk
+  organizationId string fk
+  name string
+  address string
+  country string
+  city string
+  postalCode string
+  type string enum
+  isActive boolean
+}
+
+user.id < session.userId
+user.id < account.userId
+user.id < member.userId
+user.id < invitation.inviterId
+user.id < profile.userId
+organization.id < member.organizationId
+organization.id < invitation.organizationId
+organization.id < agency.organizationId
+organization.id < location.organizationId
