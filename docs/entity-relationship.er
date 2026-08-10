@@ -1,5 +1,5 @@
 notation crows-foot
-title Auth, Organization & Agency Data Model
+title Auth, Organization, Agency & Rental Management Data Model
 
 user [icon: user, color: blue] {
   id string pk
@@ -88,27 +88,74 @@ agency [icon: house, color: red] {
   summary string
   supportEmail string
   supportPhone string
-  address: { city, country, addressLine1, zipCode } {}
+  address {}
+  onboardingStatus string
+  operatingLocationIds array
 }
 
 location [icon: map-pin, color: teal] {
   _id string pk
-  organizationId string fk
   name string
   address string
   country string
   city string
   postalCode string
   type string enum
-  isActive boolean
 }
 
+car [icon: car, color: darkred] {
+  _id string pk
+  organizationId string fk
+  agencyId string fk
+  make string
+  model string
+  year number
+  vin string
+  licensePlate string
+  color string
+  status string enum
+  category string enum
+  transmission string enum
+  fuelType string enum
+  seatingCapacity number
+  doors number
+  mileage number
+  dailyRate number
+  images array
+}
+
+reservation [icon: calendar, color: darkgreen] {
+  _id string pk
+  organizationId string fk
+  agencyId string fk
+  carId string fk
+  customerId string fk
+  startDate datetime
+  endDate datetime
+  status string enum
+  dailyRate number
+  pickupLocationId string fk
+  dropoffLocationId string fk
+  totalDays number
+  totalAmount number
+  notes string
+}
+
+
 user.id < session.userId
-user.id < account.userId
-user.id < member.userId
-user.id < invitation.inviterId
-user.id < profile.userId
+user.id <  account.userId
+user.id - member.userId
+user.id - invitation.inviterId
+user.id - profile.userId
+user.id < reservation.customerId
 organization.id < member.organizationId
 organization.id < invitation.organizationId
 organization.id < agency.organizationId
-organization.id < location.organizationId
+organization.id < car.organizationId
+organization.id < reservation.organizationId
+agency.operatingLocationIds <> location._id
+agency._id < car.agencyId
+agency._id < reservation.agencyId
+car._id < reservation.carId
+location._id < reservation.pickupLocationId
+location._id < reservation.dropoffLocationId

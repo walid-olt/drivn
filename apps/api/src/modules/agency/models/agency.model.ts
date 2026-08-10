@@ -3,6 +3,7 @@ import { Document, Schema, model, Types } from 'mongoose';
 
 interface AgencyDocument extends Omit<Agency, 'organizationId' | '_id'>, Document {
 	organizationId: Types.ObjectId;
+	operatingLocationIds: Types.ObjectId[];
 }
 
 const AgencySchema = new Schema<AgencyDocument>({
@@ -25,6 +26,12 @@ const AgencySchema = new Schema<AgencyDocument>({
 		type: String,
 		enum: ['not_started', 'initial', 'branding', 'support', 'completed'],
 		default: 'not_started',
+		required: true,
+	},
+	operatingLocationIds: {
+		type: [Types.ObjectId],
+		ref: 'Location',
+		default: [],
 		required: true,
 	},
 });

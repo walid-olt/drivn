@@ -28,6 +28,7 @@ export const agencySchema = z.object({
 	onboardingStatus: z
 		.enum(['not_started', 'initial', 'branding', 'support', 'completed'])
 		.default('not_started'),
+	operatingLocationIds: z.array(z.string()).default([]),
 });
 export const createAgencySchema = agencySchema.omit({
 	_id: true,

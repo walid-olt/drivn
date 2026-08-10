@@ -6,6 +6,8 @@ interface ReservationDocument extends Omit<Reservation, 'organizationId' | '_id'
 	agencyId: Types.ObjectId;
 	carId: Types.ObjectId;
 	customerId: Types.ObjectId;
+	pickupLocationId: Types.ObjectId;
+	dropoffLocationId: Types.ObjectId;
 }
 
 const ReservationSchema = new Schema<ReservationDocument>({
@@ -13,6 +15,8 @@ const ReservationSchema = new Schema<ReservationDocument>({
 	agencyId: { type: Types.ObjectId, required: true, ref: 'Agency' },
 	carId: { type: Types.ObjectId, required: true, ref: 'Car' },
 	customerId: { type: Types.ObjectId, required: true, ref: 'User' },
+	pickupLocationId: { type: Types.ObjectId, required: true, ref: 'Location' },
+	dropoffLocationId: { type: Types.ObjectId, required: true, ref: 'Location' },
 	startDate: { type: Date, required: true, index: true },
 	endDate: { type: Date, required: true },
 	status: {

@@ -8,6 +8,8 @@ export const reservationSchema = z.object({
 	agencyId: z.string(),
 	carId: z.string(),
 	customerId: z.string(),
+	pickupLocationId: z.string(),
+	dropoffLocationId: z.string(),
 
 	startDate: z.coerce.date({
 		message: 'A valid start date is required',
