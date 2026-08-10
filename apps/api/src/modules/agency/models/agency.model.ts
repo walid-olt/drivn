@@ -21,8 +21,16 @@ const AgencySchema = new Schema<AgencyDocument>({
 		zipCode: { type: String, required: false },
 		required: false,
 	},
+	onboardingStatus: {
+		type: String,
+		enum: ['not_started', 'initial', 'branding', 'support', 'completed'],
+		default: 'not_started',
+		required: true,
+	},
 });
 
+// index to make agency lookup by organizationId and slug faster
+AgencySchema.index({ organizationId: 1, slug: 1 }, { unique: true });
 const AgencyModel = model<AgencyDocument>('Agency', AgencySchema);
 
 export default AgencyModel;

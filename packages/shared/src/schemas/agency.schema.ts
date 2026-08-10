@@ -25,6 +25,9 @@ export const agencySchema = z.object({
 			zipCode: z.string().max(20).optional(),
 		})
 		.optional(),
+	onboardingStatus: z
+		.enum(['not_started', 'initial', 'branding', 'support', 'completed'])
+		.default('not_started'),
 });
 export const createAgencySchema = agencySchema.omit({
 	_id: true,
