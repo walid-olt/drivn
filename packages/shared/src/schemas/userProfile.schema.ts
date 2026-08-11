@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import phoneNumberSchema from './phone.schema.ts';
-// base schema for user validation
-export const userSchema = z.object({
-	id: z.string().length(24, 'Invalid user id'),
+export const userProfileSchema = z.object({
+	_id: z.string().length(24, 'Invalid user id'),
+	userId: z.string().min(1, 'Invalid user id'),
 	firstName: z
 		.string()
 		.nonempty('First name is required')
@@ -13,12 +13,9 @@ export const userSchema = z.object({
 		.nonempty('Last name is required')
 		.min(2, 'Last name must be at least 2 characters long')
 		.max(50, 'Last name must be at most 50 characters long'),
-	age: z
-		.number()
-		.int('Age must be an integer')
-		.min(18, 'Age must be at least 18')
-		.max(120, 'Age must be at most 120'),
-	email: z.email('email must be a valid email address').nonempty('Email is required'),
+	birthDate: z.coerce.date().refine((date) => date <= new Date(), {
+		error: 'Birth date cannot be in the future',
+	}),
 	phone: phoneNumberSchema,
 	country: z
 		.string()
@@ -27,11 +24,13 @@ export const userSchema = z.object({
 		.max(50, 'Country must be at most 50 characters long'),
 });
 
-// user creation schema for user validation
-export const creatUserSchema = userSchema.omit({ id: true }).extend({
-	password: z
-		.string()
-		.nonempty('Password is required')
-		.min(8, 'Password must be at least 8 characters long')
-		.max(50, 'Password must be at most 50 characters long'),
+// _id and userId are generated and handled by the server, so we omit them from the createUserProfileSchema
+export const createUserProfileSchema = userProfileSchema.omit({
+	_id: true,
+	userId: true,
+});
+
+export const updateUserProfileSchema = userProfileSchema.partial().omit({
+	_id: true,
+	userId: true,
 });

@@ -1,1 +1,1 @@
-export * from "./http.exception.ts";
+export * from './http.exception.ts';
