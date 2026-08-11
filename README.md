@@ -1,6 +1,6 @@
 # Drivn
 
-![status](https://img.shields.io/badge/status-development-brightgreen) 
+![status](https://img.shields.io/badge/status-development-brightgreen) [![CI](https://github.com/walid-olt/drivn/actions/workflows/CI.yml/badge.svg)](https://github.com/walid-olt/drivn/actions/workflows/CI.yml)
 
 # Overview
 Drivn is car rental platform built to provide a unified experience for both customers and agencies. It offers a interface for customers to browse and book cars, while providing agencies with tools to manage their fleet and reservations efficiently.
