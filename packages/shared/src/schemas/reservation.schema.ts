@@ -47,8 +47,7 @@ export const updateReservationSchema = reservationSchema
 			ctx.addIssue({
 				code: 'custom',
 				message: 'End date must be strictly after the start date',
-				path: ['endDqate'],
+				path: ['endDate'],
 			});
 		}
 	});
-export type Reservation = z.infer<typeof reservationSchema>;

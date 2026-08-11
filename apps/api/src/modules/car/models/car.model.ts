@@ -52,7 +52,7 @@ const CarSchema = new Schema<CarDocument>({
 		required: true,
 	},
 	doors: { type: Number, min: 2, max: 6, default: 4, required: true },
-	mileage: { type: Number, min: 0, default: 0, required: true },
+	kilometrage: { type: Number, min: 0, default: 0, required: true },
 	dailyRate: { type: Number, required: true },
 	images: { type: [String], required: true },
 });

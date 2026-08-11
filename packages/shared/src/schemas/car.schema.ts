@@ -1,5 +1,11 @@
 import z from 'zod';
-import { MAX_CAR_IMAGES, MIN_CAR_IMAGES } from '../constants/files';
+import {
+	ACCEPTED_IMAGE_TYPES,
+	MAX_CAR_IMAGE_SIZE_BYTES,
+	MAX_CAR_IMAGES,
+	MAX_TOTAL_CAR_IMAGE_UPLOAD_SIZE_BYTE,
+	MIN_CAR_IMAGES,
+} from '../constants/files';
 export const carSchema = z.object({
 	_id: z.string(),
 	organizationId: z.string(),
@@ -24,7 +30,7 @@ export const carSchema = z.object({
 	seatingCapacity: z.number().int().min(1).max(12).default(5),
 	doors: z.number().int().min(2).max(6).default(4),
 
-	mileage: z.number().nonnegative('Mileage cannot be negative').default(0), // Can also be tracked in kilometers depending on region
+	kilometrage: z.number().nonnegative('Kilometrage cannot be negative').default(0),
 	dailyRate: z.number().positive('Daily rate must be greater than zero'),
 
 	images: z
@@ -41,13 +47,34 @@ export const createCarSchema = carSchema.omit({
 });
 
 // validate actual image files on the client side.
-export const createCarFormSchema = carSchema.omit({
-	images: true,
-	_id: true,
-	organizationId: true,
-	agencyId: true,
-});
 
+export const carImageSchema = z
+	.file()
+	.mime(ACCEPTED_IMAGE_TYPES, 'Only standard image formats are allowed')
+	.max(MAX_CAR_IMAGE_SIZE_BYTES, 'Individual file size exceeds the limit');
+
+export const createCarFormSchema = carSchema
+	.omit({
+		images: true,
+		_id: true,
+		organizationId: true,
+		agencyId: true,
+	})
+	.extend({
+		images: z
+			.array(carImageSchema)
+			.min(MIN_CAR_IMAGES, 'Each car must have at least one image')
+			.max(MAX_CAR_IMAGES, 'Exceeded maximum number of images')
+			.refine(
+				(files) =>
+					files.reduce((acc, file) => acc + file.size, 0) <= MAX_TOTAL_CAR_IMAGE_UPLOAD_SIZE_BYTE,
+				'Total upload size is too large',
+			)
+			.refine(
+				(files) => new Set(files.map((f) => `${(f as any).name}-${f.size}`)).size === files.length,
+				'Duplicate images are not allowed',
+			),
+	});
 export const updateCarSchema = carSchema.partial().omit({
 	_id: true,
 	organizationId: true,

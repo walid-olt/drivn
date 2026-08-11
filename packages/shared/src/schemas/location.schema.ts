@@ -1,6 +1,7 @@
 import z from 'zod';
 export const locationSchema = z.object({
 	_id: z.string(),
+	organizationId: z.string(),
 	name: z.string().min(1),
 	address: z.string().min(1),
 	country: z.string(),
@@ -9,5 +10,8 @@ export const locationSchema = z.object({
 	type: z.enum(['office', 'airport', 'hotel', 'train_station', 'port', 'other']),
 });
 
-export const locationCreateSchema = locationSchema.omit({ _id: true });
-export const locationUpdateSchema = locationSchema.partial().omit({ _id: true });
+// _id and organizationId are inferred from the auth/tenant context
+export const locationCreateSchema = locationSchema.omit({ _id: true, organizationId: true });
+export const locationUpdateSchema = locationSchema
+	.partial()
+	.omit({ _id: true, organizationId: true });

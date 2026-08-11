@@ -1,7 +1,9 @@
 import { type Agency } from '@drivn/shared';
 import { Document, Schema, model, Types } from 'mongoose';
 
-interface AgencyDocument extends Omit<Agency, 'organizationId' | '_id'>, Document {
+interface AgencyDocument
+	extends Omit<Agency, 'organizationId' | '_id' | 'operatingLocationIds'>,
+		Document {
 	organizationId: Types.ObjectId;
 	operatingLocationIds: Types.ObjectId[];
 }

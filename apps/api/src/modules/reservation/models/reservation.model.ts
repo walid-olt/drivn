@@ -1,7 +1,18 @@
 import { type Reservation } from '@drivn/shared';
 import { Document, Schema, model, Types } from 'mongoose';
 
-interface ReservationDocument extends Omit<Reservation, 'organizationId' | '_id'>, Document {
+interface ReservationDocument
+	extends Omit<
+			Reservation,
+			| 'organizationId'
+			| '_id'
+			| 'agencyId'
+			| 'carId'
+			| 'customerId'
+			| 'pickupLocationId'
+			| 'dropoffLocationId'
+		>,
+		Document {
 	organizationId: Types.ObjectId;
 	agencyId: Types.ObjectId;
 	carId: Types.ObjectId;

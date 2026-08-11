@@ -95,6 +95,7 @@ agency [icon: house, color: red] {
 
 location [icon: map-pin, color: teal] {
   _id string pk
+  organizationId string fk
   name string
   address string
   country string
@@ -119,7 +120,7 @@ car [icon: car, color: darkred] {
   fuelType string enum
   seatingCapacity number
   doors number
-  mileage number
+  kilometrage number
   dailyRate number
   images array
 }
@@ -153,6 +154,7 @@ organization.id < invitation.organizationId
 organization.id < agency.organizationId
 organization.id < car.organizationId
 organization.id < reservation.organizationId
+organization.id < location.organizationId
 agency.operatingLocationIds <> location._id
 agency._id < car.agencyId
 agency._id < reservation.agencyId

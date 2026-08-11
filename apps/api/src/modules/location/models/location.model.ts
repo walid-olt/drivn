@@ -1,9 +1,12 @@
 import { type Location } from '@drivn/shared';
-import { Document, Schema, model } from 'mongoose';
+import { Document, Schema, model, Types } from 'mongoose';
 
-interface LocationDocument extends Omit<Location, '_id'>, Document {}
+interface LocationDocument extends Omit<Location, '_id' | 'organizationId'>, Document {
+	organizationId: Types.ObjectId;
+}
 
 const LocationSchema = new Schema<LocationDocument>({
+	organizationId: { type: Types.ObjectId, required: true, ref: 'Organization' },
 	name: { type: String, required: true, index: true },
 	address: { type: String, required: true },
 	country: { type: String, required: true },
