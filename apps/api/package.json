@@ -11,7 +11,7 @@
 		"test:watch": "vitest",
 		"format": "oxfmt src/ --write",
 		"lint": "oxlint src/",
-    "email:dev":"email dev --dir src/emails"
+		"email:preview": "email dev --dir src/emails"
 	},
 	"dependencies": {
 		"@drivn/shared": "workspace:*",
