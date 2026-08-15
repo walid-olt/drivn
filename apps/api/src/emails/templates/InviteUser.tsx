@@ -1,74 +1,76 @@
-import { Html, Head, Body, Container, Preview, Heading, Text, Button, Link, Img } from 'react-email';
+import { Column, Heading, Img, Row, Text } from 'react-email';
+import { ActionButton, baseUrl, EmailLayout, FallbackLink } from '../components/EmailLayout.tsx';
 
 interface InviteUserProps {
-	inviteeName?: string;
-	inviterName?: string;
-	inviterEmail?: string;
-	agencyName?: string;
+	inviteeName: string;
+	inviterName: string;
+	inviterEmail: string;
+	agencyName: string;
 	agencyLogo?: string;
-	inviteLink?: string;
+	inviteLink: string;
 }
 
-const baseUrl = process.env.FRONTEND_URL ?? '';
-
 export const AgencyInviteEmail = ({
-	inviteeName = 'there',
-	inviterName = 'an agency admin',
+	inviteeName,
+	inviterName,
 	inviterEmail,
-	agencyName = 'your agency',
+	agencyName,
 	agencyLogo,
-	inviteLink = baseUrl,
+	inviteLink,
 }: InviteUserProps) => {
-	const preview = `Invitation to join ${agencyName}`;
-	const appLogo = `${baseUrl}/static/app-logo.png`;
-	const agencyLogoSrc = agencyLogo ?? `${baseUrl}/static/agency-logo.png`;
+	const footerNote = inviterEmail
+		? `Questions? Reply to ${inviterEmail}.`
+		: "Didn't expect this invitation? You can safely ignore this email.";
 
 	return (
-		<Html>
-			<Head />
-			<Body className="mx-auto my-auto bg-white px-2 font-sans">
-				<Preview>{preview}</Preview>
-				<Container className="mx-auto my-[40px] max-w-[600px] rounded border border-[#eaeaea] p-[20px]">
-					<div className="flex items-center justify-center gap-4 mb-4">
-						<Img src={appLogo} width="48" height="48" alt="App logo" />
-						<Heading className="m-0 text-[20px] font-medium">{agencyName} — Invitation</Heading>
-					</div>
+		<EmailLayout
+			preview={`You're invited to join ${agencyName ?? 'a team'} on Drivn`}
+			eyebrow="Drivn // Team Invite"
+			note={footerNote}
+		>
+			<Heading className="m-0 text-[22px] font-bold leading-[30px] text-text">
+				{agencyName ? `You're invited to join ${agencyName}` : 'You have an invitation'}
+			</Heading>
 
-					<Text className="text-[14px]">Hello {inviteeName},</Text>
-					<Text className="text-[14px] mb-4">
-						{inviterName} {inviterEmail ? `(${inviterEmail}) ` : ''}has invited you to join <strong>{agencyName}</strong> as a member of their team.
+			<Row className="mt-[20px]">
+				<Column>
+					{agencyLogo ? (
+						<Img
+							src={agencyLogo}
+							alt={`${agencyName ?? 'Agency'} logo`}
+							width={220}
+							style={{ height: 'auto' }}
+						/>
+					) : (
+						<span className="inline-block h-[44px] w-[44px] bg-ink text-center font-mono text-[18px] font-semibold leading-[44px] text-white">
+							{agencyName?.charAt(0).toUpperCase() ?? 'D'}
+						</span>
+					)}
+					<Text className="mt-[8px] mb-0 text-[15px] font-semibold text-text">{agencyName}</Text>
+					<Text className="m-0 font-mono text-[12px] text-muted">
+						Invited by {inviterName ?? 'a team member'}
 					</Text>
+				</Column>
+			</Row>
 
-					<div className="flex items-center justify-center gap-4 my-4">
-						<Img src={agencyLogoSrc} width="64" height="64" alt={`${agencyName} logo`} className="rounded-full" />
-					</div>
+			<Text className="mt-[16px] mb-0 text-[15px] leading-[24px] text-muted">
+				Hi {inviteeName ?? 'there'}, accept the invitation below to set up your account and get
+				started.
+			</Text>
 
-					<div className="text-center my-6">
-						<Button className="rounded bg-[#000000] px-5 py-3 text-white no-underline" href={inviteLink}>
-							Accept Invitation
-						</Button>
-					</div>
-
-					<Text className="text-[14px]">Or copy and paste this link into your browser:</Text>
-					<Link href={inviteLink}>{inviteLink}</Link>
-
-					<Text className="text-[12px] text-[#666] mt-6">
-						If you did not expect this invitation, you can ignore this email. For questions, reply to {inviterEmail ?? 'the sender'}.
-					</Text>
-				</Container>
-			</Body>
-		</Html>
+			<ActionButton href={inviteLink}>Accept invitation</ActionButton>
+			<FallbackLink href={inviteLink} />
+		</EmailLayout>
 	);
 };
 
 AgencyInviteEmail.PreviewProps = {
-	inviteeName: 'janedoe',
-	inviterName: 'Agency Admin',
-	inviterEmail: 'admin@example.com',
-	agencyName: 'Sample Agency',
-	agencyLogo: undefined,
-	inviteLink: process.env.FRONTEND_URL ?? 'https://example.com',
+	inviteeName: 'Jane Doe',
+	inviterName: 'John Doe',
+	inviterEmail: 'John@example.com',
+	agencyName: 'Hertz',
+	agencyLogo: 'https://www.hertz.com/content/dam/hertz/global/hertz-logo-black.png',
+	inviteLink: baseUrl,
 } as InviteUserProps;
 
 export default AgencyInviteEmail;
-

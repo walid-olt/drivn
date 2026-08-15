@@ -5,5 +5,3 @@ export const RESERVATION_STATUS = [
 	'completed',
 	'cancelled',
 ] as const;
-
-//TODO: add simple state machine for reservation status transitions

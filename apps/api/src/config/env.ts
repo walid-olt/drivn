@@ -9,6 +9,7 @@ export const envSchema = z.object({
 	BETTER_AUTH_SECRET: z
 		.string()
 		.min(32, { error: 'BETTER_AUTH_SECRET too short, use a stronger one' }),
+	RESEND_API_KEY: z.string().min(1, { error: 'RESEND_API_KEY is required' }),
 	NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 });
 

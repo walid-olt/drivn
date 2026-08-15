@@ -1,37 +1,36 @@
-import { Html, Head, Body, Container, Preview, Heading, Text, Button, Link } from 'react-email';
+import { Heading, Text } from 'react-email';
+import { EmailLayout, ActionButton, FallbackLink } from '../components/EmailLayout.tsx';
 
 interface VerifyEmailProps {
-	username?: string;
+	userName?: string;
 	verificationUrl: string;
 }
 
-export const VerifyEmail = ({ username = 'there', verificationUrl }: VerifyEmailProps) => {
-	const preview = 'Verify your email address';
+export const VerifyEmail = ({ userName, verificationUrl }: VerifyEmailProps) => {
 	return (
-		<Html>
-			<Head />
-			<Body className="mx-auto my-auto bg-white px-2 font-sans">
-				<Preview>{preview}</Preview>
-				<Container className="mx-auto my-[40px] max-w-[465px] rounded border border-[#eaeaea] p-[20px]">
-					<Heading className="text-center text-[20px] font-normal">Verify your email</Heading>
-					<Text className="text-[14px]">Hello {username},</Text>
-					<Text className="text-[14px]">Please confirm your email address by clicking the button below.</Text>
-					<div className="my-[20px] text-center">
-						<Button className="rounded bg-[#000000] px-5 py-3 text-white no-underline" href={verificationUrl}>
-							Verify email
-						</Button>
-					</div>
-					<Text className="text-[12px] text-[#666]">If the button doesn't work, copy and paste this URL into your browser:</Text>
-					<Link href={verificationUrl}>{verificationUrl}</Link>
-				</Container>
-			</Body>
-		</Html>
+		<EmailLayout
+			preview="Confirm your email address"
+			eyebrow="Drivn // Verify"
+			note="If you didn't create a Drivn account, you can safely ignore this email."
+		>
+			<Heading className="m-0 text-[22px] font-bold leading-[30px] text-text">
+				Confirm your email
+			</Heading>
+			<Text className="mt-[12px] mb-0 text-[15px] leading-[24px] text-muted">
+				Hi {userName}, welcome to Drivn. Confirm this address and your account is ready to go.
+			</Text>
+			<ActionButton href={verificationUrl}>Confirm email</ActionButton>
+			<FallbackLink href={verificationUrl} />
+		</EmailLayout>
 	);
 };
 
 VerifyEmail.PreviewProps = {
 	username: 'alanturing',
-	verificationUrl: 'https://example.com/verify?token=xxx',
+	verificationUrl: new URL(
+		`/verify-email?token=${9874298732}`,
+		process.env.FRONTEND_URL || 'http://localhost:3000',
+	).toString(),
 };
 
 export default VerifyEmail;

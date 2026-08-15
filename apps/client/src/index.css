@@ -43,6 +43,9 @@
   --sidebar-border: #dadce0;
   --sidebar-ring: #1a73e8;
 
+  --ink: #0f0f0f;
+  --lane: #dadce0;
+
   --font-sans: 'Google Sans', 'Roboto', 'Inter', system-ui, sans-serif;
   --font-serif: 'Roboto Serif', Georgia, serif;
   --font-mono: 'Roboto Mono', 'SFMono-Regular', monospace;
@@ -99,6 +102,10 @@
   --sidebar-accent-foreground: #d2e3fc;
   --sidebar-border: #444746;
   --sidebar-ring: #a8c7fa;
+
+  --ink: #0f0f0f;
+  --lane: #444746;
+
   --font-sans: 'Google Sans', 'Roboto', 'Inter', system-ui, sans-serif;
   --font-serif: 'Roboto Serif', Georgia, serif;
   --font-mono: 'Roboto Mono', 'SFMono-Regular', monospace;
@@ -152,6 +159,9 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-ink: var(--ink);
+  --color-lane: var(--lane);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);

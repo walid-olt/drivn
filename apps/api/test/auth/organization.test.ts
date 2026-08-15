@@ -90,7 +90,10 @@ describe('[ORGANIZATION]', () => {
 			const _app = app();
 			const cookies = await signUp(_app, 'owner@example.com');
 
-			const response = await createOrganization(_app, cookies, { name: 'Acme', slug: 'acme' });
+			const response = await createOrganization(_app, cookies, {
+				name: 'Acme',
+				slug: 'acme',
+			});
 			expect(response.body).toMatchObject({
 				name: 'Acme',
 				slug: 'acme',
@@ -113,7 +116,10 @@ describe('[ORGANIZATION]', () => {
 			const _app = app();
 			const cookies = await signUp(_app, 'owner@example.com');
 			await createOrganization(_app, cookies, { name: 'Acme', slug: 'acme' });
-			await createOrganization(_app, cookies, { name: 'Globex', slug: 'globex' });
+			await createOrganization(_app, cookies, {
+				name: 'Globex',
+				slug: 'globex',
+			});
 
 			const response = await request(_app).get(LIST_ORGS_URL).set('Cookie', cookies).expect(200);
 			expect(response.body).toMatchObject([
@@ -142,7 +148,10 @@ describe('[ORGANIZATION]', () => {
 			const _app = app();
 			const cookies = await signUp(_app, 'owner@example.com');
 			await createOrganization(_app, cookies, { name: 'Acme', slug: 'acme' });
-			const globex = await createOrganization(_app, cookies, { name: 'Globex', slug: 'globex' });
+			const globex = await createOrganization(_app, cookies, {
+				name: 'Globex',
+				slug: 'globex',
+			});
 
 			await request(_app)
 				.post(SET_ACTIVE_ORG_URL)
@@ -294,8 +303,10 @@ describe('[ORGANIZATION]', () => {
 		it('should delete the organization', async () => {
 			const _app = app();
 			const cookies = await signUp(_app, 'owner@example.com');
-			const organization = await createOrganization(_app, cookies, { name: 'Acme', slug: 'acme' });
-
+			const organization = await createOrganization(_app, cookies, {
+				name: 'Acme',
+				slug: 'acme',
+			});
 			await request(_app)
 				.post(DELETE_ORG_URL)
 				.set('Cookie', cookies)
