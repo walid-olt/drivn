@@ -11,7 +11,7 @@
 		"test:watch": "vitest",
 		"format": "oxfmt src/ --write",
 		"lint": "oxlint src/",
-    "email:dev":"email dev --dir src/emails"
+		"email:preview": "email dev --dir src/emails"
 	},
 	"dependencies": {
 		"@drivn/shared": "workspace:*",
@@ -28,6 +28,7 @@
 		"react": "^19.2.7",
 		"react-dom": "^19.2.7",
 		"react-email": "6.9.2",
+		"resend": "^6.19.0",
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
