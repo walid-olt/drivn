@@ -32,7 +32,8 @@ export const auth = (db: mongo.Db) => {
 			enabled: true,
 			maxPasswordLength: 255,
 			minPasswordLength: 8,
-			requireEmailVerification: true,
+			// In tests we disable required email verification to allow immediate sign-in
+			requireEmailVerification: process.env.NODE_ENV === 'test' ? false : true,
 		},
 		plugins: [
 			organization({
