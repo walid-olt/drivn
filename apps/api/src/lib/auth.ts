@@ -3,13 +3,15 @@ import { organization } from 'better-auth/plugins/organization';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import { mongo, Types, type Document } from 'mongoose';
 import { ResendProvider } from './providers/resend';
+import { TestingEmailProvider } from './providers/testing';
 import { BackgroundEmailService } from './services/BackgroundEmailService';
 import type { BaseUser } from 'better-auth';
 import type { AgencyDocument } from '../modules/agency/models/agency.model';
 
 export const auth = (db: mongo.Db) => {
-	const resend = new ResendProvider(process.env.RESEND_API_KEY);
-	const emailService = new BackgroundEmailService(resend);
+	const useTesting = process.env.NODE_ENV === 'test' || process.env.EMAIL_PROVIDER === 'testing';
+	const provider = useTesting ? new TestingEmailProvider() : new ResendProvider(process.env.RESEND_API_KEY ?? '');
+	const emailService = new BackgroundEmailService(provider);
 	return betterAuth({
 		baseURL: process.env.BACKEND_URL,
 		database: mongodbAdapter(db),
@@ -30,7 +32,8 @@ export const auth = (db: mongo.Db) => {
 			enabled: true,
 			maxPasswordLength: 255,
 			minPasswordLength: 8,
-			requireEmailVerification: true,
+			// In tests we disable required email verification to allow immediate sign-in
+			requireEmailVerification: process.env.NODE_ENV === 'test' ? false : true,
 		},
 		plugins: [
 			organization({
