@@ -7,8 +7,6 @@ interface ProfileDocument extends Omit<UserProfile, '_id' | 'userId'>, Document 
 
 const ProfileSchema = new Schema<ProfileDocument>({
 	userId: { type: Types.ObjectId, required: true, unique: true, ref: 'User' },
-	firstName: { type: String, required: true },
-	lastName: { type: String, required: true },
 	birthDate: { type: Date, required: true },
 	phone: { type: String, required: true },
 	country: { type: String, required: true },

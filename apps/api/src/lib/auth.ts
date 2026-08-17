@@ -10,10 +10,13 @@ import type { AgencyDocument } from '../modules/agency/models/agency.model';
 
 export const auth = (db: mongo.Db) => {
 	const useTesting = process.env.NODE_ENV === 'test' || process.env.EMAIL_PROVIDER === 'testing';
-	const provider = useTesting ? new TestingEmailProvider() : new ResendProvider(process.env.RESEND_API_KEY ?? '');
+	const provider = useTesting
+		? new TestingEmailProvider()
+		: new ResendProvider(process.env.RESEND_API_KEY ?? '');
 	const emailService = new BackgroundEmailService(provider);
 	return betterAuth({
 		baseURL: process.env.BACKEND_URL,
+		trustedOrigins: [process.env.FRONTEND_URL!],
 		database: mongodbAdapter(db),
 		emailVerification: {
 			sendOnSignUp: true,
@@ -32,8 +35,9 @@ export const auth = (db: mongo.Db) => {
 			enabled: true,
 			maxPasswordLength: 255,
 			minPasswordLength: 8,
-			// In tests we disable required email verification to allow immediate sign-in
-			requireEmailVerification: process.env.NODE_ENV === 'test' ? false : true,
+			// In tests or development we disable required email verification to allow immediate sign-in
+			requireEmailVerification:
+				process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development' ? false : true,
 		},
 		plugins: [
 			organization({

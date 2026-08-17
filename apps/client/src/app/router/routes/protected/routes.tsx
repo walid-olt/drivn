@@ -1,6 +1,8 @@
 import { type RouteObject } from 'react-router';
 import agencyRoute from './Agency/routes';
 import customerRoute from './Customer/routes';
+import NoAgency from '@/pages/protected/NoAgency';
+import userAuthLoader from '@/app/loaders/userAuthloader';
 /**
  * @description
  * These are the protected routes for the application.
@@ -8,7 +10,15 @@ import customerRoute from './Customer/routes';
  * be protected by authentication and authorization.
  */
 export default [
-	//TODO: add authentication and authorization logic here to protect the routes
-	...agencyRoute,
-	...customerRoute,
+	{
+		loader: userAuthLoader,
+		children: [
+			...agencyRoute,
+			...customerRoute,
+			{
+				path: '/no-agency',
+				element: <NoAgency />,
+			},
+		],
+	},
 ] as RouteObject[];
