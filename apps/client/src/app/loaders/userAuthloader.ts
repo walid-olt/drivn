@@ -1,26 +1,12 @@
-import queryClient from '@/lib/query-client';
-import authClient from '@/lib/auth-client';
-import { type LoaderFunction } from 'react-router';
-import { redirectToLogin } from '@/lib/utils';
+import { redirect, type LoaderFunction } from 'react-router';
+import { getUserOrganizations, requireSession } from '@/lib/auth-space';
 
-const userAuthLoader: LoaderFunction = async ({ request }) => {
-	// get the session from cached query data or fetch it if not available
-	const { data: session, error } = await queryClient.ensureQueryData({
-		queryKey: ['session'],
-		queryFn: () => authClient.getSession(),
-	});
+const customerSpaceLoader: LoaderFunction = async ({ request }) => {
+	const session = await requireSession(request);
+	const organizations = await getUserOrganizations(session.user.id);
 
-	if (!session || error) {
-		const erroCode = error?.code;
-		const hasExpiredSession =
-			erroCode !== undefined && erroCode === authClient.$ERROR_CODES.SESSION_EXPIRED.code;
-
-		redirectToLogin(
-			request,
-			!hasExpiredSession ? 'Your session has expired! try loggin in again.' : undefined,
-		);
-	}
+	if (organizations.length > 0) throw redirect('/agency');
 
 	return session;
 };
-export default userAuthLoader;
+export default customerSpaceLoader;

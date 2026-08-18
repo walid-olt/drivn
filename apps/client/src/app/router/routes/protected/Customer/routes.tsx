@@ -1,4 +1,4 @@
-import userAuthLoader from '@/app/loaders/userAuthloader';
+import customerSpaceLoader from '@/app/loaders/userAuthloader';
 import Profile from '@/pages/protected/Profile';
 import { type RouteObject } from 'react-router';
 
@@ -12,6 +12,6 @@ export default [
 	{
 		path: '/profile',
 		element: <Profile />,
-		loader: userAuthLoader,
+		loader: customerSpaceLoader,
 	},
 ] as RouteObject[];

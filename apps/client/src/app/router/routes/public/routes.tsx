@@ -3,6 +3,9 @@ import Cars from '@/pages/public/Cars';
 import { type RouteObject } from 'react-router';
 import Login from '@/pages/public/Login';
 import Register from '@/pages/public/Register';
+import RegisterAgency from '@/pages/public/RegisterAgency';
+import RegisterCustomer from '@/pages/public/RegisterCustomer';
+import VerifyEmail from '@/pages/public/VerifyEmail';
 
 /**
  * @description
@@ -26,5 +29,17 @@ export default [
 	{
 		path: '/register',
 		element: <Register />,
+	},
+	{
+		path: '/register/customer',
+		element: <RegisterCustomer />,
+	},
+	{
+		path: '/register/agency',
+		element: <RegisterAgency />,
+	},
+	{
+		path: '/verify-email',
+		element: <VerifyEmail />,
 	},
 ] as RouteObject[];

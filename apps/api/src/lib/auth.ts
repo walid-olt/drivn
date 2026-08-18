@@ -9,7 +9,7 @@ import type { BaseUser } from 'better-auth';
 import type { AgencyDocument } from '../modules/agency/models/agency.model';
 
 export const auth = (db: mongo.Db) => {
-	const useTesting = process.env.NODE_ENV === 'test' || process.env.EMAIL_PROVIDER === 'testing';
+	const useTesting = process.env.NODE_ENV === 'test';
 	const provider = useTesting
 		? new TestingEmailProvider()
 		: new ResendProvider(process.env.RESEND_API_KEY ?? '');

@@ -2,6 +2,7 @@ import { Typography } from '@/components/ui/typography';
 import { Button } from '@/components/ui/button';
 import { BuildingsIcon, HouseIcon } from '@phosphor-icons/react';
 import { useNavigate } from 'react-router';
+import SignOutButton from '@/features/auth/components/SignOutButton';
 
 const NoAgency = () => {
 	const navigate = useNavigate();
@@ -17,6 +18,7 @@ const NoAgency = () => {
 				<HouseIcon data-icon="inline-start" />
 				Create agency
 			</Button>
+			<SignOutButton />
 		</div>
 	);
 };

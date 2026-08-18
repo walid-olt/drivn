@@ -2,7 +2,9 @@ import { type RouteObject } from 'react-router';
 import agencyRoute from './Agency/routes';
 import customerRoute from './Customer/routes';
 import NoAgency from '@/pages/protected/NoAgency';
-import userAuthLoader from '@/app/loaders/userAuthloader';
+import CreateAgency from '@/pages/protected/CreateAgency';
+import AcceptInvitation from '@/pages/protected/AcceptInvitation';
+import sessionAuthLoader from '@/app/loaders/sessionAuthLoader';
 /**
  * @description
  * These are the protected routes for the application.
@@ -11,13 +13,21 @@ import userAuthLoader from '@/app/loaders/userAuthloader';
  */
 export default [
 	{
-		loader: userAuthLoader,
+		loader: sessionAuthLoader,
 		children: [
 			...agencyRoute,
 			...customerRoute,
 			{
 				path: '/no-agency',
 				element: <NoAgency />,
+			},
+			{
+				path: '/agency/new',
+				element: <CreateAgency />,
+			},
+			{
+				path: '/accept-invitation/:invitationId',
+				element: <AcceptInvitation />,
 			},
 		],
 	},
