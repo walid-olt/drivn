@@ -1,5 +1,5 @@
 import phoneNumberSchema from './phone.schema.ts';
-export * from './userProfile.schema.ts';
+export * from './customerProfile.schema.ts';
 export * from './agency.schema.ts';
 export * from './car.schema.ts';
 export * from './reservation.schema.ts';
