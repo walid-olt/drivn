@@ -2,23 +2,18 @@ import authClient from '@/lib/auth-client';
 import queryClient from '@/lib/query-client';
 import { redirectToLogin } from '@/lib/utils';
 
-type SessionResult = Awaited<ReturnType<typeof authClient.getSession>>;
-type SessionData = NonNullable<SessionResult['data']>;
-type OrganizationsResult = Awaited<ReturnType<typeof authClient.organization.list>>;
-
 function getOrganizationsQueryKey(userId: string) {
 	return [userId, 'organizations'] as const;
 }
 
-export async function requireSession(request: Request): Promise<SessionData> {
+export async function requireSession(request: Request) {
 	const { data: session, error: sessionError } = await queryClient.ensureQueryData({
 		queryKey: ['session'],
 		queryFn: () => authClient.getSession(),
 	});
 
 	if (!session || sessionError) {
-		const isSessionExpired =
-			sessionError?.code === authClient.$ERROR_CODES.SESSION_EXPIRED.code;
+		const isSessionExpired = sessionError?.code === authClient.$ERROR_CODES.SESSION_EXPIRED.code;
 		redirectToLogin(
 			request,
 			isSessionExpired ? 'Your session has expired. Please log in again.' : undefined,
@@ -28,7 +23,7 @@ export async function requireSession(request: Request): Promise<SessionData> {
 	return session;
 }
 
-export async function getUserOrganizations(userId: string): Promise<NonNullable<OrganizationsResult['data']>> {
+export async function getUserOrganizations(userId: string) {
 	const { data: organizations, error } = await queryClient.ensureQueryData({
 		queryKey: getOrganizationsQueryKey(userId),
 		queryFn: () => authClient.organization.list(),
@@ -40,6 +35,10 @@ export async function getUserOrganizations(userId: string): Promise<NonNullable<
 
 	return organizations;
 }
+
+// HACK: until I find a better way to resolve the current user space,
+// this function will determine if the user is an agency or a customer
+// based on their organizations.
 
 export async function resolveCurrentUserSpace() {
 	const { data: session, error: sessionError } = await authClient.getSession();

@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
-export function redirectToLogin(request: Request, message?: string) {
+export function redirectToLogin(request: Request, message?: string): never {
 	const url = new URL(request.url);
 
 	const loginUrl = new URL('/login', url.origin);
