@@ -16,9 +16,10 @@ const createAgencySchema = z.object({
 		.string()
 		.min(3)
 		.max(100)
-		.regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must contain only lowercase letters, numbers, and hyphens'),
-	summary: z.string().max(500).optional(),
-	supportEmail: z.email().optional().or(z.literal('')),
+		.regex(
+			/^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+			'Slug must contain only lowercase letters, numbers, and hyphens',
+		),
 });
 
 type CreateAgencyFormData = z.infer<typeof createAgencySchema>;
@@ -38,13 +39,10 @@ export default function CreateAgencyForm() {
 		register,
 		handleSubmit,
 		setValue,
-		watch,
 		formState: { errors, isSubmitting },
 	} = useForm<CreateAgencyFormData>({
 		resolver: zodResolver(createAgencySchema),
 	});
-
-	const nameValue = watch('name');
 
 	function onNameChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const name = e.target.value;
@@ -56,10 +54,6 @@ export default function CreateAgencyForm() {
 		const { data: org, error } = await authClient.organization.create({
 			name: data.name,
 			slug: data.slug,
-			metadata: {
-				summary: data.summary ?? '',
-				supportEmail: data.supportEmail ?? '',
-			},
 		});
 
 		if (error) {
@@ -73,7 +67,9 @@ export default function CreateAgencyForm() {
 		const { data: session } = await authClient.getSession();
 		await Promise.all([
 			queryClient.invalidateQueries({ queryKey: ['session'] }),
-			queryClient.invalidateQueries({ queryKey: [session?.user.id, 'organizations'] }),
+			queryClient.invalidateQueries({
+				queryKey: [session?.user.id, 'organizations'],
+			}),
 		]);
 		toast.add({ type: 'success', title: `Agency "${org?.name}" created.` });
 		navigate('/agency');
@@ -82,31 +78,18 @@ export default function CreateAgencyForm() {
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className="mx-auto flex w-full max-w-md flex-col gap-3">
 			<Typography variant="h2">Create your agency</Typography>
-			<Typography variant="h3">Set up your agency to start managing cars and reservations.</Typography>
+			<Typography variant="h3">
+				Set up your agency to start managing cars and reservations.
+			</Typography>
 
-			<Input
-				type="text"
-				placeholder="Agency name"
-				{...register('name')}
-				onChange={onNameChange}
-			/>
+			<Input type="text" placeholder="Agency name" {...register('name')} onChange={onNameChange} />
 			{errors.name && <span>{errors.name.message}</span>}
 
-			<Input
-				type="text"
-				placeholder="agency-slug"
-				{...register('slug')}
-			/>
+			<Input type="text" placeholder="agency-slug" {...register('slug')} />
 			{errors.slug && <span>{errors.slug.message}</span>}
 
-			<Input type="text" placeholder="Short description (optional)" {...register('summary')} />
-			{errors.summary && <span>{errors.summary.message}</span>}
-
-			<Input type="email" placeholder="Support email (optional)" {...register('supportEmail')} />
-			{errors.supportEmail && <span>{errors.supportEmail.message}</span>}
-
 			<Button type="submit" disabled={isSubmitting}>
-				{isSubmitting ? <SpinnerIcon /> : 'Create agency'}
+				{isSubmitting ? <SpinnerIcon className="animate-spin" /> : 'Create agency'}
 			</Button>
 		</form>
 	);

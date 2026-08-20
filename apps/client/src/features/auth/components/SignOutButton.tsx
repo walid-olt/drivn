@@ -14,7 +14,9 @@ export default function SignOutButton() {
 			toast.add({ type: 'error', title: 'Unable to sign out.' });
 			return;
 		}
-		await queryClient.clear();
+		queryClient.invalidateQueries({ queryKey: ['session', 'organizations'] });
+		queryClient.cancelQueries({ queryKey: ['session'] });
+		queryClient.clear();
 		navigate('/login');
 	}
 

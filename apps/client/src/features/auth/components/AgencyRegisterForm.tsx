@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Typography } from '@/components/ui/typography';
 import { toast } from '@/components/ui/toast';
-import authClient from '@/lib/auth-client';
+import { signUpAsAgency } from '@/lib/api';
 import queryClient from '@/lib/query-client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SpinnerIcon } from '@phosphor-icons/react';
@@ -42,16 +42,16 @@ export default function AgencyRegisterForm() {
 	});
 
 	async function onSubmit(data: AgencyRegisterFormData) {
-		const { error } = await authClient.signUp.email({
-			name: getNameFromEmail(data.email),
-			email: data.email,
-			password: data.password,
-		});
-
-		if (error) {
+		try {
+			await signUpAsAgency({
+				name: getNameFromEmail(data.email),
+				email: data.email,
+				password: data.password,
+			});
+		} catch (err: any) {
 			toast.add({
 				type: 'error',
-				title: error.message ?? 'Unable to create your account.',
+				title: err.message ?? 'Unable to create your account.',
 			});
 			return;
 		}

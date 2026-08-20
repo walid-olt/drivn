@@ -3,9 +3,10 @@ import { getUserOrganizations, requireSession } from '@/lib/auth-space';
 
 const organizationAuthLoader: LoaderFunction = async ({ request }) => {
 	const session = await requireSession(request);
-	const organizations = await getUserOrganizations(session.user.id);
 
-	if (organizations.length === 0) throw redirect('/no-agency');
+	if ((session.user as any).role !== 'agency') throw redirect('/no-agency');
+
+	const organizations = await getUserOrganizations(session.user.id);
 
 	return organizations;
 };

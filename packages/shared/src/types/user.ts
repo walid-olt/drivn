@@ -13,4 +13,5 @@ export type User = CustomerProfile & {
 	email: string;
 	emailVerified: boolean;
 	name: string;
+	role: 'customer' | 'agency';
 };

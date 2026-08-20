@@ -1,4 +1,5 @@
 import { APIError, betterAuth } from 'better-auth';
+import { createAuthMiddleware } from 'better-auth/api';
 import { organization } from 'better-auth/plugins/organization';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import { mongo, Types, type Document } from 'mongoose';
@@ -18,8 +19,30 @@ export const auth = (db: mongo.Db) => {
 		baseURL: process.env.BACKEND_URL,
 		trustedOrigins: [process.env.FRONTEND_URL!],
 		database: mongodbAdapter(db),
+		user: {
+			additionalFields: {
+				role: {
+					type: 'string',
+					required: true,
+					defaultValue: 'customer',
+				},
+			},
+		},
+		hooks: {
+			before: createAuthMiddleware(async (ctx) => {
+				if (ctx.path !== '/sign-up/email') return;
+				const validRoles = ['customer', 'agency'];
+				const role = validRoles.includes(ctx.body?.role) ? ctx.body.role : 'customer';
+				return {
+					context: {
+						...ctx,
+						body: { ...ctx.body, role },
+					},
+				};
+			}),
+		},
 		emailVerification: {
-			sendOnSignUp: true,
+			sendOnSignUp: !useTesting,
 			sendVerificationEmail: async (data) => {
 				emailService.emit('verification', {
 					verificationUrl: new URL(
@@ -42,6 +65,7 @@ export const auth = (db: mongo.Db) => {
 		plugins: [
 			organization({
 				sendInvitationEmail: async (data) => {
+					if (useTesting) return;
 					const {
 						invitation: { id: invitationId },
 						organization: { name: organizationName, id: orgId },

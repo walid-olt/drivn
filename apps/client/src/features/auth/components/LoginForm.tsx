@@ -20,6 +20,8 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
 	const navigate = useNavigate();
+	const params = new URLSearchParams(window.location.search);
+	const redirectTo = params.get('redirectTo');
 	const {
 		register,
 		handleSubmit,
@@ -44,7 +46,7 @@ export default function LoginForm() {
 
 		await queryClient.invalidateQueries({ queryKey: ['session'] });
 		const { space } = await resolveCurrentUserSpace();
-		navigate(space === 'agency' ? '/agency' : '/profile');
+		navigate(space === 'agency' ? (redirectTo ?? '/agency') : (redirectTo ?? '/profile'));
 	}
 
 	return (
@@ -56,7 +58,7 @@ export default function LoginForm() {
 			<Input type="password" placeholder="Password" {...register('password')} />
 			{errors.password && <span>{errors.password.message}</span>}
 			<Button type="submit" disabled={isSubmitting}>
-				{isSubmitting ? <SpinnerIcon /> : 'Login'}
+				{isSubmitting ? <SpinnerIcon className="animate-spin" /> : 'Login'}
 			</Button>
 			<Typography variant="body">
 				Need an account? <Link to="/register">Choose signup type</Link>

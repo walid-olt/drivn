@@ -2,10 +2,6 @@ import authClient from '@/lib/auth-client';
 import queryClient from '@/lib/query-client';
 import { redirectToLogin } from '@/lib/utils';
 
-function getOrganizationsQueryKey(userId: string) {
-	return [userId, 'organizations'] as const;
-}
-
 export async function requireSession(request: Request) {
 	const { data: session, error: sessionError } = await queryClient.ensureQueryData({
 		queryKey: ['session'],
@@ -25,7 +21,7 @@ export async function requireSession(request: Request) {
 
 export async function getUserOrganizations(userId: string) {
 	const { data: organizations, error } = await queryClient.ensureQueryData({
-		queryKey: getOrganizationsQueryKey(userId),
+		queryKey: [userId, 'organizations'],
 		queryFn: () => authClient.organization.list(),
 	});
 
@@ -36,10 +32,6 @@ export async function getUserOrganizations(userId: string) {
 	return organizations;
 }
 
-// HACK: until I find a better way to resolve the current user space,
-// this function will determine if the user is an agency or a customer
-// based on their organizations.
-
 export async function resolveCurrentUserSpace() {
 	const { data: session, error: sessionError } = await authClient.getSession();
 
@@ -47,11 +39,10 @@ export async function resolveCurrentUserSpace() {
 		throw new Error('Unable to resolve user space without a valid session');
 	}
 
-	const organizations = await getUserOrganizations(session.user.id);
+	const role = (session.user as any).role as string;
 
 	return {
-		space: organizations.length > 0 ? 'agency' : 'customer',
-		organizations,
+		space: role === 'agency' ? 'agency' : 'customer',
 		session,
 	} as const;
 }
