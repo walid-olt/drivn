@@ -4,7 +4,7 @@
  * Always use these instead of inline literals so invalidations
  * and reads stay in sync across the app.
  */
-export const queryKeys = {
+export const QUERY_KEYS = {
 	/** Auth session (authClient.getSession) */
 	session: ['session'],
 	/** Agencies the signed-in user belongs to (authClient.organization.list) */

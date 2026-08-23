@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import authClient from './auth-client';
-import { queryKeys } from './query-keys';
+import { QUERY_KEYS } from './query-keys';
 
-export default function useOrganizations() {
+export default function useAgencies() {
 	return useQuery({
-		queryKey: queryKeys.agencies,
+		queryKey: QUERY_KEYS.agencies,
 		queryFn: () => authClient.organization.list(),
 	});
 }
