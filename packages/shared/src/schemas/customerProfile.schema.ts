@@ -25,10 +25,28 @@ export const customerProfileSchema = z.object({
 });
 
 // _id and userId are generated and handled by the server, so we omit them from the createCustomerProfileSchema
-export const createCustomerProfileSchema = customerProfileSchema.omit({
-	_id: true,
-	userId: true,
-});
+export const createCustomerProfileSchema = customerProfileSchema
+	.omit({
+		_id: true,
+		userId: true,
+	})
+	.extend({
+		email: z.email('Invalid email address').nonempty('Email is required'),
+		password: z
+			.string()
+			.min(8, 'Password must be at least 8 characters long')
+			.max(128)
+			.nonempty('Password is required'),
+		passwordConfirmation: z
+			.string()
+			.min(8, 'Password must be at least 8 characters long')
+			.max(128)
+			.nonempty('Password is required'),
+	})
+	.refine((data) => data.password === data.passwordConfirmation, {
+		message: 'Passwords do not match',
+		path: ['passwordConfirmation'], // path of the error
+	});
 
 export const updateCustomerProfileSchema = customerProfileSchema.partial().omit({
 	_id: true,

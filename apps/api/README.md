@@ -93,17 +93,17 @@ router.post('/items', handler(async (req, res) => {
 
 ### Error Handling
 
-Throw `HttpException` subclasses for error responses:
+Throw better-auth `APIError`s for error responses (helper factories live in `src/errors/http.exception.ts`):
 
 ```ts
-import { NotFoundException, BadRequestException, ValidationException } from '../errors/http.exception.js';
+import { notFound, badRequest, validationFailed } from '../errors/http.exception.js';
 
-throw new NotFoundException('Item not found');
-throw new BadRequestException('Invalid input');
-throw new ValidationException(zodFieldErrors); // from Zod parsing
+throw notFound('Item not found');
+throw badRequest('Invalid input');
+throw validationFailed(zodFieldErrors); // from Zod parsing
 ```
 
-Available exceptions: `BadRequestException`, `UnauthorizedException`, `ForbiddenException`, `NotFoundException`, `ConflictException`, `ValidationException`, `TooManyRequestsException`, `InternalServerErrorException`, `ServiceUnavailableException`.
+Available factories: `badRequest`, `unauthorized`, `forbidden`, `notFound`, `conflict`, `validationFailed`, `tooManyRequests`, `internalServerError`, `serviceUnavailable`. Plain `new APIError(...)` from `better-auth` works too — the global error handler converts any of them into the JSON error envelope.
 
 ### Response Format
 

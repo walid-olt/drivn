@@ -1,148 +1,46 @@
-import { ApiErrorCode, ApiStatusCode, type ZodFieldError, type ApiError } from '@drivn/shared';
-
+import { APIError } from 'better-auth';
+import type { ZodFieldError } from '@drivn/shared';
 import jwt from 'jsonwebtoken';
+
 // destructure the specific error classes from the jwt module because they are not exported directly from the module
 const { JsonWebTokenError, NotBeforeError, TokenExpiredError } = jwt;
 
-export class HttpException extends Error {
-	readonly status: ApiStatusCode;
-	readonly code: ApiErrorCode;
-	readonly details?: ZodFieldError[];
+/**
+ * Error factories built on top of better-auth's `APIError`.
+ * Throwing these keeps a single error type across server API calls
+ * and the express error handler.
+ */
+export const badRequest = (message = 'Bad request', details?: ZodFieldError[]) =>
+	new APIError('BAD_REQUEST', { message, ...(details && { details }) });
 
-	constructor(
-		message: string,
-		options: {
-			status: ApiStatusCode;
-			code: ApiErrorCode;
-			details?: ZodFieldError[];
-		},
-	) {
-		super(message);
-		this.name = 'HttpException';
-		this.status = options.status;
-		this.code = options.code;
-		this.details = options.details;
-	}
+export const unauthorized = (message = 'Unauthorized') => new APIError('UNAUTHORIZED', { message });
 
-	toResponse(): ApiError {
-		return {
-			success: false,
-			status: this.status,
-			code: this.code,
-			message: this.message,
-			...(this.details && { details: this.details }),
-		};
-	}
-}
+export const forbidden = (message = 'Forbidden') => new APIError('FORBIDDEN', { message });
 
-export class BadRequestException extends HttpException {
-	constructor(message = 'Bad request', details?: ZodFieldError[]) {
-		super(message, {
-			status: ApiStatusCode.BAD_REQUEST,
-			code: ApiErrorCode.VALIDATION_ERROR,
-			details,
-		});
-		this.name = 'BadRequestException';
-	}
-}
+export const notFound = (message = 'Not found') => new APIError('NOT_FOUND', { message });
 
-export class UnauthorizedException extends HttpException {
-	constructor(message = 'Unauthorized', code: ApiErrorCode = ApiErrorCode.AUTH_EXPIRATION) {
-		super(message, {
-			status: ApiStatusCode.UNAUTHORIZED,
-			code,
-		});
-		this.name = 'UnauthorizedException';
-	}
-}
+export const conflict = (message = 'Conflict') => new APIError('CONFLICT', { message });
 
-export class ForbiddenException extends HttpException {
-	constructor(message = 'Forbidden') {
-		super(message, {
-			status: ApiStatusCode.FORBIDDEN,
-			code: ApiErrorCode.AUTH_FORBIDDEN,
-		});
-		this.name = 'ForbiddenException';
-	}
-}
+export const validationFailed = (details: ZodFieldError[], message = 'Validation failed') =>
+	new APIError('UNPROCESSABLE_ENTITY', { message, details });
 
-export class NotFoundException extends HttpException {
-	constructor(message = 'Not found') {
-		super(message, {
-			status: ApiStatusCode.NOT_FOUND,
-			code: ApiErrorCode.NOT_FOUND,
-		});
-		this.name = 'NotFoundException';
-	}
-}
+export const tooManyRequests = (message = 'Too many requests') =>
+	new APIError('TOO_MANY_REQUESTS', { message });
 
-export class ConflictException extends HttpException {
-	constructor(message = 'Conflict') {
-		super(message, {
-			status: ApiStatusCode.CONFLICT,
-			code: ApiErrorCode.CONFLICT,
-		});
-		this.name = 'ConflictException';
-	}
-}
+export const internalServerError = (message = 'Internal server error') =>
+	new APIError('INTERNAL_SERVER_ERROR', { message });
 
-export class ValidationException extends HttpException {
-	constructor(details: ZodFieldError[], message = 'Validation failed') {
-		super(message, {
-			status: ApiStatusCode.UNPROCESSABLE_ENTITY,
-			code: ApiErrorCode.VALIDATION_ERROR,
-			details,
-		});
-		this.name = 'ValidationException';
-	}
-}
+export const serviceUnavailable = (message = 'Service unavailable') =>
+	new APIError('SERVICE_UNAVAILABLE', { message });
 
-export class TooManyRequestsException extends HttpException {
-	constructor(message = 'Too many requests') {
-		super(message, {
-			status: ApiStatusCode.TOO_MANY_REQUESTS,
-			code: ApiErrorCode.RATE_LIMIT_EXCEEDED,
-		});
-		this.name = 'TooManyRequestsException';
-	}
-}
-
-export class InternalServerErrorException extends HttpException {
-	constructor(message = 'Internal server error') {
-		super(message, {
-			status: ApiStatusCode.INTERNAL_SERVER_ERROR,
-			code: ApiErrorCode.INTERNAL_ERROR,
-		});
-		this.name = 'InternalServerErrorException';
-	}
-}
-
-export class ServiceUnavailableException extends HttpException {
-	constructor(message = 'Service unavailable') {
-		super(message, {
-			status: ApiStatusCode.SERVICE_UNAVAILABLE,
-			code: ApiErrorCode.SERVICE_UNAVAILABLE,
-		});
-		this.name = 'ServiceUnavailableException';
-	}
-}
-
-export const toUnauthorizedException = (err: unknown): UnauthorizedException => {
+export const toUnauthorizedError = (err: unknown): APIError => {
 	if (err instanceof TokenExpiredError) {
-		return new UnauthorizedException('Token has expired', ApiErrorCode.AUTH_EXPIRATION);
+		return unauthorized('Token has expired');
 	}
 	if (err instanceof JsonWebTokenError || err instanceof NotBeforeError) {
-		return new UnauthorizedException(
-			'Invalid or malformed token',
-			ApiErrorCode.AUTH_INVALID_CREDENTIALS,
-		);
+		return unauthorized('Invalid or malformed token');
 	}
-	return err instanceof UnauthorizedException
-		? err
-		: new UnauthorizedException('Authentication failed', ApiErrorCode.AUTH_INVALID_CREDENTIALS);
+	return err instanceof APIError ? err : unauthorized('Authentication failed');
 };
 
-export const toSignError = (err: unknown): InternalServerErrorException =>
-	err instanceof InternalServerErrorException
-		? err
-		: new InternalServerErrorException('Failed to sign token');
+export const toSignError = (_err?: unknown): APIError => internalServerError('Failed to sign token');

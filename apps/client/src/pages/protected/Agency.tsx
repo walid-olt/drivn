@@ -1,22 +1,16 @@
 import { Typography } from '@ui/typography';
 import SignOutButton from '@/features/auth/components/SignOutButton';
-import useOrganizations from '@/lib/auth-hooks';
+import authClient from '@/lib/auth-client';
 
 const Agency = () => {
-	//TODO: refactor this - delegate the loading/error state to Suspense and Error Boundaries
-	const { isPending, data, error } = useOrganizations();
+	const { isPending, data: organizations, error } = authClient.useListOrganizations();
 
 	if (isPending) return <p>Loading...</p>;
 
-	if (error) {
-		return <p>{error.message}</p>;
+	if (error || !organizations) {
+		return <p>{error?.message}</p>;
 	}
 
-	const { error: authError, data: organizations } = data;
-
-	if (authError) {
-		return <p>{authError.message}</p>;
-	}
 	return (
 		<div className="flex h-screen w-screen flex-col items-center justify-center gap-4">
 			<Typography variant="h1">Agency</Typography>

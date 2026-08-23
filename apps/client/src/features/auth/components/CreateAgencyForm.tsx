@@ -64,12 +64,9 @@ export default function CreateAgencyForm() {
 			return;
 		}
 
-		const { data: session } = await authClient.getSession();
 		await Promise.all([
 			queryClient.invalidateQueries({ queryKey: ['session'] }),
-			queryClient.invalidateQueries({
-				queryKey: [session?.user.id, 'organizations'],
-			}),
+			queryClient.removeQueries({ queryKey: ['agencies'] }),
 		]);
 		toast.add({ type: 'success', title: `Agency "${org?.name}" created.` });
 		navigate('/agency');

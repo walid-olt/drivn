@@ -1,5 +1,4 @@
 export const parseCookies = (cookieArray: string[]) => {
-	if (!cookieArray) return {};
 	return Object.fromEntries(
 		cookieArray.map((cookie) => {
 			const [cookiePair] = cookie.split(';');

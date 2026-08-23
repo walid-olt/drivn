@@ -28,7 +28,10 @@ export default function AcceptInvitation() {
 					setErrorMessage(error.message ?? 'Failed to accept invitation.');
 					return;
 				}
-				await queryClient.invalidateQueries({ queryKey: ['session'] });
+				await Promise.all([
+					queryClient.invalidateQueries({ queryKey: ['session'] }),
+					queryClient.removeQueries({ queryKey: ['agencies'] }),
+				]);
 				toast.add({ type: 'success', title: 'Invitation accepted!' });
 				navigate('/agency');
 			})

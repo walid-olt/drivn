@@ -9,7 +9,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SpinnerIcon } from '@phosphor-icons/react';
 import { Link, useNavigate } from 'react-router';
-import { resolveCurrentUserSpace } from '@/lib/auth-space';
 
 const loginSchema = z.object({
 	email: z.email(),
@@ -31,7 +30,7 @@ export default function LoginForm() {
 	});
 
 	async function onSubmit(data: LoginFormData) {
-		const { error } = await authClient.signIn.email({
+		const { error, data: session } = await authClient.signIn.email({
 			email: data.email,
 			password: data.password,
 		});
@@ -43,10 +42,11 @@ export default function LoginForm() {
 			});
 			return;
 		}
+		const user = session.user;
 
 		await queryClient.invalidateQueries({ queryKey: ['session'] });
-		const { space } = await resolveCurrentUserSpace();
-		navigate(space === 'agency' ? (redirectTo ?? '/agency') : (redirectTo ?? '/profile'));
+		if (redirectTo) return navigate(redirectTo);
+		navigate((user as any).type === 'customer' ? '/profile' : '/agency');
 	}
 
 	return (

@@ -12,6 +12,7 @@ import { z } from 'zod';
 
 const agencyRegisterSchema = z
 	.object({
+		name: z.string().min(1).max(128),
 		email: z.email(),
 		password: z.string().min(8).max(128),
 		passwordConfirmation: z.string().min(8).max(128),
@@ -22,14 +23,6 @@ const agencyRegisterSchema = z
 	});
 
 type AgencyRegisterFormData = z.infer<typeof agencyRegisterSchema>;
-
-function getNameFromEmail(email: string) {
-	const fallback = 'Agency user';
-	const value = email.split('@')[0]?.trim();
-
-	if (!value) return fallback;
-	return value;
-}
 
 export default function AgencyRegisterForm() {
 	const navigate = useNavigate();
@@ -44,7 +37,7 @@ export default function AgencyRegisterForm() {
 	async function onSubmit(data: AgencyRegisterFormData) {
 		try {
 			await signUpAsAgency({
-				name: getNameFromEmail(data.email),
+				name: data.name,
 				email: data.email,
 				password: data.password,
 			});
@@ -64,6 +57,9 @@ export default function AgencyRegisterForm() {
 		<form onSubmit={handleSubmit(onSubmit)} className="mx-auto flex w-full max-w-md flex-col gap-3">
 			<Typography variant="h2">Agency signup</Typography>
 			<Typography variant="h3">Create your account with email and password.</Typography>
+
+			<Input type="text" placeholder="Name" {...register('name')} />
+			{errors.name && <span>{errors.name.message}</span>}
 
 			<Input type="email" placeholder="Email" {...register('email')} />
 			{errors.email && <span>{errors.email.message}</span>}

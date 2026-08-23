@@ -1,6 +1,7 @@
-import { createAuthClient } from 'better-auth/client';
+import { createAuthClient } from 'better-auth/react';
 import { inferAdditionalFields } from 'better-auth/client/plugins';
 import { organizationClient } from 'better-auth/client/plugins';
+import z from 'zod';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -14,8 +15,14 @@ const authClient = createAuthClient({
 		organizationClient(),
 		inferAdditionalFields({
 			user: {
-				role: {
+				type: {
 					type: 'string',
+					required: true,
+					fieldName: 'type',
+					validator: {
+						input: z.enum(['customer', 'agency_member']),
+						output: z.enum(['customer', 'agency_member']),
+					},
 				},
 			},
 		}),
