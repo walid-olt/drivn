@@ -1,16 +1,9 @@
 import z from 'zod';
 import {
-	userProfileSchema,
-	createUserProfileSchema,
-	updateUserProfileSchema,
+	customerProfileSchema,
+	createCustomerProfileSchema,
+	updateCustomerProfileSchema,
 } from '../schemas/index.ts';
-export type UserProfile = z.infer<typeof userProfileSchema>;
-export type createUserProfileDto = z.infer<typeof createUserProfileSchema>;
-export type updateUserProfileDto = z.infer<typeof updateUserProfileSchema>;
-export type User = UserProfile & {
-	id: string;
-	image?: string;
-	email: string;
-	emailVerified: boolean;
-	name: string;
-};
+export type CustomerProfile = z.infer<typeof customerProfileSchema>;
+export type createCustomerProfileDto = z.infer<typeof createCustomerProfileSchema>;
+export type updateCustomerProfileDto = z.infer<typeof updateCustomerProfileSchema>;

@@ -1,7 +1,7 @@
-import { type UserProfile } from '@drivn/shared';
+import { type CustomerProfile } from '@drivn/shared';
 import { Document, Schema, model, Types } from 'mongoose';
 
-interface ProfileDocument extends Omit<UserProfile, '_id' | 'userId'>, Document {
+interface ProfileDocument extends Omit<CustomerProfile, '_id' | 'userId'>, Document {
 	userId: Types.ObjectId;
 }
 

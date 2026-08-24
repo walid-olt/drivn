@@ -11,7 +11,8 @@
 		"test:watch": "vitest",
 		"format": "oxfmt src/ --write",
 		"lint": "oxlint src/",
-		"email:preview": "email dev --dir src/emails"
+		"email:preview": "email dev --dir src/emails",
+		"clear-db": "tsx --env-file=../../.env.development ./scripts/clear-db.ts "
 	},
 	"dependencies": {
 		"@drivn/shared": "workspace:*",

@@ -5,22 +5,23 @@ import { mongo } from 'mongoose';
 import { errorHandler } from './middleware/error.middleware.ts';
 import { handler } from './lib/handler.ts';
 import { toNodeHandler } from 'better-auth/node';
-import { auth } from './lib/auth.ts';
+import { initializeAuthInstance, getAuth } from './lib/auth.ts';
+import appAuthRoutes from './modules/auth/auth.routes.ts';
 
 export function createApp(db: mongo.Db): express.Express {
 	const app = express();
+	initializeAuthInstance(db);
 
-	const NODE_ENV = process.env.NODE_ENV ?? 'development';
-	if (NODE_ENV === 'development' || NODE_ENV === 'test') {
-		app.use(cors());
-	} else {
-		app.use(cors({ origin: process.env.FRONTEND_URL }));
-	}
-	app.all('/api/auth/{*any}', toNodeHandler(auth(db)));
+	const authInstance = getAuth();
+
+	app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 	app.use(morgan('dev'));
+	app.use(express.json());
+
+	app.use('/api/auth', appAuthRoutes);
+	app.all('/api/auth/{*any}', toNodeHandler(authInstance));
 
 	app.use('/assets', express.static('assets'));
-	app.use(express.json());
 	app.use(
 		'/health',
 		handler(async () => {

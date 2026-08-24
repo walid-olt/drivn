@@ -2,7 +2,8 @@ import { type Reservation } from '@drivn/shared';
 import { Document, Schema, model, Types } from 'mongoose';
 
 interface ReservationDocument
-	extends Omit<
+	extends
+		Omit<
 			Reservation,
 			| 'organizationId'
 			| '_id'

@@ -150,15 +150,15 @@ The board is fed from repo issues — each story/task becomes an issue in this r
 
 ---
 
-## EPIC E2 — User Profile
+## EPIC E2 — Customer Profile
 
-### DRVN-6 — User profile (read / update)
+### DRVN-6 — Customer profile (read / update)
 **Area:** `api` · `shared` · **Priority:** P0 · **Size:** M · **Status:** Todo · **Iteration:** — · **Labels:** `api`, `profile`, `shared`
 
 **As a** signed-in user, **I want** to view and edit my profile (first/last name, birth date, phone, country), **so that** agencies can reach and identify me for bookings.
 
 **Acceptance criteria:**
-- [ ] `userProfileSchema` (exists in `packages/shared`) is wired to a `profile` collection + model.
+- [ ] `customerProfileSchema` (exists in `packages/shared`) is wired to a `profile` collection + model.
 - [ ] `GET /profile` and `PUT /profile` endpoints scoped to the authenticated user.
 - [ ] Phone validated with `libphonenumber-js`; birth date cannot be in the future.
 - [ ] Tests for create-on-first-read and update flows.

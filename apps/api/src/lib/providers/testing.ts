@@ -1,4 +1,9 @@
-import type { IEmailProvider, VerificationEmailParams, EmailResponse, OrganizationInviteParams } from '../../types/email';
+import type {
+	IEmailProvider,
+	VerificationEmailParams,
+	EmailResponse,
+	OrganizationInviteParams,
+} from '../../types/email';
 
 export interface SentEmailRecord {
 	type: string;
@@ -23,7 +28,12 @@ export class TestingEmailProvider implements IEmailProvider {
 		return this.record('orgInvite', params);
 	}
 
-	async sendRawEmail(to: string, subject: string, html: string, text?: string): Promise<EmailResponse> {
+	async sendRawEmail(
+		to: string,
+		subject: string,
+		html: string,
+		text?: string,
+	): Promise<EmailResponse> {
 		return this.record('raw', { to, subject, html, text });
 	}
 

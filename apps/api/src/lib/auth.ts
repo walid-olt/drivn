@@ -1,4 +1,5 @@
 import { APIError, betterAuth } from 'better-auth';
+import { createAuthMiddleware } from 'better-auth/api';
 import { organization } from 'better-auth/plugins/organization';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import { mongo, Types, type Document } from 'mongoose';
@@ -7,16 +8,56 @@ import { TestingEmailProvider } from './providers/testing';
 import { BackgroundEmailService } from './services/BackgroundEmailService';
 import type { BaseUser } from 'better-auth';
 import type { AgencyDocument } from '../modules/agency/models/agency.model';
+import { z } from 'zod';
 
-export const auth = (db: mongo.Db) => {
-	const useTesting = process.env.NODE_ENV === 'test' || process.env.EMAIL_PROVIDER === 'testing';
-	const provider = useTesting ? new TestingEmailProvider() : new ResendProvider(process.env.RESEND_API_KEY ?? '');
+let authInstance: ReturnType<typeof initializeAuthInstance> | null = null;
+
+export function getAuth() {
+	if (!authInstance) {
+		throw new Error('Auth instance not initialized. Call initAuth first.');
+	}
+	return authInstance;
+}
+export function initializeAuthInstance(db: mongo.Db) {
+	const useTesting = process.env.NODE_ENV === 'test';
+	const provider = useTesting
+		? new TestingEmailProvider()
+		: new ResendProvider(process.env.RESEND_API_KEY ?? '');
 	const emailService = new BackgroundEmailService(provider);
-	return betterAuth({
+	const auth = betterAuth({
 		baseURL: process.env.BACKEND_URL,
+		trustedOrigins: [process.env.FRONTEND_URL!],
 		database: mongodbAdapter(db),
+		user: {
+			additionalFields: {
+				type: {
+					type: 'string',
+					required: true,
+					fieldName: 'type',
+					validator: {
+						input: z.enum(['customer', 'agency_member']),
+						output: z.enum(['customer', 'agency_member']),
+					},
+				},
+			},
+		},
+		hooks: {
+			before: createAuthMiddleware(async (ctx) => {
+				if (ctx.path !== '/sign-up/email') return;
+				const body = (ctx.body ?? {}) as Record<string, unknown>;
+				// `type` is a required user additionalField; honor an explicit one, default to customer
+				const type =
+					body.type === 'agency_member' || body.type === 'customer' ? body.type : 'customer';
+				return {
+					context: {
+						...ctx,
+						body: { ...body, type },
+					},
+				};
+			}),
+		},
 		emailVerification: {
-			sendOnSignUp: true,
+			sendOnSignUp: !useTesting,
 			sendVerificationEmail: async (data) => {
 				emailService.emit('verification', {
 					verificationUrl: new URL(
@@ -32,12 +73,14 @@ export const auth = (db: mongo.Db) => {
 			enabled: true,
 			maxPasswordLength: 255,
 			minPasswordLength: 8,
-			// In tests we disable required email verification to allow immediate sign-in
-			requireEmailVerification: process.env.NODE_ENV === 'test' ? false : true,
+			// In tests or development we disable required email verification to allow immediate sign-in
+			requireEmailVerification:
+				process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development' ? false : true,
 		},
 		plugins: [
 			organization({
 				sendInvitationEmail: async (data) => {
+					if (useTesting) return;
 					const {
 						invitation: { id: invitationId },
 						organization: { name: organizationName, id: orgId },
@@ -80,4 +123,8 @@ export const auth = (db: mongo.Db) => {
 			}),
 		],
 	});
-};
+	authInstance = auth;
+	return auth;
+}
+// it's either this or duplicating the type declaration
+export type User = ReturnType<typeof getAuth>['$Infer']['Session']['user'];
