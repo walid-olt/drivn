@@ -18,7 +18,7 @@ Drivn aims to solve these problems by creating a centralized platform that conne
 
 - [ ] Agency Dashboard: A comprehensive dashboard for agencies to manage their fleet and reservations.
 - [ ] Customer Interface: A user-friendly interface for customers to browse and book cars.
-- [ ] Email Notifications: Automated email notifications for booking confirmations, cancellations, and reminders.
+- [ ] Email Notifications: Automated email notifications for reservation confirmations, cancellations, and reminders.
 
 # Tech Stack
 
@@ -26,7 +26,7 @@ Drivn aims to solve these problems by creating a centralized platform that conne
 | ------------------- | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 | Frontend            |    [![React](https://img.shields.io/badge/React-%2320232a.svg?logo=react&logoColor=%2361DAFB)](#) [![React Router](https://img.shields.io/badge/React_Router-CA4245?logo=react-router&logoColor=white)](#)    |
 | UI                  | [![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-000?logo=shadcnui&logoColor=fff)](#) [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-%2338B2AC.svg?logo=tailwind-css&logoColor=white)](#) |
-| State management    |                                                       [![Zustand](https://img.shields.io/badge/Zustand-%2320232a.svg?logo=zustand&logoColor=white)](#)                                                        |
+| State management    |                                                       [![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?logo=reactquery&logoColor=white)](#)                                                        |
 | Backend             |     [![Node.js](https://img.shields.io/badge/Node.js-6DA55F?logo=node.js&logoColor=white)](#) [![Express.js](https://img.shields.io/badge/Express.js-%23404d59.svg?logo=express&logoColor=%2361DAFB)](#)      |
 | Database            |                                                       [![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?logo=mongodb&logoColor=white)](#)                                                        |
 | API testing/docs    |                     ![Bruno](https://img.shields.io/badge/Bruno-F4AA41?logo=Bruno&logoColor=black) ![Swagger](https://img.shields.io/badge/Swagger-85EA2D?logo=swagger&logoColor=173647)                      |
