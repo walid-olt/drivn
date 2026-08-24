@@ -27,7 +27,10 @@ describe('customerProfileSchema', () => {
 
 	it('accepts a birth date on today', () => {
 		expect(() =>
-			customerProfileSchema.parse({ ...validProfile, birthDate: new Date().toISOString() }),
+			customerProfileSchema.parse({
+				...validProfile,
+				birthDate: new Date().toISOString(),
+			}),
 		).not.toThrow();
 	});
 
@@ -53,6 +56,9 @@ describe('createCustomerProfileSchema', () => {
 			birthDate: '1990-05-15T00:00:00.000Z',
 			phone: '+14155552671',
 			country: 'US',
+			email: 'John@doe.com',
+			password: 'Password123!',
+			passwordConfirmation: 'Password123!',
 		});
 		expect(result).not.toHaveProperty('_id');
 		expect(result).not.toHaveProperty('userId');
