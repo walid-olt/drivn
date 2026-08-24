@@ -16,9 +16,9 @@ A unified, multi-tenant b2b2c marketplace that standardizes the rental process. 
 
 ![use-case-diagram](./drivn-[use-case].svg)
 
-### 1.3 MVP scope guardrails
+### 1.4 MVP scope guardrails
 
-- **no online payments:** bookings use an approval-based reservation system. financial transactions occur offline (cash/card at counter) during vehicle pickup.
+- **no online payments:** reservations use an approval-based system. financial transactions occur offline (cash/card at counter) during car pickup.
 
 ---
 
@@ -31,7 +31,7 @@ The system uses a unified **turborepo monorepo** architecture to enforce compile
 ```text
 ├── apps/
 │   ├── client/               # frontend: react + vite + tailwind css + shadcn/ui
-│   └── api/                  # backend: nestjs (modular architecture) + mongoose
+│   └── api/                  # backend: express (modular architecture) + mongoose
 ├── packages/
 │   └── shared/               # shared types, schemas, domain rules and permissions and validation contracts
 ```
@@ -46,7 +46,7 @@ The system uses a unified **turborepo monorepo** architecture to enforce compile
 
 ## 3. System Workflows & State Machines
 
-### 3.1 The Booking Lifecycle (State Machine)
+### 3.1 The Reservation Lifecycle (State Machine)
 
 Reservations follow a strict, non-automated lifecycle entirely governed by the agency administrator.
 
@@ -54,7 +54,7 @@ Reservations follow a strict, non-automated lifecycle entirely governed by the a
 | -------------- | -------------------------- | --------------------------- | ------------- | ------------------------------------------------------ |
 | **None**       | Submit Reservation Request | `customer`                  | `pending`     | Checks date availability collision. Holds time window. |
 | **pending**    | Reject Request             | `agency_admin`              | `rejected`    | Releases car asset for the requested dates.            |
-| **pending**    | Approve Request            | `agency_admin`              | `confirmed`   | Hard-locks vehicle time block.                         |
-| **confirmed**  | Cancel Booking             | `customer` / `agency_admin` | `cancelled`   | Releases car asset.                                    |
-| **confirmed**  | Process Vehicle Handover   | `agency_admin`              | `active`      | Car leaves the lot; client contract is open.           |
-| **active**     | Return Vehicle & Inspect   | `agency_admin`              | `completed`   | Asset marked available immediately.                    |
+| **pending**    | Approve Request            | `agency_admin`              | `confirmed`   | Hard-locks car time block.                             |
+| **confirmed**  | Cancel Reservation         | `customer` / `agency_admin` | `cancelled`   | Releases car asset.                                    |
+| **confirmed**  | Process Car Handover       | `agency_admin`              | `active`      | Car leaves the lot; client contract is open.           |
+| **active**     | Return Car & Inspect       | `agency_admin`              | `completed`   | Asset marked available immediately.                    |
