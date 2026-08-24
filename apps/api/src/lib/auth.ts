@@ -57,7 +57,7 @@ export function initializeAuthInstance(db: mongo.Db) {
 			}),
 		},
 		emailVerification: {
-			sendOnSignUp: !useTesting,
+			sendOnSignUp: false, // We will send the email manually after sign-up
 			sendVerificationEmail: async (data) => {
 				emailService.emit('verification', {
 					verificationUrl: new URL(
