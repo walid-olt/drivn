@@ -1,5 +1,6 @@
 import { Typography } from '@/components/ui/typography';
 import authClient from '@/lib/auth-client';
+import { useSession } from '@/lib/auth-hooks';
 import { toast } from '@/components/ui/toast';
 import { Button } from '@ui/button';
 import { useMutation } from '@tanstack/react-query';
@@ -17,7 +18,7 @@ export default function EmailVerificationRequestPage() {
 		}
 	}, [message]);
 
-	const { data, error, isPending } = authClient.useSession();
+	const { isError, data: result, error, isPending } = useSession();
 
 	const { mutate: sendVerificationEmail, isPending: isVerifing } = useMutation({
 		mutationFn: (email: string) => authClient.sendVerificationEmail({ email }),
@@ -37,9 +38,11 @@ export default function EmailVerificationRequestPage() {
 
 	if (isPending) return <p>Loading...</p>;
 
-	if (error || !data) return <p>{error?.message}</p>;
+	if (isError || !result || result.error || !result.data) {
+		return <p>{error?.message ?? result?.error?.message}</p>;
+	}
 
-	const user = data.user;
+	const user = result.data.user;
 
 	if (user.emailVerified) return <p>Your email is already verified.</p>;
 

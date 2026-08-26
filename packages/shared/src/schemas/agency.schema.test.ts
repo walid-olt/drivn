@@ -50,7 +50,7 @@ describe('createAgencySchema', () => {
 			organizationId: 'org-1',
 		});
 		expect(result).not.toHaveProperty('_id');
-		expect(result).not.toHaveProperty('organizationId');
+		expect(result).toHaveProperty('organizationId');
 	});
 });
 
@@ -62,11 +62,23 @@ describe('updateAgencySchema', () => {
 
 describe('agency slug', () => {
 	it('accepts lowercase alphanumerics and hyphens', () => {
-		expect(() => createAgencySchema.parse({ name: 'Acme', slug: 'acme-rentals-2' })).not.toThrow();
+		expect(() =>
+			createAgencySchema.parse({
+				name: 'Acme',
+				slug: 'acme-rentals-2',
+				organizationId: 'iouyer987',
+			}),
+		).not.toThrow();
 	});
 
 	it('rejects uppercase letters', () => {
-		expect(() => createAgencySchema.parse({ name: 'Acme', slug: 'Acme-rentals' })).toThrow();
+		expect(() =>
+			createAgencySchema.parse({
+				name: 'Acme',
+				slug: 'Acme-rentals',
+				organizationId: 'org-1',
+			}),
+		).toThrow();
 	});
 
 	it('rejects spaces and underscores', () => {

@@ -7,8 +7,10 @@ import { ResendProvider } from './providers/resend';
 import { TestingEmailProvider } from './providers/testing';
 import { BackgroundEmailService } from './services/BackgroundEmailService';
 import type { BaseUser } from 'better-auth';
-import type { AgencyDocument } from '../modules/agency/models/agency.model';
 import { z } from 'zod';
+import agencyService from '../modules/agency/agency.service';
+import { internalServerError } from '../errors';
+import { tryCatch } from './result';
 
 let authInstance: ReturnType<typeof initializeAuthInstance> | null = null;
 
@@ -27,7 +29,9 @@ export function initializeAuthInstance(db: mongo.Db) {
 	const auth = betterAuth({
 		baseURL: process.env.BACKEND_URL,
 		trustedOrigins: [process.env.FRONTEND_URL!],
-		database: mongodbAdapter(db),
+		database: mongodbAdapter(db, {
+			usePlural: true,
+		}),
 		user: {
 			additionalFields: {
 				type: {
@@ -57,7 +61,7 @@ export function initializeAuthInstance(db: mongo.Db) {
 			}),
 		},
 		emailVerification: {
-			sendOnSignUp: false, // We will send the email manually after sign-up
+			sendOnSignUp: false, // We will allow the user to request email verification manually after sign-up
 			sendVerificationEmail: async (data) => {
 				emailService.emit('verification', {
 					verificationUrl: new URL(
@@ -89,20 +93,19 @@ export function initializeAuthInstance(db: mongo.Db) {
 					} = data;
 
 					const userColl = db.collection<Document<BaseUser>>('users');
-					const agencyColl = db.collection<AgencyDocument>('agencies');
 
-					// Run both DB queries concurrently
-					const [existingUser, agency] = await Promise.all([
-						userColl.findOne<BaseUser>({ emai: inviteeEmail }),
-						agencyColl.findOne({ organizationId: new Types.ObjectId(orgId) }),
-					]);
+					const existingUser = await userColl.findOne<BaseUser>({
+						emai: inviteeEmail,
+					});
 
 					if (!existingUser) throw new APIError('NOT_FOUND', { message: 'User not found' });
-					if (!agency) throw new APIError('NOT_FOUND', { message: 'Agency not found' });
+
+					const [err, agency] = await agencyService.getByOrganizationId(orgId);
+					if (err || !agency) throw internalServerError("Couldn't get Agency");
 
 					const inviteeName = existingUser.name || '';
 					const agencyName = agency.name || organizationName;
-					const agencyLogo = agency.logo || '';
+					const agencyLogo = agency.logo;
 
 					// Construct invitation URL
 					const inviteLink = new URL(
@@ -119,6 +122,31 @@ export function initializeAuthInstance(db: mongo.Db) {
 						inviteeEmail,
 						inviteeName,
 					});
+				},
+				organizationHooks: {
+					async afterCreateOrganization({ organization, user }) {
+						//HACK: create agency and link to organization, delete organization if agency creation fails
+						const { id: organizationId, name, slug } = organization;
+						const [err, agency] = await agencyService.create({
+							name,
+							slug,
+							onboardingStatus: 'not_started',
+							operatingLocationIds: [],
+							organizationId,
+						});
+						if (err || !agency) {
+							const deleteOrg = db.collection('organizations').findOneAndDelete({
+								_id: new Types.ObjectId(organizationId),
+							});
+							const [err, organization] = await tryCatch(deleteOrg);
+							if (err || !organization)
+								throw internalServerError(
+									"Couldn't delete organization after agency creation failed",
+								);
+
+							throw internalServerError("Couldn't create agency for organization");
+						}
+					},
 				},
 			}),
 		],

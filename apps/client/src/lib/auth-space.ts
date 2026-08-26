@@ -3,17 +3,21 @@ import queryClient from '@/lib/query-client';
 import { QUERY_KEYS } from '@/lib/query-keys';
 import { redirectToLogin } from '@/lib/utils';
 
+type AuthResult<T> = { data: T; error: null } | { data: null; error: { code?: string; message?: string } } | undefined;
+
+function isOk<T>(result: AuthResult<T>): result is { data: T; error: null } {
+	return !!result && !result.error && !!result.data;
+}
+
 export async function requireSession(request: Request) {
-	const { data: session, error: sessionError } = await queryClient.ensureQueryData({
+	const result: AuthResult<any> = await queryClient.ensureQueryData({
 		queryKey: QUERY_KEYS.session,
 		queryFn: () => authClient.getSession(),
-		staleTime: 1000 * 60 * 5,
 	});
 
-	if (!session || sessionError) {
-		const isSessionExpired = sessionError?.code === authClient.$ERROR_CODES.SESSION_EXPIRED.code;
+	if (!isOk(result)) {
+		const isSessionExpired = result?.error?.code === authClient.$ERROR_CODES.SESSION_EXPIRED.code;
 
-		// Ensure bad session data is wiped from cache if it errored
 		queryClient.removeQueries({ queryKey: QUERY_KEYS.session });
 
 		redirectToLogin(
@@ -22,34 +26,37 @@ export async function requireSession(request: Request) {
 		);
 	}
 
-	return session;
+	return result!.data!;
 }
 
 export async function resolvePostAuthPath(): Promise<string> {
-	const { data: session, error: sessionError } = await queryClient.ensureQueryData({
+	const sessionResult: AuthResult<any> = await queryClient.ensureQueryData({
 		queryKey: QUERY_KEYS.session,
 		queryFn: () => authClient.getSession(),
-		staleTime: 1000 * 60 * 5,
 	});
 
-	if (!session || sessionError) return '/login';
-	if (session.user.type === 'customer') return '/profile';
+	if (!isOk(sessionResult)) return '/login';
+	if (sessionResult.data.user.type === 'customer') return '/profile';
 
-	const { data: agencies } = await authClient.organization.list();
-	return agencies && agencies.length > 0 ? '/agency' : '/no-agency';
+	const orgResult: AuthResult<any[]> = await queryClient.ensureQueryData({
+		queryKey: QUERY_KEYS.agencies,
+		queryFn: () => authClient.organization.list(),
+	});
+
+	if (!isOk(orgResult)) return '/login';
+	return orgResult.data.length > 0 ? '/agency' : '/no-agency';
 }
 
 export async function requireAgency(request: Request) {
-	const { data: agencies, error } = await queryClient.ensureQueryData({
+	const result: AuthResult<any[]> = await queryClient.ensureQueryData({
 		queryKey: QUERY_KEYS.agencies,
 		queryFn: () => authClient.organization.list(),
-		staleTime: 1000 * 60 * 5,
 	});
 
-	if (error || !agencies) {
+	if (!isOk(result)) {
 		queryClient.removeQueries({ queryKey: QUERY_KEYS.agencies });
 		redirectToLogin(request);
 	}
 
-	return agencies;
+	return result!.data!;
 }

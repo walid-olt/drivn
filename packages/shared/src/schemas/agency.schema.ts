@@ -32,7 +32,6 @@ export const agencySchema = z.object({
 });
 export const createAgencySchema = agencySchema.omit({
 	_id: true,
-	organizationId: true,
 });
 
 export const updateAgencySchema = agencySchema.partial().omit({

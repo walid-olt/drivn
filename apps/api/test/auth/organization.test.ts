@@ -101,7 +101,7 @@ describe('[ORGANIZATION]', () => {
 			});
 
 			const stored = await mongoose.connection
-				.db!.collection('organization')
+				.db!.collection('organizations')
 				.findOne({ slug: 'acme' });
 			expect(stored).not.toBeNull();
 		});
@@ -314,7 +314,7 @@ describe('[ORGANIZATION]', () => {
 				.expect(200);
 
 			const stored = await mongoose.connection
-				.db!.collection('organization')
+				.db!.collection('organizations')
 				.findOne({ slug: 'acme' });
 			expect(stored).toBeNull();
 

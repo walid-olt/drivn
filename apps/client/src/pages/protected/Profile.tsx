@@ -1,14 +1,18 @@
 import { Typography } from '@/components/ui/typography';
 import SignOutButton from '@/features/auth/components/SignOutButton';
-import authClient from '@/lib/auth-client';
+import { useSession } from '@/lib/auth-hooks';
 import { Link } from 'react-router';
 
 export default function Profile() {
-	const { isPending, data } = authClient.useSession();
+	const { isPending, isError, data: result, error } = useSession();
 
 	if (isPending) return <div>Loading...</div>;
 
-	const { user } = data!;
+	if (isError || !result || result.error || !result.data) {
+		return <p>{error?.message ?? result?.error?.message}</p>;
+	}
+
+	const { user } = result.data;
 
 	return (
 		<div className="flex h-screen w-screen flex-col items-center justify-center gap-4">
