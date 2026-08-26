@@ -35,7 +35,7 @@ describe('[AUTH]', () => {
 			expect(response.body.user.emailVerified).toBe(false);
 
 			const stored = await mongoose.connection
-				.db!.collection('user')
+				.db!.collection('users')
 				.findOne({ email: 'test@example.com' });
 			expect(stored).not.toBeNull();
 		});
@@ -113,10 +113,7 @@ describe('[AUTH]', () => {
 				['better-auth.session_token']: expect.any(String),
 			});
 
-			const response = await request(_app)
-				.post(SIGN_OUT_URL)
-				.set('Cookie', cookies)
-				.expect(200);
+			const response = await request(_app).post(SIGN_OUT_URL).set('Cookie', cookies).expect(200);
 
 			const clearedJar = parseCookies(response.get('Set-Cookie') || []);
 			expect(clearedJar['better-auth.session_token']).toBe('');

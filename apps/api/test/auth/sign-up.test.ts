@@ -44,7 +44,7 @@ describe('[AUTH] sign-up routes', () => {
 			});
 
 			const stored = await mongoose.connection
-				.db!.collection('user')
+				.db!.collection('users')
 				.findOne({ email: validCustomer.email });
 			expect(stored).not.toBeNull();
 			expect(stored!.type).toBe('customer');
@@ -74,7 +74,7 @@ describe('[AUTH] sign-up routes', () => {
 			});
 
 			const stored = await mongoose.connection
-				.db!.collection('user')
+				.db!.collection('users')
 				.findOne({ email: validAgency.email });
 			expect(stored).not.toBeNull();
 			expect(stored!.type).toBe('agency_member');
@@ -89,7 +89,7 @@ describe('[AUTH] sign-up routes', () => {
 			expect(response.body.data.user.type).toBe('agency_member');
 
 			const stored = await mongoose.connection
-				.db!.collection('user')
+				.db!.collection('users')
 				.findOne({ email: validAgency.email });
 			expect(stored!.type).toBe('agency_member');
 		});
