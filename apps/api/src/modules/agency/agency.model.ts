@@ -21,7 +21,6 @@ const AgencySchema = new Schema<AgencyDocument>({
 		country: { type: String, required: false },
 		addressLine1: { type: String, required: false },
 		zipCode: { type: String, required: false },
-		required: false,
 	},
 	onboardingStatus: {
 		type: String,

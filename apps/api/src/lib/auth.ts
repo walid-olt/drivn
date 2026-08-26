@@ -7,8 +7,9 @@ import { ResendProvider } from './providers/resend';
 import { TestingEmailProvider } from './providers/testing';
 import { BackgroundEmailService } from './services/BackgroundEmailService';
 import type { BaseUser } from 'better-auth';
-import type { AgencyDocument } from '../modules/agency/models/agency.model';
+import type { AgencyDocument } from '../modules/agency/agency.model';
 import { z } from 'zod';
+import agencyService from '../modules/agency/agency.service';
 
 let authInstance: ReturnType<typeof initializeAuthInstance> | null = null;
 
@@ -88,6 +89,7 @@ export function initializeAuthInstance(db: mongo.Db) {
 						email: inviteeEmail,
 					} = data;
 
+					//TODO: use the agencyService to get the agency by orgId instead of querying the db directly
 					const userColl = db.collection<Document<BaseUser>>('users');
 					const agencyColl = db.collection<AgencyDocument>('agencies');
 
@@ -119,6 +121,11 @@ export function initializeAuthInstance(db: mongo.Db) {
 						inviteeEmail,
 						inviteeName,
 					});
+				},
+				organizationHooks: {
+					async beforeCreateOrganization({ organization, user }) {
+						//TODO: query the db check if a user has already created an organization, if so throw an error
+					},
 				},
 			}),
 		],

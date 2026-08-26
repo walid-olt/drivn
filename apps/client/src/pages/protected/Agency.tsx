@@ -1,15 +1,17 @@
 import { Typography } from '@ui/typography';
 import SignOutButton from '@/features/auth/components/SignOutButton';
-import authClient from '@/lib/auth-client';
+import { useAgencies } from '@/lib/auth-hooks';
 
 const Agency = () => {
-	const { isPending, data: organizations, error } = authClient.useListOrganizations();
+	const { isPending, isError, data: result, error } = useAgencies();
 
 	if (isPending) return <p>Loading...</p>;
 
-	if (error || !organizations) {
-		return <p>{error?.message}</p>;
+	if (isError || !result || result.error || !result.data) {
+		return <p>{error?.message ?? result?.error?.message}</p>;
 	}
+
+	const organizations = result.data;
 
 	return (
 		<div className="flex h-screen w-screen flex-col items-center justify-center gap-4">
