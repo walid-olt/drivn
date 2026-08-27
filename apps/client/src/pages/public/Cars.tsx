@@ -1,11 +1,9 @@
 import { Typography } from '@ui/typography';
 
-const Cars = () => {
+export const Component = () => {
 	return (
 		<div className={'flex h-screen w-screen items-center justify-center'}>
 			<Typography variant="h1">Cars </Typography>
 		</div>
 	);
 };
-
-export default Cars;

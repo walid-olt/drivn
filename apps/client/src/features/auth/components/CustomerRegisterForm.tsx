@@ -9,6 +9,7 @@ import { SpinnerIcon } from '@phosphor-icons/react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router';
 import { z } from 'zod';
+import { PhoneInput } from '@/components/PhoneInput';
 
 const customerRegisterSchema = z
 	.object({
@@ -69,8 +70,9 @@ export default function CustomerRegisterForm() {
 
 			<Input type="email" placeholder="Email" {...register('email')} />
 			{errors.email && <span>{errors.email.message}</span>}
+			{/*TODO:  Make this phone input match stype of project  and hook it to state */}
 
-			<Input type="tel" placeholder="Phone number" {...register('phone')} />
+			<PhoneInput />
 			{errors.phone && <span>{errors.phone.message}</span>}
 
 			<Input type="text" placeholder="Country" {...register('country')} />
