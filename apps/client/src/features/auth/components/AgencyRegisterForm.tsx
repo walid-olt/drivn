@@ -1,18 +1,21 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Typography } from '@/components/ui/typography';
-import { toast } from '@/components/ui/toast';
-import { signUpAsAgency } from '@/lib/api';
-import queryClient from '@/lib/query-client';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { SpinnerIcon } from '@phosphor-icons/react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router';
 import { z } from 'zod';
 
+import { Button } from '@/components/ui/button';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { toast } from '@/components/ui/toast';
+import { Typography } from '@/components/ui/typography';
+import { signUpAsAgency } from '@/lib/api';
+import queryClient from '@/lib/query-client';
+
 const agencyRegisterSchema = z
 	.object({
-		name: z.string().min(1).max(128),
+		firstName: z.string().min(2).max(50),
+		lastName: z.string().min(2).max(50),
 		email: z.email(),
 		password: z.string().min(8).max(128),
 		passwordConfirmation: z.string().min(8).max(128),
@@ -37,7 +40,7 @@ export default function AgencyRegisterForm() {
 	async function onSubmit(data: AgencyRegisterFormData) {
 		try {
 			await signUpAsAgency({
-				name: data.name,
+				name: `${data.firstName} ${data.lastName}`.trim(),
 				email: data.email,
 				password: data.password,
 			});
@@ -54,29 +57,92 @@ export default function AgencyRegisterForm() {
 	}
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className="mx-auto flex w-full max-w-md flex-col gap-3">
-			<Typography variant="h2">Agency signup</Typography>
-			<Typography variant="h3">Create your account with email and password.</Typography>
+		<div className="flex flex-col gap-6">
+			<div className="flex flex-col gap-1 text-center">
+				<Typography variant="h3">Agency signup</Typography>
+				<Typography variant="body">Create your account with email and password.</Typography>
+			</div>
 
-			<Input type="text" placeholder="Name" {...register('name')} />
-			{errors.name && <span>{errors.name.message}</span>}
+			<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+				<div className="grid grid-cols-2 gap-3">
+					<Field>
+						<FieldLabel htmlFor="firstName">First name</FieldLabel>
+						<Input
+							id="firstName"
+							type="text"
+							placeholder="Jane"
+							autoComplete="given-name"
+							aria-invalid={errors.firstName ? true : undefined}
+							{...register('firstName')}
+						/>
+						<FieldError errors={[errors.firstName]} />
+					</Field>
 
-			<Input type="email" placeholder="Email" {...register('email')} />
-			{errors.email && <span>{errors.email.message}</span>}
+					<Field>
+						<FieldLabel htmlFor="lastName">Last name</FieldLabel>
+						<Input
+							id="lastName"
+							type="text"
+							placeholder="Doe"
+							autoComplete="family-name"
+							aria-invalid={errors.lastName ? true : undefined}
+							{...register('lastName')}
+						/>
+						<FieldError errors={[errors.lastName]} />
+					</Field>
+				</div>
 
-			<Input type="password" placeholder="Password" {...register('password')} />
-			{errors.password && <span>{errors.password.message}</span>}
+				<Field>
+					<FieldLabel htmlFor="email">Email</FieldLabel>
+					<Input
+						id="email"
+						type="email"
+						placeholder="you@example.com"
+						autoComplete="email"
+						aria-invalid={errors.email ? true : undefined}
+						{...register('email')}
+					/>
+					<FieldError errors={[errors.email]} />
+				</Field>
 
-			<Input type="password" placeholder="Confirm Password" {...register('passwordConfirmation')} />
-			{errors.passwordConfirmation && <span>{errors.passwordConfirmation.message}</span>}
+				<Field>
+					<FieldLabel htmlFor="password">Password</FieldLabel>
+					<Input
+						id="password"
+						type="password"
+						placeholder="At least 8 characters"
+						autoComplete="new-password"
+						aria-invalid={errors.password ? true : undefined}
+						{...register('password')}
+					/>
+					<FieldError errors={[errors.password]} />
+				</Field>
 
-			<Button type="submit" disabled={isSubmitting}>
-				{isSubmitting ? <SpinnerIcon /> : 'Create agency account'}
-			</Button>
+				<Field>
+					<FieldLabel htmlFor="passwordConfirmation">Confirm password</FieldLabel>
+					<Input
+						id="passwordConfirmation"
+						type="password"
+						placeholder="Repeat your password"
+						autoComplete="new-password"
+						aria-invalid={errors.passwordConfirmation ? true : undefined}
+						{...register('passwordConfirmation')}
+					/>
+					<FieldError errors={[errors.passwordConfirmation]} />
+				</Field>
 
-			<Typography variant="body">
-				Signing up as a customer instead? <Link to="/register/customer">Go to customer signup</Link>
+				<Button type="submit" size="lg" disabled={isSubmitting} className="mt-1 w-full">
+					{isSubmitting && <SpinnerIcon className="animate-spin" />}
+					{isSubmitting ? 'Creating account...' : 'Create agency account'}
+				</Button>
+			</form>
+
+			<Typography variant="caption" className="text-center">
+				Signing up as a customer instead?{' '}
+				<Link to="/register/customer" className="font-medium text-primary hover:underline">
+					Go to customer signup
+				</Link>
 			</Typography>
-		</form>
+		</div>
 	);
 }

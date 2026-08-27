@@ -16,7 +16,7 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from '@/components/ui/sheet';
-import { NavLink } from 'react-router';
+import { Link, NavLink } from 'react-router';
 
 const menu = [
 	{ title: 'Home', url: '/', icon: <HouseIcon /> },
@@ -29,9 +29,9 @@ const Navbar = () => {
 		<header className="sticky top-0 z-50 bg-background/80 py-4 backdrop-blur-sm">
 			<nav className="flex items-center justify-between">
 				<div className="flex items-center gap-6">
-					<a href="/" aria-label="logo" className="flex items-center gap-2">
+					<Link to="/" aria-label="logo" className="flex items-center gap-2">
 						<img src="/Drivn-logo.svg" className="max-h-8 dark:invert" alt="logo" />
-					</a>
+					</Link>
 					<div className="hidden items-center gap-1 lg:flex">
 						{menu.map((item) => (
 							<NavLink
@@ -51,17 +51,17 @@ const Navbar = () => {
 					<Button
 						variant="ghost"
 						size="lg"
-						render={<a href="/for-agencies" />}
+						render={<Link to="/for-agencies" />}
 						nativeButton={false}
 					>
 						<BuildingsIcon data-icon="inline-start" />
 						For Agencies
 					</Button>
-					<Button variant="outline" size="lg" render={<a href="#" />} nativeButton={false}>
+					<Button variant="outline" size="lg" render={<Link to="#" />} nativeButton={false}>
 						<SignInIcon data-icon="inline-start" />
 						Login
 					</Button>
-					<Button size="lg" render={<a href="/login" />} nativeButton={false}>
+					<Button size="lg" render={<Link to="/login" />} nativeButton={false}>
 						<UserPlusIcon data-icon="inline-start" />
 						Sign up
 					</Button>
@@ -79,9 +79,9 @@ const Navbar = () => {
 						<SheetHeader>
 							<div className="flex items-center justify-between">
 								<SheetTitle>
-									<a href="/" aria-label="logo" className="flex items-center gap-2">
+									<Link to="/" aria-label="logo" className="flex items-center gap-2">
 										<img src="/Drivn-logo.svg" className="max-h-8 dark:invert" alt="logo" />
-									</a>
+									</Link>
 								</SheetTitle>
 								<SheetClose
 									render={
@@ -107,15 +107,15 @@ const Navbar = () => {
 							))}
 							<div className="my-4 h-px bg-border" />
 							<div className="flex flex-col gap-2 *:py-4">
-								<Button variant="default" render={<a href="/for-agencies" />} nativeButton={false}>
+								<Button variant="default" render={<Link to="/for-agencies" />} nativeButton={false}>
 									<BuildingsIcon data-icon="inline-start" />
 									For Agencies
 								</Button>
-								<Button variant="outline" render={<a href="#" />} nativeButton={false}>
+								<Button variant="outline" render={<Link to="#" />} nativeButton={false}>
 									<SignInIcon data-icon="inline-start" />
 									Login
 								</Button>
-								<Button variant={'secondary'} render={<a href="#" />} nativeButton={false}>
+								<Button variant={'secondary'} render={<Link to="#" />} nativeButton={false}>
 									<UserPlusIcon data-icon="inline-start" />
 									Sign up
 								</Button>

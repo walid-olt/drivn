@@ -1,23 +1,26 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Typography } from '@/components/ui/typography';
-import { toast } from '@/components/ui/toast';
-import { signUpAsCustomer } from '@/lib/api';
-import queryClient from '@/lib/query-client';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { SpinnerIcon } from '@phosphor-icons/react';
-import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router';
 import { z } from 'zod';
+
+import { Button } from '@/components/ui/button';
+import { CountryDropdown } from '@/components/ui/country-dropdown';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { toast } from '@/components/ui/toast';
+import { Typography } from '@/components/ui/typography';
 import { PhoneInput } from '@/components/PhoneInput';
+import { signUpAsCustomer } from '@/lib/api';
+import queryClient from '@/lib/query-client';
 
 const customerRegisterSchema = z
 	.object({
 		firstName: z.string().min(2).max(50),
 		lastName: z.string().min(2).max(50),
 		email: z.email(),
-		phone: z.string().min(6).max(30),
-		country: z.string().min(2).max(50),
+		phone: z.string({ error: 'Please enter your phone number.' }).min(6).max(30),
+		country: z.string({ error: 'Please select your country.' }).min(2).max(50),
 		password: z.string().min(8).max(128),
 		passwordConfirmation: z.string().min(8).max(128),
 	})
@@ -32,6 +35,7 @@ export default function CustomerRegisterForm() {
 	const navigate = useNavigate();
 	const {
 		register,
+		control,
 		handleSubmit,
 		formState: { errors, isSubmitting },
 	} = useForm<CustomerRegisterFormData>({
@@ -58,39 +62,125 @@ export default function CustomerRegisterForm() {
 	}
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className="mx-auto flex w-full max-w-md flex-col gap-3">
-			<Typography variant="h2">Customer signup</Typography>
-			<Typography variant="h3">Create your account to start booking cars.</Typography>
+		<div className="flex flex-col gap-6">
+			<div className="flex flex-col gap-1 text-center">
+				<Typography variant="h3">Customer signup</Typography>
+				<Typography variant="body">Create your account to start booking cars.</Typography>
+			</div>
 
-			<Input type="text" placeholder="First name" {...register('firstName')} />
-			{errors.firstName && <span>{errors.firstName.message}</span>}
+			<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+				<div className="grid grid-cols-2 gap-3">
+					<Field>
+						<FieldLabel htmlFor="firstName">First name</FieldLabel>
+						<Input
+							id="firstName"
+							type="text"
+							placeholder="Jane"
+							autoComplete="given-name"
+							aria-invalid={errors.firstName ? true : undefined}
+							{...register('firstName')}
+						/>
+						<FieldError errors={[errors.firstName]} />
+					</Field>
 
-			<Input type="text" placeholder="Last name" {...register('lastName')} />
-			{errors.lastName && <span>{errors.lastName.message}</span>}
+					<Field>
+						<FieldLabel htmlFor="lastName">Last name</FieldLabel>
+						<Input
+							id="lastName"
+							type="text"
+							placeholder="Doe"
+							autoComplete="family-name"
+							aria-invalid={errors.lastName ? true : undefined}
+							{...register('lastName')}
+						/>
+						<FieldError errors={[errors.lastName]} />
+					</Field>
+				</div>
 
-			<Input type="email" placeholder="Email" {...register('email')} />
-			{errors.email && <span>{errors.email.message}</span>}
-			{/*TODO:  Make this phone input match stype of project  and hook it to state */}
+				<Field>
+					<FieldLabel htmlFor="email">Email</FieldLabel>
+					<Input
+						id="email"
+						type="email"
+						placeholder="you@example.com"
+						autoComplete="email"
+						aria-invalid={errors.email ? true : undefined}
+						{...register('email')}
+					/>
+					<FieldError errors={[errors.email]} />
+				</Field>
 
-			<PhoneInput />
-			{errors.phone && <span>{errors.phone.message}</span>}
+				<Field>
+					<FieldLabel>Phone number</FieldLabel>
+					<Controller
+						control={control}
+						name="phone"
+						render={({ field }) => (
+							<PhoneInput
+								name={field.name}
+								value={field.value}
+								aria-invalid={errors.phone ? true : undefined}
+								onChange={field.onChange}
+								onBlur={field.onBlur}
+							/>
+						)}
+					/>
+					<FieldError errors={[errors.phone]} />
+				</Field>
 
-			<Input type="text" placeholder="Country" {...register('country')} />
-			{errors.country && <span>{errors.country.message}</span>}
+				<Field>
+					<FieldLabel>Country</FieldLabel>
+					<Controller
+						control={control}
+						name="country"
+						render={({ field }) => (
+							<CountryDropdown
+								value={field.value}
+								onChange={(country) => field.onChange(country.name)}
+							/>
+						)}
+					/>
+					<FieldError errors={[errors.country]} />
+				</Field>
 
-			<Input type="password" placeholder="Password" {...register('password')} />
-			{errors.password && <span>{errors.password.message}</span>}
+				<Field>
+					<FieldLabel htmlFor="password">Password</FieldLabel>
+					<Input
+						id="password"
+						type="password"
+						placeholder="At least 8 characters"
+						autoComplete="new-password"
+						aria-invalid={errors.password ? true : undefined}
+						{...register('password')}
+					/>
+					<FieldError errors={[errors.password]} />
+				</Field>
 
-			<Input type="password" placeholder="Confirm Password" {...register('passwordConfirmation')} />
-			{errors.passwordConfirmation && <span>{errors.passwordConfirmation.message}</span>}
+				<Field>
+					<FieldLabel htmlFor="passwordConfirmation">Confirm password</FieldLabel>
+					<Input
+						id="passwordConfirmation"
+						type="password"
+						placeholder="Repeat your password"
+						autoComplete="new-password"
+						aria-invalid={errors.passwordConfirmation ? true : undefined}
+						{...register('passwordConfirmation')}
+					/>
+					<FieldError errors={[errors.passwordConfirmation]} />
+				</Field>
 
-			<Button type="submit" disabled={isSubmitting}>
-				{isSubmitting ? <SpinnerIcon /> : 'Create customer account'}
-			</Button>
+				<Button type="submit" size="lg" disabled={isSubmitting} className="mt-1 w-full">
+					{isSubmitting && <SpinnerIcon className="animate-spin" />}
+					{isSubmitting ? 'Creating account...' : 'Create customer account'}
+				</Button>
+			</form>
 
-			<Typography variant="body">
-				Registering an agency instead? <Link to="/register/agency">Go to agency signup</Link>
+			<Typography variant="caption" className="text-center">
+				Registering an agency instead?{' '}
+				<Link to="/register/agency" className="font-medium text-primary hover:underline">
+					Go to agency signup
+				</Link>
 			</Typography>
-		</form>
+		</div>
 	);
 }

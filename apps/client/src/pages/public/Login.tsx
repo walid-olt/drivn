@@ -1,4 +1,5 @@
 import { toast } from '@/components/ui/toast';
+import AuthLayout from '@/components/layouts/AuthLayout';
 import LoginForm from '@/features/auth/components/LoginForm';
 import { useEffect } from 'react';
 
@@ -14,9 +15,9 @@ const Login = () => {
 		}
 	}, [message]);
 	return (
-		<section>
+		<AuthLayout>
 			<LoginForm />
-		</section>
+		</AuthLayout>
 	);
 };
 
