@@ -124,7 +124,7 @@ export function initializeAuthInstance(db: mongo.Db) {
 					});
 				},
 				organizationHooks: {
-					async afterCreateOrganization({ organization, user }) {
+					async afterCreateOrganization({ organization }) {
 						//HACK: create agency and link to organization, delete organization if agency creation fails
 						const { id: organizationId, name, slug } = organization;
 						const [err, agency] = await agencyService.create({

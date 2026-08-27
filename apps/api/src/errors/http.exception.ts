@@ -43,4 +43,5 @@ export const toUnauthorizedError = (err: unknown): APIError => {
 	return err instanceof APIError ? err : unauthorized('Authentication failed');
 };
 
-export const toSignError = (_err?: unknown): APIError => internalServerError('Failed to sign token');
+export const toSignError = (_err?: unknown): APIError =>
+	internalServerError('Failed to sign token');

@@ -12,7 +12,11 @@ export default function VerifyEmail() {
 	const token = new URLSearchParams(window.location.search).get('token');
 	const navigate = useNavigate();
 
-	const { mutate: verifyEmail, isPending, error } = useMutation({
+	const {
+		mutate: verifyEmail,
+		isPending,
+		error,
+	} = useMutation({
 		mutationFn: (token: string) => authClient.verifyEmail({ query: { token } }),
 		onSuccess: async () => {
 			await queryClient.invalidateQueries({ queryKey: ['session'] });

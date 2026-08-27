@@ -16,7 +16,12 @@ const isApiLikeError = (err: unknown): err is ApiLikeError =>
 	typeof (err as ApiLikeError).statusCode === 'number' &&
 	typeof (err as ApiLikeError).body !== 'undefined';
 
-export function errorHandler(err: unknown, _req: Request, res: Response, _next: NextFunction): void {
+export function errorHandler(
+	err: unknown,
+	_req: Request,
+	res: Response,
+	_next: NextFunction,
+): void {
 	if (isApiLikeError(err)) {
 		res.status(err.statusCode).json({
 			success: false,
