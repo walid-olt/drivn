@@ -1,5 +1,4 @@
 import Home from '@/pages/public/Home';
-import Cars from '@/pages/public/Cars';
 import Unauthorized from '@/pages/public/Unauthorized';
 import VerifyEmail from '@/pages/public/VerifyEmail';
 import { type RouteObject } from 'react-router';
@@ -8,6 +7,7 @@ import Register from '@/pages/public/Register';
 import RegisterAgency from '@/pages/public/RegisterAgency';
 import RegisterCustomer from '@/pages/public/RegisterCustomer';
 import { redirectIfAuthenticated } from '../../middleware/redirectIfAuthenticated';
+import PublicLayout from '@/components/layouts/PublicLayout';
 
 /**
  * @description
@@ -16,19 +16,25 @@ import { redirectIfAuthenticated } from '../../middleware/redirectIfAuthenticate
  */
 export default [
 	{
+		element: <PublicLayout />,
 		children: [
 			{
-				path: '/',
-				index: true,
-				element: <Home />,
-			},
-			{
-				path: '/cars',
-				element: <Cars />,
-			},
-			{
-				path: '/unauthorized',
-				element: <Unauthorized />,
+				middleware: [redirectIfAuthenticated],
+				children: [
+					{
+						path: '/',
+						index: true,
+						element: <Home />,
+					},
+					{
+						path: '/cars',
+						lazy: () => import('@/pages/public/Cars'),
+					},
+					{
+						path: '/unauthorized',
+						element: <Unauthorized />,
+					},
+				],
 			},
 			{
 				path: '/verify-email',

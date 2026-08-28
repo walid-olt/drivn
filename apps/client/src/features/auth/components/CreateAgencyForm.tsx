@@ -1,14 +1,16 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Typography } from '@/components/ui/typography';
-import { toast } from '@/components/ui/toast';
-import authClient from '@/lib/auth-client';
-import queryClient from '@/lib/query-client';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { SpinnerIcon } from '@phosphor-icons/react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { z } from 'zod';
+
+import { Button } from '@/components/ui/button';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { toast } from '@/components/ui/toast';
+import { Typography } from '@/components/ui/typography';
+import authClient from '@/lib/auth-client';
+import queryClient from '@/lib/query-client';
 
 const createAgencySchema = z.object({
 	name: z.string().min(3).max(100),
@@ -73,21 +75,46 @@ export default function CreateAgencyForm() {
 	}
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className="mx-auto flex w-full max-w-md flex-col gap-3">
-			<Typography variant="h2">Create your agency</Typography>
-			<Typography variant="h3">
-				Set up your agency to start managing cars and reservations.
-			</Typography>
+		<div className="flex flex-col gap-6">
+			<div className="flex flex-col gap-1 text-center">
+				<Typography variant="h3">Create your agency</Typography>
+				<Typography variant="body">
+					Set up your agency to start managing cars and reservations.
+				</Typography>
+			</div>
 
-			<Input type="text" placeholder="Agency name" {...register('name')} onChange={onNameChange} />
-			{errors.name && <span>{errors.name.message}</span>}
+			<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+				<Field>
+					<FieldLabel htmlFor="name">Agency name</FieldLabel>
+					<Input
+						id="name"
+						type="text"
+						placeholder="Acme Rentals"
+						aria-invalid={errors.name ? true : undefined}
+						{...register('name')}
+						onChange={onNameChange}
+					/>
+					<FieldError errors={[errors.name]} />
+				</Field>
 
-			<Input type="text" placeholder="agency-slug" {...register('slug')} />
-			{errors.slug && <span>{errors.slug.message}</span>}
+				<Field>
+					<FieldLabel htmlFor="slug">Slug</FieldLabel>
+					<Input
+						id="slug"
+						type="text"
+						placeholder="acme-rentals"
+						aria-invalid={errors.slug ? true : undefined}
+						{...register('slug')}
+					/>
+					<FieldDescription>Used in your public agency URL.</FieldDescription>
+					<FieldError errors={[errors.slug]} />
+				</Field>
 
-			<Button type="submit" disabled={isSubmitting}>
-				{isSubmitting ? <SpinnerIcon className="animate-spin" /> : 'Create agency'}
-			</Button>
-		</form>
+				<Button type="submit" size="lg" disabled={isSubmitting} className="mt-1 w-full">
+					{isSubmitting && <SpinnerIcon className="animate-spin" />}
+					{isSubmitting ? 'Creating agency...' : 'Create agency'}
+				</Button>
+			</form>
+		</div>
 	);
 }

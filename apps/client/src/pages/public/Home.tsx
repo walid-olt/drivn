@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 
 const Home = () => {
 	return (
-		<div className="flex flex-col gap-6 p-8">
+		<div className="flex flex-col gap-6 ">
 			<Typography variant="h1">Home</Typography>
 
 			<section className="flex flex-col gap-2">
