@@ -24,7 +24,7 @@ const AgencySchema = new Schema<AgencyDocument>({
 	},
 	onboardingStatus: {
 		type: String,
-		enum: ['not_started', 'initial', 'branding', 'support', 'completed'],
+		enum: ['not_started', 'branding', 'support', 'locations', 'completed'],
 		default: 'not_started',
 		required: true,
 	},

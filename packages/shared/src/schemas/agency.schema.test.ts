@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { agencySchema, createAgencySchema, updateAgencySchema } from './agency.schema';
+import {
+	agencyOnboardingStatusSchema,
+	agencySchema,
+	createAgencySchema,
+	updateAgencyBranding,
+	updateAgencyLocations,
+	updateAgencySchema,
+	updateAgencySupport,
+} from './agency.schema';
+import { AGENCY_ONBOARDING_STATUS } from '../constants/status';
 
 const validAgency = {
 	_id: '507f1f77bcf86cd799439011',
@@ -57,6 +66,85 @@ describe('createAgencySchema', () => {
 describe('updateAgencySchema', () => {
 	it('accepts a partial update', () => {
 		expect(() => updateAgencySchema.parse({ summary: 'New summary' })).not.toThrow();
+	});
+});
+
+describe('agencyOnboardingStatusSchema', () => {
+	it('matches the AGENCY_ONBOARDING_STATUS constant order', () => {
+		expect(agencyOnboardingStatusSchema.options).toEqual(AGENCY_ONBOARDING_STATUS);
+	});
+
+	it('accepts every onboarding status', () => {
+		for (const status of AGENCY_ONBOARDING_STATUS) {
+			expect(() => agencyOnboardingStatusSchema.parse(status)).not.toThrow();
+		}
+	});
+
+	it('rejects unknown statuses', () => {
+		expect(() => agencyOnboardingStatusSchema.parse('initial')).toThrow();
+	});
+});
+
+describe('updateAgencyBranding', () => {
+	it('accepts logo, banner and summary', () => {
+		const result = updateAgencyBranding.parse({
+			logo: 'https://cdn.example.com/logo.png',
+			banner: 'https://cdn.example.com/banner.webp',
+			summary: 'Premium car rentals',
+		});
+		expect(result).toMatchObject({ summary: 'Premium car rentals' });
+	});
+
+	it('accepts a partial branding update', () => {
+		expect(() => updateAgencyBranding.parse({ summary: 'Only a summary' })).not.toThrow();
+	});
+
+	it('rejects a non-url logo', () => {
+		expect(() => updateAgencyBranding.parse({ logo: 'not-a-url' })).toThrow();
+	});
+
+	it('rejects a summary longer than 500 characters', () => {
+		expect(() => updateAgencyBranding.parse({ summary: 'a'.repeat(501) })).toThrow();
+	});
+});
+
+describe('updateAgencySupport', () => {
+	it('accepts support email, phone and address', () => {
+		const result = updateAgencySupport.parse({
+			supportEmail: 'support@acme.com',
+			supportPhone: '+14155552671',
+			address: {
+				city: 'Casablanca',
+				country: 'MA',
+				addressLine1: '5 Boulevard de la Corniche',
+				zipCode: '20000',
+			},
+		});
+		expect(result.address).toMatchObject({ city: 'Casablanca' });
+	});
+
+	it('rejects an invalid support email', () => {
+		expect(() => updateAgencySupport.parse({ supportEmail: 'not-an-email' })).toThrow();
+	});
+
+	it('rejects an invalid support phone', () => {
+		expect(() => updateAgencySupport.parse({ supportPhone: '123' })).toThrow();
+	});
+});
+
+describe('updateAgencyLocations', () => {
+	it('accepts at least one operating location', () => {
+		expect(() =>
+			updateAgencyLocations.parse({ operatingLocationIds: ['507f1f77bcf86cd799439011'] }),
+		).not.toThrow();
+	});
+
+	it('rejects an empty operatingLocationIds array', () => {
+		expect(() => updateAgencyLocations.parse({ operatingLocationIds: [] })).toThrow();
+	});
+
+	it('rejects when operatingLocationIds is missing', () => {
+		expect(() => updateAgencyLocations.parse({})).toThrow();
 	});
 });
 

@@ -47,7 +47,6 @@ export const createCarSchema = carSchema.omit({
 });
 
 // validate actual image files on the client side.
-
 export const carImageSchema = z
 	.file()
 	.mime(ACCEPTED_IMAGE_TYPES, 'Only standard image formats are allowed')

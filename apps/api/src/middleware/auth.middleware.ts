@@ -1,6 +1,6 @@
 import type { RequestHandler } from 'express';
-import { APIError } from 'better-auth';
 import { getAuth } from '../lib/auth.ts';
+import { unauthorized } from '../errors';
 
 /**
  * Middleware that extracts the auth context and attach it to the request
@@ -13,7 +13,7 @@ export const authenticate: RequestHandler = async (req, _res, next) => {
 		});
 
 		if (!session) {
-			throw new APIError('UNAUTHORIZED');
+			throw unauthorized('Unauthorized');
 		}
 		req.user = session.user;
 		req.session = session.session;

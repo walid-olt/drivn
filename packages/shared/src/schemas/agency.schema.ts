@@ -1,5 +1,9 @@
 import z from 'zod';
 import phoneNumberSchema from './phone.schema';
+import { AGENCY_ONBOARDING_STATUS } from '../constants/status';
+
+export const agencyOnboardingStatusSchema = z.enum(AGENCY_ONBOARDING_STATUS);
+
 export const agencySchema = z.object({
 	_id: z.string(),
 	organizationId: z.string(),
@@ -25,16 +29,29 @@ export const agencySchema = z.object({
 			zipCode: z.string().max(20).optional(),
 		})
 		.optional(),
-	onboardingStatus: z
-		.enum(['not_started', 'initial', 'branding', 'support', 'completed'])
-		.default('not_started'),
+	onboardingStatus: agencyOnboardingStatusSchema.default('not_started'),
 	operatingLocationIds: z.array(z.string()).default([]),
 });
 export const createAgencySchema = agencySchema.omit({
 	_id: true,
 });
-
 export const updateAgencySchema = agencySchema.partial().omit({
 	_id: true,
 	organizationId: true,
+});
+
+export const updateAgencyBranding = agencySchema.pick({
+	logo: true,
+	banner: true,
+	summary: true,
+});
+
+export const updateAgencySupport = agencySchema.pick({
+	supportEmail: true,
+	supportPhone: true,
+	address: true,
+});
+
+export const updateAgencyLocations = z.object({
+	operatingLocationIds: z.array(z.string()).min(1, 'At least one operating location is required'),
 });

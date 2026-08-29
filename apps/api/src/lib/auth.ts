@@ -156,3 +156,4 @@ export function initializeAuthInstance(db: mongo.Db) {
 }
 // it's either this or duplicating the type declaration
 export type User = ReturnType<typeof getAuth>['$Infer']['Session']['user'];
+export type AuthSession = ReturnType<typeof getAuth>['$Infer']['Session']['session'];
