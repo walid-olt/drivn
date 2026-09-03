@@ -28,6 +28,14 @@ type TypographyOwnProps<T extends ElementType> = {
 	className?: string;
 } & Omit<ComponentPropsWithoutRef<T>, 'as' | 'children' | 'className'>;
 
+type TypographySkeletonProps = Omit<TypographyOwnProps<'span'>, 'as' | 'children'> & {
+	/**
+	 * Optional copy used only to give the shimmer an intrinsic width.
+	 * Prefer a width utility such as `w-48` when the loaded copy is dynamic.
+	 */
+	children?: ReactNode;
+};
+
 /**
  * @description
  * Versatile Typography component for rendering text with various styles and
@@ -54,4 +62,26 @@ function Typography<T extends ElementType = 'p'>({
 	);
 }
 
-export { Typography, typographyVariants };
+function TypographySkeleton({
+	variant = 'body',
+	className,
+	children,
+	...props
+}: TypographySkeletonProps) {
+	return (
+		<Typography
+			as="span"
+			variant={variant}
+			className={cn(
+				'shimmer shimmer-bg shimmer-duration-1000  rounded-(--radius) text-transparent inline-block',
+				className,
+			)}
+			{...props}
+			aria-hidden="true"
+		>
+			{children ?? '\u00a0'}
+		</Typography>
+	);
+}
+
+export { Typography, TypographySkeleton, typographyVariants };

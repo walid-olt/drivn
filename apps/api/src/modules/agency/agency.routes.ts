@@ -10,14 +10,13 @@ import {
 } from '@drivn/shared';
 import { badRequest, internalServerError, validationFailed } from '../../errors';
 import { handler } from '../../lib/handler';
-import { tryCatch } from '../../lib/result';
+import { tryCatch } from '@drivn/shared';
 import { localStorageService } from '../../lib/services/LocalStorageService';
 import { authenticate, requireAgency } from '../../middleware';
 import { uploadBrandingFiles } from '../../middleware/upload.middleware';
 import agencyService from './agency.service';
 
 const router = Router();
-
 router.use(authenticate, requireAgency);
 
 const toFieldErrors = (error: z.ZodError): ZodFieldError[] =>
@@ -32,17 +31,15 @@ router.get(
 	handler(async (req) => req.agency),
 );
 
-router.post(
-	'/branding',
+router.put(
+	'/onboarding/branding',
 	uploadBrandingFiles,
 	handler(async (req) => {
 		const files = (req.files ?? {}) as Record<string, Express.Multer.File[]>;
 		const uploaded: Record<string, string> = {};
-
 		for (const field of ['logo', 'banner'] as const) {
 			const file = files[field]?.[0];
 			if (!file) continue;
-
 			const ext = path.extname(file.originalname).toLowerCase();
 			const [error, stored] = await tryCatch(
 				localStorageService.save({
@@ -75,7 +72,7 @@ router.post(
 );
 
 router.put(
-	'/support',
+	'/onboarding/support',
 	handler(async (req) => {
 		const parsed = updateAgencySupport.safeParse(req.body);
 		if (!parsed.success) throw validationFailed(toFieldErrors(parsed.error));
@@ -89,7 +86,7 @@ router.put(
 );
 
 router.put(
-	'/locations',
+	'/onboarding/locations',
 	handler(async (req) => {
 		const parsed = updateAgencyLocations.safeParse(req.body);
 		if (!parsed.success) throw validationFailed(toFieldErrors(parsed.error));

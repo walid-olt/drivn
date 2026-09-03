@@ -9,4 +9,6 @@ export const QUERY_KEYS = {
 	session: ['session'],
 	/** Agencies the signed-in user belongs to (authClient.organization.list) */
 	agencies: ['agencies'],
+	/** Current active agency */
+	agency: ['agency'],
 } as const;

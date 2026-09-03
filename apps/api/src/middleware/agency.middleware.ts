@@ -15,7 +15,6 @@ export const requireAgency: RequestHandler = async (req, _res, next) => {
 		const [err, agency] = await agencyService.getByOrganizationId(organizationId);
 		if (err) throw err;
 		if (!agency) throw notFound('Agency not found');
-
 		req.agency = agency;
 		next();
 	} catch (err) {

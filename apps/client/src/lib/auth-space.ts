@@ -2,7 +2,6 @@ import authClient from '@/lib/auth-client';
 import queryClient from '@/lib/query-client';
 import { QUERY_KEYS } from '@/lib/query-keys';
 import { redirectToLogin } from '@/lib/utils';
-
 type AuthResult<T> =
 	| { data: T; error: null }
 	| { data: null; error: { code?: string; message?: string } }
@@ -10,7 +9,6 @@ type AuthResult<T> =
 function isOk<T>(result: AuthResult<T>): result is { data: T; error: null } {
 	return !!result && !result.error && !!result.data;
 }
-
 export async function requireSession(request: Request) {
 	const result: AuthResult<typeof authClient.$Infer.Session> = await queryClient.ensureQueryData({
 		queryKey: QUERY_KEYS.session,

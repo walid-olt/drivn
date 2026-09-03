@@ -1,15 +1,16 @@
 import { type RouteObject } from 'react-router';
-import Agency from '@/pages/protected/Agency';
 import Profile from '@/pages/protected/Profile';
-import NoAgency from '@/pages/protected/NoAgency';
-import CreateAgency from '@/pages/protected/CreateAgency';
-import AcceptInvitation from '@/pages/protected/AcceptInvitation';
+import NoAgency from '@/features/agency/pages/NoAgency';
 import EmailVerificationRequestPage from '@/pages/public/EmailVerificationRequestPage';
 import requireUserAuth from '../../middleware/requireUserAuth';
 import requireUserOfType from '../../middleware/requireUserOfType';
 import requireVerifiedUser from '../../middleware/requireVerifiedUser';
 import requireAgencyMembership from '../../middleware/requireAgencyMembership';
 import requireNoAgency from '../../middleware/requireNoAgency';
+import requireAgencyOnboarding from '../../middleware/requireAgencyOnBoarding';
+import CreateAgency from '@/features/agency/pages/CreateAgency';
+import AcceptInvitation from '@/features/agency/pages/AcceptInvitation';
+import Loading from '@/components/ui/Loading';
 
 /**
  * @description
@@ -27,10 +28,16 @@ export default [
 				children: [
 					{
 						middleware: [requireAgencyMembership],
+						hydrateFallbackElement: <Loading />,
 						children: [
 							{
 								path: '/agency',
-								element: <Agency />,
+								lazy: () => import('@/features/agency/pages/Agency'),
+								middleware: [requireAgencyOnboarding],
+							},
+							{
+								path: '/agency/onboarding',
+								lazy: () => import('@/features/agency/pages/AgencyOnboarding'),
 							},
 						],
 					},
