@@ -1,4 +1,7 @@
 import { fileURLToPath } from 'node:url';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import dotenv from 'dotenv';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
@@ -18,9 +21,13 @@ dotenv.config({
 });
 
 let mongod: MongoMemoryServer;
+let uploadDir: string;
 
 beforeAll(async () => {
 	process.env.NODE_ENV = 'test';
+
+	uploadDir = mkdtempSync(path.join(tmpdir(), 'drivn-uploads-'));
+	process.env.UPLOAD_DIR = uploadDir;
 
 	mongod = await MongoMemoryServer.create();
 
@@ -43,5 +50,8 @@ afterAll(async () => {
 	await mongoose.disconnect();
 	if (mongod) {
 		await mongod.stop();
+	}
+	if (uploadDir) {
+		rmSync(uploadDir, { recursive: true, force: true });
 	}
 });

@@ -10,6 +10,8 @@ export const envSchema = z.object({
 		.string()
 		.min(32, { error: 'BETTER_AUTH_SECRET too short, use a stronger one' }),
 	RESEND_API_KEY: z.string().min(1, { error: 'RESEND_API_KEY is required' }),
+	UPLOAD_DIR: z.string().default('./uploads'),
+	PUBLIC_UPLOAD_URL: z.url().optional(),
 	NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 });
 

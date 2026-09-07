@@ -8,6 +8,7 @@ import GlobalLayout from '@/components/layouts/GlobalLayout';
 const router = createBrowserRouter([
 	{
 		errorElement: <Error />,
+		hydrateFallbackElement: <div className="shimmer-bg w-screen h-screen" />,
 		element: <GlobalLayout />,
 		children: [...publicRoutes, ...protectedRoutes, { path: '*', element: <NotFound /> }],
 	},

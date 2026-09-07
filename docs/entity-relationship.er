@@ -75,7 +75,6 @@ profile [icon: id-card, color: blue] {
   lastName string
   birthDate date
   phone string
-  country string
 }
 
 agency [icon: house, color: red] {
@@ -98,7 +97,6 @@ location [icon: map-pin, color: teal] {
   organizationId string fk
   name string
   address string
-  country string
   city string
   postalCode string
   type string enum

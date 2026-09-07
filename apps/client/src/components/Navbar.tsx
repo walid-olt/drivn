@@ -17,6 +17,7 @@ import {
 	SheetTrigger,
 } from '@/components/ui/sheet';
 import { Link, NavLink } from 'react-router';
+import Logo from './Logo';
 
 const menu = [
 	{ title: 'Home', url: '/', icon: <HouseIcon /> },
@@ -29,9 +30,7 @@ const Navbar = () => {
 		<header className="sticky top-0 z-50 bg-background/80 py-4 backdrop-blur-sm">
 			<nav className="flex items-center justify-between">
 				<div className="flex items-center gap-6">
-					<Link to="/" aria-label="logo" className="flex items-center gap-2">
-						<img src="/Drivn-logo.svg" className="max-h-8 dark:invert" alt="logo" />
-					</Link>
+					<Logo className="flex items-center gap-2" />
 					<div className="hidden items-center gap-1 lg:flex">
 						{menu.map((item) => (
 							<NavLink

@@ -7,6 +7,8 @@ import { handler } from './lib/handler.ts';
 import { toNodeHandler } from 'better-auth/node';
 import { initializeAuthInstance, getAuth } from './lib/auth.ts';
 import appAuthRoutes from './modules/auth/auth.routes.ts';
+import agencyRoutes from './modules/agency/agency.routes.ts';
+import locationRoutes from './modules/location/location.routes.ts';
 
 export function createApp(db: mongo.Db): express.Express {
 	const app = express();
@@ -17,11 +19,12 @@ export function createApp(db: mongo.Db): express.Express {
 	app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 	app.use(morgan('dev'));
 	app.use(express.json());
-
 	app.use('/api/auth', appAuthRoutes);
 	app.all('/api/auth/{*any}', toNodeHandler(authInstance));
-
+	app.use('/api/agency/', agencyRoutes);
+	app.use('/api/locations', locationRoutes);
 	app.use('/assets', express.static('assets'));
+	app.use('/uploads', express.static(process.env.UPLOAD_DIR ?? './uploads'));
 	app.use(
 		'/health',
 		handler(async () => {
