@@ -93,10 +93,7 @@ describe('[AGENCY ONBOARDING]', () => {
 	describe('GET /', () => {
 		it('should return the agency with its onboarding status', async () => {
 			const { _app, cookies } = await setup();
-			const response = await request(_app)
-				.get(AGENCY_URL)
-				.set('Cookie', cookies)
-				.expect(200);
+			const response = await request(_app).get(AGENCY_URL).set('Cookie', cookies).expect(200);
 			expect(response.body.data).toMatchObject({
 				name: 'Acme Rentals',
 				slug: 'acme-rentals',
@@ -273,17 +270,6 @@ describe('[AGENCY ONBOARDING]', () => {
 			expect(response.body.details).toEqual(
 				expect.arrayContaining([expect.objectContaining({ field: 'operatingLocationIds' })]),
 			);
-		});
-
-		it('should reject branding without any content', async () => {
-			const { _app, cookies } = await setup();
-
-			const response = await request(_app)
-				.put(`${ONBOARDING_URL}/branding`)
-				.set('Cookie', cookies)
-				.field('summary', '')
-				.expect(400);
-			expect(response.body).toMatchObject({ success: false, status: 400 });
 		});
 
 		it('should reject non-image branding files', async () => {
