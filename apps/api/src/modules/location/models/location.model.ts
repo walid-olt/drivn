@@ -1,12 +1,9 @@
 import { type Location } from '@drivn/shared';
-import { Document, Schema, model, Types } from 'mongoose';
+import { Document, Schema, model } from 'mongoose';
 
-interface LocationDocument extends Omit<Location, '_id' | 'organizationId'>, Document {
-	organizationId: Types.ObjectId;
-}
+export interface LocationDocument extends Omit<Location, '_id'>, Document {}
 
 const LocationSchema = new Schema<LocationDocument>({
-	organizationId: { type: Types.ObjectId, required: true, ref: 'Organization' },
 	name: { type: String, required: true, index: true },
 	address: { type: String, required: true },
 	country: { type: String, required: true },
@@ -19,9 +16,9 @@ const LocationSchema = new Schema<LocationDocument>({
 	},
 });
 
-// index for fast lookups by organization
-LocationSchema.index({ organizationId: 1 });
-LocationSchema.index({ organizationId: 1, type: 1 });
+LocationSchema.index({ country: 1, city: 1 });
+LocationSchema.index({ type: 1 });
+LocationSchema.index({ name: 'text' });
 
 const LocationModel = model<LocationDocument>('Location', LocationSchema);
 

@@ -21,6 +21,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowRightIcon, FloppyDiskIcon, SpinnerIcon } from '@phosphor-icons/react';
 import apiClient from '@/lib/api-client';
 import { getExtensionFromMime } from '@/lib/utils';
+import { useState } from 'react';
 
 export const updateAgencyBrandingSchema = updateAgencyBranding
 	.omit({
@@ -86,14 +87,13 @@ type Props = {
 };
 
 const AgencyBrandingForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
+	const [isSkipping, setIsSkipping] = useState(false);
 	const {
 		register,
 		watch,
 		handleSubmit,
-
 		control,
-		formState: { errors, isSubmitting },
-
+		formState: { errors, isSubmitting, isDirty },
 		setError,
 	} = useForm({
 		resolver: zodResolver(updateAgencyBrandingSchema),
@@ -101,6 +101,7 @@ const AgencyBrandingForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 	const summary = watch('summary');
 	const onSubmit = async (data: z.infer<typeof updateAgencyBrandingSchema>) => {
 		startSubmit();
+		setIsSkipping(true);
 
 		const [err, res] = await apiClient.agency.updateAgencyBranding(data);
 		if (err) {
@@ -108,6 +109,18 @@ const AgencyBrandingForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 				message: err.message || 'Failed to save your changes, please try again',
 			});
 			console.info('[SERVER]: ', res);
+			setIsSkipping(false);
+			return;
+		}
+		onSuccess();
+	};
+
+	const onSkip = async () => {
+		setIsSkipping(true);
+		const [err] = await apiClient.agency.updateAgencyBranding({});
+		if (err) {
+			setError('root', { message: err.message });
+			setIsSkipping(false);
 			return;
 		}
 		onSuccess();
@@ -238,7 +251,7 @@ const AgencyBrandingForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 					<Button size={'lg'} type="submit">
 						{isSubmitting ? (
 							<>
-								<SpinnerIcon /> Saving
+								<SpinnerIcon className="animate-spin" /> Saving
 							</>
 						) : (
 							<>
@@ -247,8 +260,23 @@ const AgencyBrandingForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 							</>
 						)}
 					</Button>
-					<Button size={'lg'} type="button" variant="secondary" onClick={onSuccess}>
-						skip <ArrowRightIcon />
+					<Button
+						size={'lg'}
+						type="button"
+						variant="secondary"
+						disabled={isSkipping}
+						onClick={onSkip}
+					>
+						{isSkipping ? (
+							<>
+								<SpinnerIcon className="animate-spin" /> Skipping
+							</>
+						) : (
+							<>
+								skip {isDirty && '(Discard changes)'}
+								<ArrowRightIcon />
+							</>
+						)}
 					</Button>
 				</div>
 			</form>

@@ -15,6 +15,7 @@ import { localStorageService } from '../../lib/services/LocalStorageService';
 import { authenticate, requireAgency } from '../../middleware';
 import { uploadBrandingFiles } from '../../middleware/upload.middleware';
 import agencyService from './agency.service';
+import locationService from '../location/location.service';
 
 const router = Router();
 router.use(authenticate, requireAgency);
@@ -58,9 +59,6 @@ router.put(
 			...(req.body.summary ? { summary: String(req.body.summary) } : {}),
 		});
 		if (!parsed.success) throw validationFailed(toFieldErrors(parsed.error));
-		if (!parsed.data.logo && !parsed.data.banner && !parsed.data.summary) {
-			throw badRequest('Provide at least a logo, banner or summary');
-		}
 
 		const [error, agency] = await agencyService.completeBranding(
 			req.agency!._id.toString(),
@@ -90,6 +88,17 @@ router.put(
 	handler(async (req) => {
 		const parsed = updateAgencyLocations.safeParse(req.body);
 		if (!parsed.success) throw validationFailed(toFieldErrors(parsed.error));
+
+		const [fetchError, existing] = await locationService.getManyByIds(
+			parsed.data.operatingLocationIds,
+		);
+		if (fetchError) throw internalServerError('Failed to validate locations');
+		if (existing!.length !== parsed.data.operatingLocationIds.length) {
+			const existingIds = new Set(existing!.map((l) => l._id.toString()));
+			const invalidIds = parsed.data.operatingLocationIds.filter((id) => !existingIds.has(id));
+			throw badRequest(`Invalid location IDs: ${invalidIds.join(', ')}`);
+		}
+
 		const [error, agency] = await agencyService.completeLocations(
 			req.agency!._id.toString(),
 			parsed.data,

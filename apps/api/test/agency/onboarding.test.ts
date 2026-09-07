@@ -2,6 +2,7 @@ import { it, expect, describe } from 'vitest';
 import mongoose from 'mongoose';
 import { createApp } from '../../src/app';
 import request from 'supertest';
+import LocationModel from '../../src/modules/location/models/location.model';
 
 /**
  * @description
@@ -19,6 +20,8 @@ describe('[AGENCY ONBOARDING]', () => {
 	const SIGN_IN_URL = `${AUTH_BASE_URL}/sign-in/email`;
 
 	const CREATE_ORG_URL = `${AUTH_BASE_URL}/organization/create`;
+
+	const AGENCY_URL = '/api/agency/';
 
 	const ONBOARDING_URL = '/api/agency/onboarding';
 
@@ -64,23 +67,36 @@ describe('[AGENCY ONBOARDING]', () => {
 		return { _app, cookies };
 	};
 
+	const createLocation = async (name = 'Casablanca Office') =>
+		LocationModel.create({
+			name,
+			address: '1 Place des Nations',
+			country: 'Morocco',
+			city: 'Casablanca',
+			postalCode: '20000',
+			type: 'office',
+		});
+
 	describe('authentication', () => {
 		it("should return 401 when the user isn't authenticated", async () => {
-			await request(app()).get(ONBOARDING_URL).expect(401);
+			await request(app()).get(AGENCY_URL).expect(401);
 		});
 
 		it('should return 403 when the user has no active organization', async () => {
 			const _app = app();
 			const cookies = await signUp(_app, 'owner@example.com');
 
-			await request(_app).get(ONBOARDING_URL).set('Cookie', cookies).expect(403);
+			await request(_app).get(AGENCY_URL).set('Cookie', cookies).expect(403);
 		});
 	});
 
 	describe('GET /', () => {
 		it('should return the agency with its onboarding status', async () => {
 			const { _app, cookies } = await setup();
-			const response = await request(_app).get(ONBOARDING_URL).set('Cookie', cookies).expect(200);
+			const response = await request(_app)
+				.get(AGENCY_URL)
+				.set('Cookie', cookies)
+				.expect(200);
 			expect(response.body.data).toMatchObject({
 				name: 'Acme Rentals',
 				slug: 'acme-rentals',
@@ -104,9 +120,10 @@ describe('[AGENCY ONBOARDING]', () => {
 
 		it('should reject re-submitting branding after onboarding is completed', async () => {
 			const { _app, cookies } = await setup();
+			const location = await createLocation();
 
 			await request(_app)
-				.post(`${ONBOARDING_URL}/branding`)
+				.put(`${ONBOARDING_URL}/branding`)
 				.set('Cookie', cookies)
 				.field('summary', 'Premium car rentals')
 				.attach('logo', PNG_BUFFER, {
@@ -126,11 +143,11 @@ describe('[AGENCY ONBOARDING]', () => {
 			await request(_app)
 				.put(`${ONBOARDING_URL}/locations`)
 				.set('Cookie', cookies)
-				.send({ operatingLocationIds: ['507f1f77bcf86cd799439011'] })
+				.send({ operatingLocationIds: [location._id.toString()] })
 				.expect(200);
 
 			const response = await request(_app)
-				.post(`${ONBOARDING_URL}/branding`)
+				.put(`${ONBOARDING_URL}/branding`)
 				.set('Cookie', cookies)
 				.field('summary', 'Try again')
 				.attach('logo', PNG_BUFFER, {
@@ -145,9 +162,10 @@ describe('[AGENCY ONBOARDING]', () => {
 	describe('full flow', () => {
 		it('should walk through branding → support → locations → completed', async () => {
 			const { _app, cookies } = await setup();
+			const location = await createLocation();
 
 			const branding = await request(_app)
-				.post(`${ONBOARDING_URL}/branding`)
+				.put(`${ONBOARDING_URL}/branding`)
 				.set('Cookie', cookies)
 				.field('summary', 'Premium car rentals')
 				.attach('logo', PNG_BUFFER, {
@@ -187,10 +205,10 @@ describe('[AGENCY ONBOARDING]', () => {
 			const locations = await request(_app)
 				.put(`${ONBOARDING_URL}/locations`)
 				.set('Cookie', cookies)
-				.send({ operatingLocationIds: ['507f1f77bcf86cd799439011'] })
+				.send({ operatingLocationIds: [location._id.toString()] })
 				.expect(200);
 			expect(locations.body.data.onboardingStatus).toBe('completed');
-			expect(locations.body.data.operatingLocationIds).toEqual(['507f1f77bcf86cd799439011']);
+			expect(locations.body.data.operatingLocationIds).toEqual([location._id.toString()]);
 
 			const stored = await mongoose.connection
 				.db!.collection('agencies')
@@ -204,7 +222,7 @@ describe('[AGENCY ONBOARDING]', () => {
 			const { _app, cookies } = await setup();
 
 			const response = await request(_app)
-				.post(`${ONBOARDING_URL}/branding`)
+				.put(`${ONBOARDING_URL}/branding`)
 				.set('Cookie', cookies)
 				.field('summary', 'Premium car rentals')
 				.attach('logo', PNG_BUFFER, {
@@ -233,7 +251,7 @@ describe('[AGENCY ONBOARDING]', () => {
 			const { _app, cookies } = await setup();
 
 			await request(_app)
-				.post(`${ONBOARDING_URL}/branding`)
+				.put(`${ONBOARDING_URL}/branding`)
 				.set('Cookie', cookies)
 				.field('summary', 'Premium car rentals')
 				.attach('logo', PNG_BUFFER, {
@@ -261,7 +279,7 @@ describe('[AGENCY ONBOARDING]', () => {
 			const { _app, cookies } = await setup();
 
 			const response = await request(_app)
-				.post(`${ONBOARDING_URL}/branding`)
+				.put(`${ONBOARDING_URL}/branding`)
 				.set('Cookie', cookies)
 				.field('summary', '')
 				.expect(400);
@@ -272,7 +290,7 @@ describe('[AGENCY ONBOARDING]', () => {
 			const { _app, cookies } = await setup();
 
 			const response = await request(_app)
-				.post(`${ONBOARDING_URL}/branding`)
+				.put(`${ONBOARDING_URL}/branding`)
 				.set('Cookie', cookies)
 				.attach('logo', Buffer.from('not an image'), {
 					filename: 'logo.txt',

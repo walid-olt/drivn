@@ -19,6 +19,7 @@ import {
 } from '@phosphor-icons/react';
 import type { Agency } from '@drivn/shared';
 import AgencyFormSkeleton from './AgencyFormSkeleton.tsx';
+import { useLocation, useNavigate } from 'react-router';
 
 type OnboardingStep = {
 	title: Agency['onboardingStatus'];
@@ -48,8 +49,17 @@ const steps: OnboardingStep[] = [
 	},
 ];
 
-export default function AgencyOnBoardingFlow() {
-	const [currentStep, setCurrentStep] = useState(0);
+type Props = {
+	agency: Agency;
+};
+
+export default function AgencyOnBoardingFlow({ agency }: Props) {
+	const navigate = useNavigate();
+	const location = useLocation();
+	const [currentStep, setCurrentStep] = useState(() => {
+		const current = steps.findIndex((s) => s.title === agency.onboardingStatus);
+		return current != -1 ? current + 1 : 0;
+	});
 	const [currentLoading, setcurrentLoading] = useState(-1);
 
 	return (
@@ -65,7 +75,7 @@ export default function AgencyOnBoardingFlow() {
 			<StepperNav
 				className="gap-3 justify-center items-center sticky top-0 py-4
         outline outline-primary/20 px-2
-        z-9999 rounded-sm bg-background backdrop-blur-2xl w-full"
+        z-1 rounded-sm bg-background backdrop-blur-2xl w-full h-32"
 			>
 				{steps.map((step, index) => (
 					<StepperItem
@@ -103,6 +113,10 @@ export default function AgencyOnBoardingFlow() {
 							<Suspense fallback={<AgencyFormSkeleton />}>
 								<Form
 									onSuccess={() => {
+										if (index === steps.length - 1) {
+											navigate(`/agency/setup-completed${location.search}`);
+											return;
+										}
 										setCurrentStep(index + 1);
 										setcurrentLoading(-1);
 									}}

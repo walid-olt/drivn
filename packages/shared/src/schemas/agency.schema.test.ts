@@ -115,7 +115,6 @@ describe('updateAgencySupport', () => {
 			supportPhone: '+14155552671',
 			address: {
 				city: 'Casablanca',
-				country: 'MA',
 				addressLine1: '5 Boulevard de la Corniche',
 				zipCode: '20000',
 			},
@@ -135,7 +134,9 @@ describe('updateAgencySupport', () => {
 describe('updateAgencyLocations', () => {
 	it('accepts at least one operating location', () => {
 		expect(() =>
-			updateAgencyLocations.parse({ operatingLocationIds: ['507f1f77bcf86cd799439011'] }),
+			updateAgencyLocations.parse({
+				operatingLocationIds: ['507f1f77bcf86cd799439011'],
+			}),
 		).not.toThrow();
 	});
 

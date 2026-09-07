@@ -18,7 +18,6 @@ const AgencySchema = new Schema<AgencyDocument>({
 	supportPhone: { type: String, required: false },
 	address: {
 		city: { type: String, required: false },
-		country: { type: String, required: false },
 		addressLine1: { type: String, required: false },
 		zipCode: { type: String, required: false },
 	},

@@ -11,6 +11,8 @@ import requireAgencyOnboarding from '../../middleware/requireAgencyOnBoarding';
 import CreateAgency from '@/features/agency/pages/CreateAgency';
 import AcceptInvitation from '@/features/agency/pages/AcceptInvitation';
 import Loading from '@/components/ui/Loading';
+import apiClient from '@/lib/api-client';
+import AgencySetupCompleted from '@/features/agency/pages/AgencySetupCompleted';
 
 /**
  * @description
@@ -36,7 +38,18 @@ export default [
 								middleware: [requireAgencyOnboarding],
 							},
 							{
+								path: '/agency/setup-completed',
+								element: <AgencySetupCompleted />,
+							},
+							{
 								path: '/agency/onboarding',
+								loader: async () => {
+									const [err, res] = await apiClient.agency.getActive();
+									if (err) throw err;
+									const { success } = res;
+									if (!success) throw new Error(res.message);
+									return res.data;
+								},
 								lazy: () => import('@/features/agency/pages/AgencyOnboarding'),
 							},
 						],

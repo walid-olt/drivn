@@ -1,6 +1,14 @@
 const API_URL = import.meta.env.VITE_API_URL;
 import ky, { isHTTPError } from 'ky';
-import { tryCatch, type ApiResult, type Agency } from '@drivn/shared';
+import {
+	tryCatch,
+	type ApiResult,
+	type Agency,
+	type UpdateAgencyBrandingDto,
+	type UpdateAgencyLocationsDto,
+	type UpdateAgencySupportDto,
+	type Location as AgencyLocation, // Renamed to avoid naming conflict with the Window Location type
+} from '@drivn/shared';
 const httpClient = ky.create({
 	baseUrl: API_URL,
 	retry: 3,
@@ -28,11 +36,16 @@ const httpClient = ky.create({
 const apiClient = {
 	agency: {
 		async getActive() {
-			const promise = httpClient.get('/agency/onboarding/').json<ApiResult<Agency>>();
+			const promise = httpClient.get('/agency').json<ApiResult<Agency>>();
 			return tryCatch(promise);
 		},
 
-		async updateAgencyBranding(data: { summary?: string; logo?: File; banner?: File }) {
+		async updateAgencyBranding(
+			data: Omit<UpdateAgencyBrandingDto, 'logo' | 'banner'> & {
+				logo?: File;
+				banner?: File;
+			},
+		) {
 			const fd = new FormData();
 			Object.entries(data).forEach(([key, val]) => {
 				if (val) fd.append(key, val);
@@ -41,6 +54,26 @@ const apiClient = {
 			const promise = httpClient.put<ApiResult<Agency>>('/agency/onboarding/branding', {
 				body: fd,
 			});
+			return tryCatch(promise);
+		},
+
+		async updateAgencySupport(data: UpdateAgencySupportDto) {
+			const promise = httpClient
+				.put<ApiResult<Agency>>('/agency/onboarding/support', { json: data })
+				.json<ApiResult<Agency>>();
+			return tryCatch(promise);
+		},
+
+		async updateAgencyLocations(data: UpdateAgencyLocationsDto) {
+			const promise = httpClient
+				.put<ApiResult<Agency>>('/agency/onboarding/locations', { json: data })
+				.json<ApiResult<Agency>>();
+			return tryCatch(promise);
+		},
+	},
+	locations: {
+		getAll() {
+			const promise = httpClient.get('/locations').json<ApiResult<AgencyLocation[]>>();
 			return tryCatch(promise);
 		},
 	},

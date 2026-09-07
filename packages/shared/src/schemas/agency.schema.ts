@@ -24,7 +24,6 @@ export const agencySchema = z.object({
 	address: z
 		.object({
 			city: z.string().max(100).optional(),
-			country: z.string().max(100).optional(),
 			addressLine1: z.string().max(100).optional(),
 			zipCode: z.string().max(20).optional(),
 		})
