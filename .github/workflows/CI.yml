@@ -39,6 +39,10 @@ jobs:
       - name: Lint
         run: npx turbo run lint
 
+      - name: Clear MongoDB Cache
+        run: rm -rf ~/.cache/mongodb-binaries/ ~/.mongodb-memory-server/
+        if: always()
+
       - name: Test
         run: npx turbo run test
 
