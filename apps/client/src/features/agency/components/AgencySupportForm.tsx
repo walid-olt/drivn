@@ -1,5 +1,4 @@
 import { Typography } from '@/components/ui/typography';
-import { CountryDropdown } from '@/components/ui/country-dropdown';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PhoneInput } from '@/components/PhoneInput';
@@ -118,30 +117,16 @@ const AgencySupportForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 						aria-invalid={errors.address?.city ? true : undefined}
 						{...register('address.city')}
 					/>
-					<Controller
-						control={control}
-						name="address.country"
-						render={({ field }) => (
-							<CountryDropdown
-								value={field.value}
-								onChange={(country) => field.onChange(country.name)}
-							/>
-						)}
-					/>
 					<Input
 						id="address.zipCode"
 						placeholder="ZIP / postal code"
 						aria-invalid={errors.address?.zipCode ? true : undefined}
 						{...register('address.zipCode')}
 					/>
-					{(errors.address?.addressLine1 ||
-						errors.address?.city ||
-						errors.address?.country ||
-						errors.address?.zipCode) && (
+					{(errors.address?.addressLine1 || errors.address?.city || errors.address?.zipCode) && (
 						<Typography variant="caption" className="text-destructive">
 							{errors.address.addressLine1?.message ||
 								errors.address.city?.message ||
-								errors.address.country?.message ||
 								errors.address.zipCode?.message}
 						</Typography>
 					)}
