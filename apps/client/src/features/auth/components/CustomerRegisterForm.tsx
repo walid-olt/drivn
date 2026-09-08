@@ -1,6 +1,7 @@
 import { SpinnerIcon } from '@phosphor-icons/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { z } from 'zod';
 
@@ -8,21 +9,41 @@ import { Button } from '@/components/ui/button';
 import { CountryDropdown } from '@/components/ui/country-dropdown';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { toast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
 import { PhoneInput } from '@/components/PhoneInput';
 import { signUpAsCustomer } from '@/lib/api';
 import queryClient from '@/lib/query-client';
+import { AuthFormMessage, getAuthErrorMessage } from './AuthFormMessage';
 
 const customerRegisterSchema = z
 	.object({
-		firstName: z.string().min(2).max(50),
-		lastName: z.string().min(2).max(50),
-		email: z.email(),
-		phone: z.string({ error: 'Please enter your phone number.' }).min(6).max(30),
-		country: z.string({ error: 'Please select your country.' }).min(2).max(50),
-		password: z.string().min(8).max(128),
-		passwordConfirmation: z.string().min(8).max(128),
+		firstName: z
+			.string({ error: 'Enter your first name.' })
+			.trim()
+			.min(2, 'First name must be at least 2 characters.')
+			.max(50, 'First name must be 50 characters or fewer.'),
+		lastName: z
+			.string({ error: 'Enter your last name.' })
+			.trim()
+			.min(2, 'Last name must be at least 2 characters.')
+			.max(50, 'Last name must be 50 characters or fewer.'),
+		email: z.email('Enter a valid email address.'),
+		phone: z
+			.string({ error: 'Enter your phone number.' })
+			.min(6, 'Phone number must be at least 6 characters.')
+			.max(30, 'Phone number must be 30 characters or fewer.'),
+		country: z
+			.string({ error: 'Select your country.' })
+			.min(2, 'Select a valid country.')
+			.max(50, 'Country name must be 50 characters or fewer.'),
+		password: z
+			.string({ error: 'Create a password.' })
+			.min(8, 'Password must be at least 8 characters.')
+			.max(128, 'Password must be 128 characters or fewer.'),
+		passwordConfirmation: z
+			.string({ error: 'Confirm your password.' })
+			.min(8, 'Password must be at least 8 characters.')
+			.max(128, 'Password must be 128 characters or fewer.'),
 	})
 	.refine((data) => data.password === data.passwordConfirmation, {
 		message: 'Passwords do not match',
@@ -41,19 +62,18 @@ export default function CustomerRegisterForm() {
 	} = useForm<CustomerRegisterFormData>({
 		resolver: zodResolver(customerRegisterSchema),
 	});
+	const [submitError, setSubmitError] = useState<string | null>(null);
 
 	async function onSubmit(data: CustomerRegisterFormData) {
+		setSubmitError(null);
 		try {
 			await signUpAsCustomer({
 				name: `${data.firstName} ${data.lastName}`.trim(),
 				email: data.email,
 				password: data.password,
 			});
-		} catch (err: any) {
-			toast.add({
-				type: 'error',
-				title: err.message ?? 'Unable to create your account.',
-			});
+		} catch (err: unknown) {
+			setSubmitError(getAuthErrorMessage(err, 'Unable to create your account.'));
 			return;
 		}
 
@@ -68,7 +88,12 @@ export default function CustomerRegisterForm() {
 				<Typography variant="body">Create your account to start booking cars.</Typography>
 			</div>
 
-			<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+			<form
+				onSubmit={handleSubmit(onSubmit)}
+				className="flex flex-col gap-4"
+				aria-busy={isSubmitting}
+			>
+				<AuthFormMessage message={submitError} />
 				<div className="grid grid-cols-2 gap-3">
 					<Field>
 						<FieldLabel htmlFor="firstName">First name</FieldLabel>

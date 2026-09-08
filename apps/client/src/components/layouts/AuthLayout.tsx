@@ -4,9 +4,7 @@ import { cn } from '@/lib/utils';
 
 /**
  * @description
- * Full-screen centered shell used by the standalone auth pages
- * (login, signup, email verification). Keeps the branding at the top
- * and wraps the page content in a single card.
+ * Full-screen centered shell used by the standalone auth pages.
  */
 function AuthLayout({ className, children, ...props }: ComponentProps<'div'>) {
 	return (
@@ -18,9 +16,9 @@ function AuthLayout({ className, children, ...props }: ComponentProps<'div'>) {
 			{...props}
 		>
 			<a href="/" aria-label="Drivn home">
-				<img src="/Drivn-logo.svg" alt="Drivn logo" className="max-h-9 dark:invert" />
+				<img src="/Drivn-logo.svg" alt="Drivn logo" className="max-h-9" />
 			</a>
-			<div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+			<div className="w-full max-w-md bg-card p-6 shadow-sm ring-1 ring-foreground/10 sm:p-8">
 				{children}
 			</div>
 		</div>

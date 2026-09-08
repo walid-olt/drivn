@@ -1,42 +1,21 @@
 import { CheckCircleIcon, EnvelopeSimpleIcon, SpinnerIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';
-import { useEffect } from 'react';
 
 import AuthLayout from '@/components/layouts/AuthLayout';
 import { Button } from '@ui/button';
 import { Typography } from '@/components/ui/typography';
-import { toast } from '@/components/ui/toast';
 import authClient from '@/lib/auth-client';
 import { useSession } from '@/lib/auth-hooks';
 
 export default function EmailVerificationRequestPage() {
-	const searchParams = new URLSearchParams(window.location.search);
-	const message = searchParams.get('message');
-	useEffect(() => {
-		if (message && message.trim().length > 0) {
-			toast.add({
-				title: message,
-				type: 'info',
-			});
-		}
-	}, [message]);
-
 	const { isError, data: result, error, isPending } = useSession();
 
-	const { mutate: sendVerificationEmail, isPending: isVerifying } = useMutation({
+	const {
+		mutate: sendVerificationEmail,
+		isPending: isVerifying,
+		isSuccess: isEmailVerificationSent,
+	} = useMutation({
 		mutationFn: (email: string) => authClient.sendVerificationEmail({ email }),
-		onMutate: () => {
-			toast.add({
-				type: 'info',
-				description: 'Sending verification email...',
-			});
-		},
-		onSuccess: () => {
-			toast.add({
-				type: 'success',
-				description: 'Verification email sent. Please check your inbox.',
-			});
-		},
 	});
 
 	if (isPending) {
@@ -99,13 +78,17 @@ export default function EmailVerificationRequestPage() {
 					Check your inbox and click the link to activate your account.
 				</Typography>
 				<Button
-					disabled={isVerifying}
+					disabled={isVerifying || isEmailVerificationSent}
 					onClick={() => sendVerificationEmail(user.email)}
 					className="mt-2 w-full"
 					size="lg"
 				>
-					{isVerifying && <SpinnerIcon className="animate-spin" />}
-					{isVerifying ? 'Sending...' : 'Send verification email'}
+					{!isVerifying && !isEmailVerificationSent && 'Send verification email'}
+					{isVerifying && !isEmailVerificationSent && <SpinnerIcon className="animate-spin" />}
+					{isVerifying && 'Sending...'}
+					{!isVerifying &&
+						isEmailVerificationSent &&
+						'Email verification was sent, check your inbox.'}
 				</Button>
 			</div>
 		</AuthLayout>

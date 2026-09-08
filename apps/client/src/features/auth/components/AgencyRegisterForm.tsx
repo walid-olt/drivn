@@ -1,5 +1,6 @@
 import { SpinnerIcon } from '@phosphor-icons/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router';
 import { z } from 'zod';
@@ -7,18 +8,32 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { toast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
 import { signUpAsAgency } from '@/lib/api';
 import queryClient from '@/lib/query-client';
+import { AuthFormMessage, getAuthErrorMessage } from './AuthFormMessage';
 
 const agencyRegisterSchema = z
 	.object({
-		firstName: z.string().min(2).max(50),
-		lastName: z.string().min(2).max(50),
-		email: z.email(),
-		password: z.string().min(8).max(128),
-		passwordConfirmation: z.string().min(8).max(128),
+		firstName: z
+			.string({ error: 'Enter your first name.' })
+			.trim()
+			.min(2, 'First name must be at least 2 characters.')
+			.max(50, 'First name must be 50 characters or fewer.'),
+		lastName: z
+			.string({ error: 'Enter your last name.' })
+			.trim()
+			.min(2, 'Last name must be at least 2 characters.')
+			.max(50, 'Last name must be 50 characters or fewer.'),
+		email: z.email('Enter a valid email address.'),
+		password: z
+			.string({ error: 'Create a password.' })
+			.min(8, 'Password must be at least 8 characters.')
+			.max(128, 'Password must be 128 characters or fewer.'),
+		passwordConfirmation: z
+			.string({ error: 'Confirm your password.' })
+			.min(8, 'Password must be at least 8 characters.')
+			.max(128, 'Password must be 128 characters or fewer.'),
 	})
 	.refine((data) => data.password === data.passwordConfirmation, {
 		message: 'Passwords do not match',
@@ -36,19 +51,18 @@ export default function AgencyRegisterForm() {
 	} = useForm<AgencyRegisterFormData>({
 		resolver: zodResolver(agencyRegisterSchema),
 	});
+	const [submitError, setSubmitError] = useState<string | null>(null);
 
 	async function onSubmit(data: AgencyRegisterFormData) {
+		setSubmitError(null);
 		try {
 			await signUpAsAgency({
 				name: `${data.firstName} ${data.lastName}`.trim(),
 				email: data.email,
 				password: data.password,
 			});
-		} catch (err: any) {
-			toast.add({
-				type: 'error',
-				title: err.message ?? 'Unable to create your account.',
-			});
+		} catch (err: unknown) {
+			setSubmitError(getAuthErrorMessage(err, 'Unable to create your account.'));
 			return;
 		}
 
@@ -63,7 +77,12 @@ export default function AgencyRegisterForm() {
 				<Typography variant="body">Create your account with email and password.</Typography>
 			</div>
 
-			<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+			<form
+				onSubmit={handleSubmit(onSubmit)}
+				className="flex flex-col gap-4"
+				aria-busy={isSubmitting}
+			>
+				<AuthFormMessage message={submitError} />
 				<div className="grid grid-cols-2 gap-3">
 					<Field>
 						<FieldLabel htmlFor="firstName">First name</FieldLabel>

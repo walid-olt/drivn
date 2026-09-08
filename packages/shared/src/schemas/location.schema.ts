@@ -10,12 +10,12 @@ export const locationTypeEnum = z.enum([
 ]);
 
 export const locationSchema = z.object({
-	_id: z.string(),
-	name: z.string().min(1),
-	address: z.string().min(1),
-	country: z.string().min(1),
-	city: z.string().min(1),
-	postalCode: z.string().optional(),
+	_id: z.string({ error: 'Location id is required.' }),
+	name: z.string({ error: 'Location name is required.' }).trim().min(1, 'Enter a location name.'),
+	address: z.string({ error: 'Address is required.' }).trim().min(1, 'Enter an address.'),
+	country: z.string({ error: 'Country is required.' }).trim().min(1, 'Enter a country.'),
+	city: z.string({ error: 'City is required.' }).trim().min(1, 'Enter a city.'),
+	postalCode: z.string().max(20, 'Postal code must be 20 characters or fewer.').optional(),
 	type: locationTypeEnum,
 });
 
@@ -23,10 +23,19 @@ export const locationCreateSchema = locationSchema.omit({ _id: true });
 export const locationUpdateSchema = locationSchema.partial().omit({ _id: true });
 
 export const locationQuerySchema = z.object({
-	q: z.string().optional(),
-	country: z.string().optional(),
-	city: z.string().optional(),
+	q: z.string().max(100, 'Search must be 100 characters or fewer.').optional(),
+	country: z.string().max(50, 'Country must be 50 characters or fewer.').optional(),
+	city: z.string().max(100, 'City must be 100 characters or fewer.').optional(),
 	type: locationTypeEnum.optional(),
-	page: z.coerce.number().int().positive().default(1),
-	limit: z.coerce.number().int().positive().max(100).default(20),
+	page: z.coerce
+		.number()
+		.int('Page must be a whole number.')
+		.positive('Page must be at least 1.')
+		.default(1),
+	limit: z.coerce
+		.number()
+		.int('Limit must be a whole number.')
+		.positive('Limit must be at least 1.')
+		.max(100, 'Limit cannot exceed 100 results.')
+		.default(20),
 });

@@ -29,9 +29,7 @@ const Footer = () => {
 				</nav>
 			</div>
 			<div className="border-t border-border px-12 py-4">
-				<p className="text-xs text-muted-foreground">
-					&copy; {new Date().getFullYear()} Drivn
-				</p>
+				<p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} Drivn</p>
 			</div>
 		</footer>
 	);

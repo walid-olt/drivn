@@ -1,5 +1,6 @@
 import { AtIcon, LockKeyIcon, SpinnerIcon } from '@phosphor-icons/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router';
 import { z } from 'zod';
@@ -7,19 +8,26 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
-import { toast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
 import authClient from '@/lib/auth-client';
 import queryClient from '@/lib/query-client';
+import { AuthFormMessage, getAuthErrorMessage } from './AuthFormMessage';
 
 const loginSchema = z.object({
-	email: z.email(),
-	password: z.string().min(8).max(128),
+	email: z.email('Enter a valid email address.'),
+	password: z
+		.string({ error: 'Enter your password.' })
+		.min(8, 'Password must be at least 8 characters.')
+		.max(128, 'Password must be 128 characters or fewer.'),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-export default function LoginForm() {
+type LoginFormProps = {
+	initialMessage?: string | null;
+};
+
+export default function LoginForm({ initialMessage }: LoginFormProps) {
 	const navigate = useNavigate();
 	const params = new URLSearchParams(window.location.search);
 	const redirectTo = params.get('redirectTo');
@@ -30,18 +38,17 @@ export default function LoginForm() {
 	} = useForm<LoginFormData>({
 		resolver: zodResolver(loginSchema),
 	});
+	const [submitError, setSubmitError] = useState(initialMessage);
 
 	async function onSubmit(data: LoginFormData) {
+		setSubmitError(null);
 		const { error, data: session } = await authClient.signIn.email({
 			email: data.email,
 			password: data.password,
 		});
 
 		if (error) {
-			toast.add({
-				type: 'error',
-				title: error.message ?? 'Unable to sign in.',
-			});
+			setSubmitError(getAuthErrorMessage(error, 'Unable to sign in.'));
 			return;
 		}
 		const user = session.user;
@@ -58,7 +65,12 @@ export default function LoginForm() {
 				<Typography variant="body">Please enter your details to sign in.</Typography>
 			</div>
 
-			<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+			<form
+				onSubmit={handleSubmit(onSubmit)}
+				className="flex flex-col gap-4"
+				aria-busy={isSubmitting}
+			>
+				<AuthFormMessage message={submitError} />
 				<Field>
 					<FieldLabel htmlFor="email">Email</FieldLabel>
 					<InputGroup>

@@ -7,34 +7,70 @@ import {
 	MIN_CAR_IMAGES,
 } from '../constants/files';
 export const carSchema = z.object({
-	_id: z.string(),
-	organizationId: z.string(),
-	agencyId: z.string(),
-	make: z.string().min(1).max(100),
-	model: z.string().min(1).max(100),
-	year: z.number().int().min(1886).max(2100),
-	vin: z.string().length(17).optional(),
-	licensePlate: z.string().max(20).optional(),
-	color: z.string().max(50).optional(),
-	status: z.enum(['available', 'rented', 'maintenance', 'inactive']).default('available'),
+	_id: z.string({ error: 'Car id is required.' }),
+	organizationId: z.string({ error: 'Organization id is required.' }),
+	agencyId: z.string({ error: 'Agency id is required.' }),
+	make: z
+		.string({ error: 'Car make is required.' })
+		.trim()
+		.min(1, 'Enter the car make.')
+		.max(100, 'Car make must be 100 characters or fewer.'),
+	model: z
+		.string({ error: 'Car model is required.' })
+		.trim()
+		.min(1, 'Enter the car model.')
+		.max(100, 'Car model must be 100 characters or fewer.'),
+	year: z
+		.number({ error: 'Enter the car model year.' })
+		.int('Year must be a whole number.')
+		.min(1886, 'Year must be 1886 or later.')
+		.max(2100, 'Year must be 2100 or earlier.'),
+	vin: z.string().length(17, 'VIN must be exactly 17 characters.').optional(),
+	licensePlate: z.string().max(20, 'License plate must be 20 characters or fewer.').optional(),
+	color: z.string().max(50, 'Color must be 50 characters or fewer.').optional(),
+	status: z
+		.enum(['available', 'rented', 'maintenance', 'inactive'], {
+			error: 'Choose a valid car status.',
+		})
+		.default('available'),
 	category: z
-		.enum(['sedan', 'suv', 'hatchback', 'coupe', 'convertible', 'minivan', 'truck', 'luxury'])
+		.enum(['sedan', 'suv', 'hatchback', 'coupe', 'convertible', 'minivan', 'truck', 'luxury'], {
+			error: 'Choose a valid car category.',
+		})
 		.default('sedan'),
 
-	transmission: z.enum(['automatic', 'manual', 'semi-automatic']).default('automatic'),
+	transmission: z
+		.enum(['automatic', 'manual', 'semi-automatic'], {
+			error: 'Choose a valid transmission type.',
+		})
+		.default('automatic'),
 
 	fuelType: z
-		.enum(['gasoline', 'diesel', 'electric', 'hybrid', 'plug-in-hybrid'])
+		.enum(['gasoline', 'diesel', 'electric', 'hybrid', 'plug-in-hybrid'], {
+			error: 'Choose a valid fuel type.',
+		})
 		.default('gasoline'),
 
-	seatingCapacity: z.number().int().min(1).max(12).default(5),
-	doors: z.number().int().min(2).max(6).default(4),
+	seatingCapacity: z
+		.number()
+		.int('Seating capacity must be a whole number.')
+		.min(1, 'A car must have at least one seat.')
+		.max(12, 'Seating capacity cannot exceed 12.')
+		.default(5),
+	doors: z
+		.number()
+		.int('Number of doors must be a whole number.')
+		.min(2, 'A car must have at least 2 doors.')
+		.max(6, 'A car cannot have more than 6 doors.')
+		.default(4),
 
 	kilometrage: z.number().nonnegative('Kilometrage cannot be negative').default(0),
-	dailyRate: z.number().positive('Daily rate must be greater than zero'),
+	dailyRate: z
+		.number({ error: 'Enter a daily rental rate.' })
+		.positive('Daily rate must be greater than zero.'),
 
 	images: z
-		.array(z.url())
+		.array(z.url('Each image must be a valid URL.'))
 		.max(MAX_CAR_IMAGES, 'Exceeded maximum number of images')
 		.min(MIN_CAR_IMAGES, 'Each car must have at least one image'),
 });
