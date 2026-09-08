@@ -1,6 +1,6 @@
 # Drivn
 
-![status](https://img.shields.io/badge/status-development-brightgreen) [![CI](https://github.com/walid-olt/drivn/actions/workflows/CI.yml/badge.svg)](https://github.com/walid-olt/drivn/actions/workflows/CI.yml)
+![status](https://img.shields.io/badge/status-development-brightgreen) [![CI](https://github.com/walid-olt/drivn/actions/workflows/CI.yml/badge.svg?event=pull_request)](https://github.com/walid-olt/drivn/actions/workflows/CI.yml)
 
 # Overview
 
