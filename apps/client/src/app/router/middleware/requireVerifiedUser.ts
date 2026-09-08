@@ -6,8 +6,7 @@ const requireVerifiedUser: MiddlewareFunction = async ({ request }, next) => {
 	const user = session.user;
 	const isVerified = user.emailVerified;
 
-	if (!isVerified)
-		throw redirect('/verify-email/request?message=Please verify your email to access this page.');
+	if (!isVerified) throw redirect('/verify-email/request');
 	next();
 };
 

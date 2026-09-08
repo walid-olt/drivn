@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import phoneNumberSchema from './phone.schema.ts';
 export const customerProfileSchema = z.object({
-	_id: z.string().length(24, 'Invalid user id'),
-	userId: z.string().min(1, 'Invalid user id'),
+	_id: z.string({ error: 'Profile id is required.' }).length(24, 'Profile id must be valid'),
+	userId: z.string({ error: 'User id is required.' }).min(1, 'User id must be valid'),
 	firstName: z
 		.string()
 		.nonempty('First name is required')
@@ -13,9 +13,11 @@ export const customerProfileSchema = z.object({
 		.nonempty('Last name is required')
 		.min(2, 'Last name must be at least 2 characters long')
 		.max(50, 'Last name must be at most 50 characters long'),
-	birthDate: z.coerce.date().refine((date) => date <= new Date(), {
-		error: 'Birth date cannot be in the future',
-	}),
+	birthDate: z.coerce
+		.date({ error: 'Enter a valid birth date.' })
+		.refine((date) => date <= new Date(), {
+			error: 'Birth date cannot be in the future',
+		}),
 	phone: phoneNumberSchema,
 	country: z
 		.string()

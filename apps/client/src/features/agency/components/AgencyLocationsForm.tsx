@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import apiClient from '@/lib/api-client';
 import { SpinnerIcon } from '@phosphor-icons/react';
-import { useEffect, useState, type FormEvent } from 'react';
+import { useState, type SubmitEventHandler } from 'react';
 import AgencyLocationsFilters from './AgencyLocationsFilters';
 import AgencyLocationsTable from './AgencyLocationsTable';
 import { useAgencyLocationsStore } from '../stores/agency-locations.store';
@@ -29,18 +29,10 @@ const AgencyLocationsForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [submitError, setSubmitError] = useState<string>();
 	const selectedIds = useAgencyLocationsStore((state) => state.selectedIds);
-	const reset = useAgencyLocationsStore((state) => state.reset);
-
-	useEffect(() => {
-		reset();
-		return reset;
-	}, [reset]);
-
 	if (error) {
 		return <p>error : {error.message}</p>;
 	}
-
-	const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+	const handleSubmit: SubmitEventHandler = async (event) => {
 		event.preventDefault();
 		setSubmitError(undefined);
 		startSubmit();
@@ -67,7 +59,18 @@ const AgencyLocationsForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 				Tell customers where they can pick up and return their vehicles.
 			</Typography>
 
-			<AgencyLocationsFilters selectedCount={selectedIds.size} />
+			<div className="flex gap-2 ">
+				<AgencyLocationsFilters />
+				<Button
+					className={'h-9 '}
+					type="submit"
+					size="lg"
+					disabled={selectedIds.size === 0 || isSubmitting}
+				>
+					{isSubmitting ? <SpinnerIcon className="animate-spin" /> : null}
+					{isSubmitting ? 'Saving' : 'Save and finish setup'}
+				</Button>
+			</div>
 			<AgencyLocationsTable locations={agencyLocations} />
 			<div className="flex items-center justify-between gap-4">
 				<div>
@@ -80,10 +83,6 @@ const AgencyLocationsForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 						</Typography>
 					)}
 				</div>
-				<Button type="submit" size="lg" disabled={selectedIds.size === 0 || isSubmitting}>
-					{isSubmitting ? <SpinnerIcon className="animate-spin" /> : null}
-					{isSubmitting ? 'Saving' : 'Save and finish setup'}
-				</Button>
 			</div>
 		</form>
 	);

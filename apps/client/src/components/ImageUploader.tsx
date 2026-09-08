@@ -14,11 +14,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Slider } from './ui/slider';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
+/** Position of the crop viewport in the source image. */
 interface Point {
 	x: number;
 	y: number;
 }
 
+/** Pixel coordinates returned by react-easy-crop for the selected area. */
 interface Area {
 	x: number;
 	y: number;
@@ -26,6 +28,12 @@ interface Area {
 	height: number;
 }
 
+/**
+ * Localized strings and validation messages used by {@link ImageUploader}.
+ *
+ * The callbacks receive formatter functions so callers can include their own
+ * accepted types, size limits, and file-count limits in the message.
+ */
 export interface ImageUploaderCopy {
 	title: string;
 	dropPrompt: string;
@@ -43,6 +51,13 @@ export interface ImageUploaderCopy {
 	maxFiles: (count: number) => string;
 }
 
+/**
+ * Props for the file picker and crop editor.
+ *
+ * Files are validated before they are read, cropped in a canvas, and emitted
+ * as JPEG blobs. `multiple` controls both the native file input and whether
+ * the component renders a gallery of previews.
+ */
 export interface ImageUploaderProps extends React.ComponentPropsWithoutRef<'input'> {
 	aspectRatio?: number;
 	maxSize?: number;
@@ -60,6 +75,19 @@ type Preview = {
 	blob: Blob;
 };
 
+/**
+ * File picker with drag-and-drop, client-side validation, image cropping, and
+ * preview management.
+ *
+ * Each selected file opens the crop editor before it is added to the preview
+ * list. Selecting "Apply" creates a JPEG blob and invokes:
+ *
+ * - `onImageCropped` for the newly created or edited image, with its index.
+ * - `onImagesCropped` with the complete current list, when supplied.
+ *
+ * Object URLs are revoked when a preview is replaced, removed, or the
+ * component unmounts. The caller owns persistence of the emitted blobs.
+ */
 export function ImageUploader({
 	aspectRatio = 1,
 	maxSize = 5 * 1024 * 1024,
@@ -89,12 +117,19 @@ export function ImageUploader({
 		return () => previewsRef.current.forEach(({ url }) => URL.revokeObjectURL(url));
 	}, []);
 
+	/** Return the crop editor to its initial position and zoom. */
 	const resetCrop = () => {
 		setCrop({ x: 0, y: 0 });
 		setZoom(1);
 		setCroppedAreaPixels(null);
 	};
 
+	/**
+	 * Validate a selected file and open it in the crop editor.
+	 *
+	 * FileReader is used rather than an object URL because the cropper needs a
+	 * stable data URL while the source file is being edited.
+	 */
 	const handleFileSelect = (file: File | null) => {
 		if (!file) return;
 		setError(null);
@@ -128,6 +163,13 @@ export function ImageUploader({
 		setCroppedAreaPixels(area);
 	}, []);
 
+	/**
+	 * Render the selected crop into a JPEG blob and update the preview list.
+	 *
+	 * react-easy-crop reports coordinates relative to the displayed image, so
+	 * the coordinates are scaled back to the image's natural dimensions before
+	 * drawing to the canvas.
+	 */
 	const cropImage = useCallback(async () => {
 		if (!image || !croppedAreaPixels) return;
 
@@ -180,6 +222,7 @@ export function ImageUploader({
 		}, 'image/jpeg');
 	}, [croppedAreaPixels, editingIndex, image, onImageCropped, onImagesCropped, previews.length]);
 
+	/** Remove a preview and notify consumers with the remaining blobs. */
 	const removePreview = (index: number) => {
 		setPreviews((current) => {
 			URL.revokeObjectURL(current[index].url);
@@ -189,6 +232,7 @@ export function ImageUploader({
 		});
 	};
 
+	/** Reopen an existing preview in the crop editor for replacement. */
 	const openEditor = (index: number) => {
 		setEditingIndex(index);
 		setImage(previews[index].url);

@@ -1,23 +1,28 @@
 import { SpinnerIcon } from '@phosphor-icons/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { useState, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { toast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
 import authClient from '@/lib/auth-client';
 import queryClient from '@/lib/query-client';
+import { AuthFormMessage, getAuthErrorMessage } from './AuthFormMessage';
 
 const createAgencySchema = z.object({
-	name: z.string().min(3).max(100),
+	name: z
+		.string({ error: 'Enter your agency name.' })
+		.trim()
+		.min(3, 'Agency name must be at least 3 characters.')
+		.max(100, 'Agency name must be 100 characters or fewer.'),
 	slug: z
-		.string()
-		.min(3)
-		.max(100)
+		.string({ error: 'Enter an agency URL slug.' })
+		.min(3, 'Slug must be at least 3 characters.')
+		.max(100, 'Slug must be 100 characters or fewer.')
 		.regex(
 			/^[a-z0-9]+(?:-[a-z0-9]+)*$/,
 			'Slug must contain only lowercase letters, numbers, and hyphens',
@@ -45,24 +50,23 @@ export default function CreateAgencyForm() {
 	} = useForm<CreateAgencyFormData>({
 		resolver: zodResolver(createAgencySchema),
 	});
+	const [submitError, setSubmitError] = useState<string | null>(null);
 
-	function onNameChange(e: React.ChangeEvent<HTMLInputElement>) {
+	function onNameChange(e: ChangeEvent<HTMLInputElement>) {
 		const name = e.target.value;
 		setValue('name', name);
 		setValue('slug', slugify(name));
 	}
 
 	async function onSubmit(data: CreateAgencyFormData) {
-		const { data: org, error } = await authClient.organization.create({
+		setSubmitError(null);
+		const { error } = await authClient.organization.create({
 			name: data.name,
 			slug: data.slug,
 		});
 
 		if (error) {
-			toast.add({
-				type: 'error',
-				title: error.message ?? 'Unable to create agency.',
-			});
+			setSubmitError(getAuthErrorMessage(error, 'Unable to create agency.'));
 			return;
 		}
 
@@ -70,7 +74,6 @@ export default function CreateAgencyForm() {
 			queryClient.invalidateQueries({ queryKey: ['session'] }),
 			queryClient.removeQueries({ queryKey: ['agencies'] }),
 		]);
-		toast.add({ type: 'success', title: `Agency "${org?.name}" created.` });
 		navigate('/agency');
 	}
 
@@ -83,7 +86,12 @@ export default function CreateAgencyForm() {
 				</Typography>
 			</div>
 
-			<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+			<form
+				onSubmit={handleSubmit(onSubmit)}
+				className="flex flex-col gap-4"
+				aria-busy={isSubmitting}
+			>
+				<AuthFormMessage message={submitError} />
 				<Field>
 					<FieldLabel htmlFor="name">Agency name</FieldLabel>
 					<Input
