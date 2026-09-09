@@ -13,6 +13,7 @@ import AcceptInvitation from '@/features/agency/pages/AcceptInvitation';
 import Loading from '@/components/ui/Loading';
 import apiClient from '@/lib/api-client';
 import AgencySetupCompleted from '@/features/agency/pages/AgencySetupCompleted';
+import DashboardLayout from '@/features/agency/components/DashboardLayout';
 
 /**
  * @description
@@ -34,7 +35,13 @@ export default [
 						children: [
 							{
 								path: '/agency',
-								lazy: () => import('@/features/agency/pages/Agency'),
+								element: <DashboardLayout />,
+								children: [
+									{
+										index: true,
+										lazy: () => import('@/features/agency/pages/Agency'),
+									},
+								],
 								middleware: [requireAgencyOnboarding],
 							},
 							{

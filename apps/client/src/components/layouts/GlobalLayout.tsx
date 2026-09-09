@@ -1,3 +1,4 @@
+import { TooltipProvider } from '@ui/tooltip';
 import { Outlet, ScrollRestoration, useNavigation } from 'react-router';
 import { BarLoader } from 'react-spinners';
 
@@ -20,7 +21,9 @@ function Layout() {
 				}}
 			/>
 			<ScrollRestoration />
-			<Outlet />
+			<TooltipProvider>
+				<Outlet />
+			</TooltipProvider>
 		</>
 	);
 }
