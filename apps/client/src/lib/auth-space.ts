@@ -9,6 +9,7 @@ type AuthResult<T> =
 function isOk<T>(result: AuthResult<T>): result is { data: T; error: null } {
 	return !!result && !result.error && !!result.data;
 }
+
 export async function requireSession(request: Request) {
 	const result: AuthResult<typeof authClient.$Infer.Session> = await queryClient.ensureQueryData({
 		queryKey: QUERY_KEYS.session,

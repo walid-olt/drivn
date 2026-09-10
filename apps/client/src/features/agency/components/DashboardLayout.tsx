@@ -1,11 +1,11 @@
 import {
-	BuildingsIcon,
 	CarIcon,
 	ChartLineUpIcon,
 	MapPinIcon,
 	UsersThreeIcon,
 	CalendarCheckIcon,
 	CommandIcon,
+	SidebarSimpleIcon,
 } from '@phosphor-icons/react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 
@@ -39,16 +39,20 @@ import authClient from '@/lib/auth-client';
 import queryClient from '@/lib/query-client';
 import { toast } from '@/components/ui/toast';
 import { SignOutIcon, UserCircleIcon } from '@phosphor-icons/react';
+import { Typography } from '@/components/ui/typography';
+import { getAvatarColor, getInitials } from '@/lib/utils';
 
 const navigation = [
 	{ label: 'Overview', href: '/agency', icon: ChartLineUpIcon },
 	{ label: 'Cars', href: '/agency/cars', icon: CarIcon },
-	{ label: 'Reservations', href: '/agency/reservations', icon: CalendarCheckIcon },
+	{
+		label: 'Reservations',
+		href: '/agency/reservations',
+		icon: CalendarCheckIcon,
+	},
 	{ label: 'Locations', href: '/agency/locations', icon: MapPinIcon },
 	{ label: 'Members', href: '/agency/members', icon: UsersThreeIcon },
 ];
-
-const avatarColors = ['#2563eb', '#9333ea', '#db2777', '#ea580c', '#16a34a', '#0891b2'];
 
 const DashboardLayout = () => {
 	const agency = useAgency();
@@ -56,23 +60,12 @@ const DashboardLayout = () => {
 	const location = useLocation();
 	const navigate = useNavigate();
 
-	if (agency.isPending || session.isPending) {
-		return <div className="flex min-h-svh items-center justify-center text-muted-foreground">Loading dashboard...</div>;
+	const user = session.data.data?.user;
+	if (!user) {
+		throw new Error('Unable to load the authenticated user.');
 	}
-
-	if (agency.isError || !agency.data || session.isError || !session.data?.data) {
-		return <div className="flex min-h-svh items-center justify-center text-muted-foreground">Unable to load the dashboard.</div>;
-	}
-
-	const user = session.data.data.user;
-	const initials = user.name
-		.split(' ')
-		.map((part) => part[0])
-		.join('')
-		.slice(0, 2)
-		.toUpperCase();
-	const avatarColor = avatarColors[user.name.length % avatarColors.length];
-
+	const initials = getInitials(user.name);
+	const avatarColor = getAvatarColor(user.name);
 	const handleSignOut = async () => {
 		const { error } = await authClient.signOut();
 		if (error) {
@@ -84,8 +77,8 @@ const DashboardLayout = () => {
 	};
 
 	return (
-		<SidebarProvider>
-			<Sidebar variant="inset">
+		<SidebarProvider defaultOpen={false}>
+			<Sidebar variant="sidebar" collapsible="icon">
 				<SidebarHeader>
 					<SidebarMenu>
 						<SidebarMenuItem>
@@ -100,7 +93,9 @@ const DashboardLayout = () => {
 										<CommandIcon className="size-4" />
 									)}
 								</div>
-								<span className="truncate font-medium">{agency.data.name}</span>
+								<Typography variant={'h4'} className="truncate font-medium">
+									{agency.data.name}
+								</Typography>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 					</SidebarMenu>
@@ -113,7 +108,10 @@ const DashboardLayout = () => {
 								{navigation.map(({ label, href, icon: Icon }) => (
 									<SidebarMenuItem key={href}>
 										<SidebarMenuButton
-											isActive={location.pathname === href || (href !== '/agency' && location.pathname.startsWith(`${href}/`))}
+											isActive={
+												location.pathname === href ||
+												(href !== '/agency' && location.pathname.startsWith(`${href}/`))
+											}
 											render={<Link to={href} />}
 										>
 											<Icon />
@@ -162,11 +160,7 @@ const DashboardLayout = () => {
 			</Sidebar>
 			<SidebarInset>
 				<header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
-					<SidebarTrigger />
-					<div className="flex items-center gap-2 text-sm text-muted-foreground">
-						<BuildingsIcon className="size-4" />
-						<span>{agency.data.name}</span>
-					</div>
+					<SidebarTrigger render={<SidebarSimpleIcon />}></SidebarTrigger>
 				</header>
 				<main className="flex flex-1 flex-col gap-6 p-4 md:p-6">
 					<Outlet />

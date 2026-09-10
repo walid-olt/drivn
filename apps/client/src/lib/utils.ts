@@ -50,3 +50,18 @@ export function getExtensionFromMime(mimeType: string) {
 
 	return mimeType in mimeMap ? mimeMap[mimeType] : 'bin';
 }
+
+export function getInitials(name: string) {
+	return name
+		.split(' ')
+		.map((part) => part[0])
+		.join('')
+		.slice(0, 2)
+		.toUpperCase();
+}
+
+export const avatarColors = ['#2563eb', '#9333ea', '#db2777', '#ea580c', '#16a34a', '#0891b2'];
+
+export function getAvatarColor(name: string) {
+	return avatarColors[name.length % avatarColors.length];
+}
