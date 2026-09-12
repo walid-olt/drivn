@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import { Model, type QueryFilter } from 'mongoose';
 import Agency, { type AgencyDocument } from './agency.model';
 import { tryCatch } from '../../lib/result';
 import type { Result } from '../../types/result';
@@ -33,6 +33,8 @@ class AgencyService {
 				throw new Error(`Unknown onboarding status: ${currentStatus}`);
 		}
 	};
+
+	list = (query?: QueryFilter<AgencyDocument>) => tryCatch(this.agencyModel.find(query));
 
 	create = (data: CreateAgencyDto) => tryCatch(this.agencyModel.create(data));
 	update = (id: string, data: UpdateAgencyDto) =>

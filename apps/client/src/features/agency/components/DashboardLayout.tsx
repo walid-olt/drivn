@@ -24,6 +24,7 @@ import {
 	SidebarProvider,
 	SidebarInset,
 	SidebarTrigger,
+	useSidebar,
 } from '@/components/ui/sidebar';
 import {
 	DropdownMenu,
@@ -41,6 +42,9 @@ import { toast } from '@/components/ui/toast';
 import { SignOutIcon, UserCircleIcon } from '@phosphor-icons/react';
 import { Typography } from '@/components/ui/typography';
 import { getAvatarColor, getInitials } from '@/lib/utils';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@ui/tooltip';
+import type { Agency } from '@drivn/shared';
+import { useState } from 'react';
 
 const navigation = [
 	{ label: 'Overview', href: '/agency', icon: ChartLineUpIcon },
@@ -82,21 +86,7 @@ const DashboardLayout = () => {
 				<SidebarHeader>
 					<SidebarMenu>
 						<SidebarMenuItem>
-							<SidebarMenuButton size="lg" render={<Link to="/agency" />}>
-								<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-									{agency.data.logo ? (
-										<Avatar className="size-8 rounded-lg">
-											<AvatarImage src={agency.data.logo} alt="" />
-											<AvatarFallback>{agency.data.name.slice(0, 1).toUpperCase()}</AvatarFallback>
-										</Avatar>
-									) : (
-										<CommandIcon className="size-4" />
-									)}
-								</div>
-								<Typography variant={'h4'} className="truncate font-medium">
-									{agency.data.name}
-								</Typography>
-							</SidebarMenuButton>
+							<DashboardSidebarToggle agency={agency.data} />
 						</SidebarMenuItem>
 					</SidebarMenu>
 				</SidebarHeader>
@@ -159,15 +149,84 @@ const DashboardLayout = () => {
 				</SidebarFooter>
 			</Sidebar>
 			<SidebarInset>
-				<header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
-					<SidebarTrigger render={<SidebarSimpleIcon />}></SidebarTrigger>
-				</header>
-				<main className="flex flex-1 flex-col gap-6 p-4 md:p-6">
+				<main className="flex flex-1 flex-col gap-6 p-2">
 					<Outlet />
 				</main>
 			</SidebarInset>
 		</SidebarProvider>
 	);
 };
+
+type DashboardSidebarToogleProps = {
+	agency: Agency;
+};
+function DashboardSidebarToggle({ agency }: DashboardSidebarToogleProps) {
+	const { state } = useSidebar();
+	const [isHovering, setIsHovering] = useState(false);
+
+	// If collapsed and hovering, show the trigger version
+	if (state === 'collapsed' && isHovering) {
+		return (
+			<Tooltip>
+				<TooltipTrigger>
+					<SidebarMenuButton
+						size="lg"
+						className="flex items-center justify-center"
+						onPointerLeave={() => setIsHovering(false)}
+					>
+						<SidebarTrigger
+							className="cursor-pointer"
+							size="icon-lg"
+							render={<SidebarSimpleIcon />}
+						/>
+					</SidebarMenuButton>
+				</TooltipTrigger>
+				<TooltipContent side="right">Open sidebar</TooltipContent>
+			</Tooltip>
+		);
+	}
+
+	// Default version (Expanded OR collapsed when not hovering)
+	return (
+		<SidebarMenuItem
+			className="flex items-center gap-2 "
+			onPointerEnter={() => {
+				if (state === 'collapsed') setIsHovering(true);
+			}}
+		>
+			<div className="flex size-8 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
+				{agency.logo ? (
+					<Avatar className="size-8">
+						<AvatarImage src={agency.logo} alt="" />
+						<AvatarFallback>{agency.name.slice(0, 1).toUpperCase()}</AvatarFallback>
+					</Avatar>
+				) : (
+					<CommandIcon className="size-4" />
+				)}
+			</div>
+
+			{state === 'expanded' && (
+				<div className="flex justify-between items-center w-full">
+					<Typography variant="h4" className="truncate font-medium">
+						{agency.name}
+					</Typography>
+					<Tooltip>
+						<TooltipTrigger>
+							<SidebarMenuButton size="lg" className="flex items-center justify-center h-8">
+								<SidebarTrigger
+									onPointerLeave={() => setIsHovering(false)}
+									className="cursor-pointer"
+									size="icon-lg"
+									render={<SidebarSimpleIcon />}
+								/>
+							</SidebarMenuButton>
+						</TooltipTrigger>
+						<TooltipContent side="right">Close sidebar</TooltipContent>
+					</Tooltip>
+				</div>
+			)}
+		</SidebarMenuItem>
+	);
+}
 
 export default DashboardLayout;
