@@ -5,11 +5,14 @@ import {
 	UsersThreeIcon,
 	CalendarCheckIcon,
 	CommandIcon,
-	SidebarSimpleIcon,
+	CrownIcon,
+	ShieldStarIcon,
+	UserIcon,
 } from '@phosphor-icons/react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/reui/badge';
 import {
 	Sidebar,
 	SidebarContent,
@@ -35,7 +38,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useAgency, useSession } from '@/lib/auth-hooks';
+import { useAgency, useMembership, useSession } from '@/lib/auth-hooks';
 import authClient from '@/lib/auth-client';
 import queryClient from '@/lib/query-client';
 import { toast } from '@/components/ui/toast';
@@ -58,12 +61,27 @@ const navigation = [
 	{ label: 'Members', href: '/agency/members', icon: UsersThreeIcon },
 ];
 
+/**
+ * TODO:: Refactor and break this component into smaller components.
+ * Current issues:
+ *  - Data fetching: multiple suspending queries are being used in this component,
+ *    which cause a waterfall effect (each fetch waits for the previous one to finish).
+ *  - Readability: the component is too large and does not have a clear separation of concerns.
+ *    It mixes layout, data fetching, and UI logic.
+ */
 const DashboardLayout = () => {
 	const agency = useAgency();
 	const session = useSession();
+	const membership = useMembership();
 	const location = useLocation();
 	const navigate = useNavigate();
 
+	const role = membership.data.data?.role;
+	const roleConfig = {
+		owner: { label: 'Owner', icon: CrownIcon },
+		admin: { label: 'Admin', icon: ShieldStarIcon },
+		member: { label: 'Member', icon: UserIcon },
+	}[role ?? 'member'];
 	const user = session.data.data?.user;
 	if (!user) {
 		throw new Error('Unable to load the authenticated user.');
@@ -117,21 +135,38 @@ const DashboardLayout = () => {
 					<SidebarMenu>
 						<SidebarMenuItem>
 							<DropdownMenu>
-								<DropdownMenuTrigger render={<SidebarMenuButton size="lg" />}>
-									<Avatar>
-										<AvatarImage src={user.image ?? undefined} alt={user.name} />
-										<AvatarFallback className="text-white" style={{ backgroundColor: avatarColor }}>
-											{initials}
-										</AvatarFallback>
-									</Avatar>
-									<div className="grid flex-1 text-left text-sm leading-tight">
-										<span className="truncate font-medium">{user.name}</span>
-										<span className="truncate text-xs">{user.email}</span>
-									</div>
-								</DropdownMenuTrigger>
+								<Tooltip>
+									<TooltipTrigger>
+										<DropdownMenuTrigger
+											render={<SidebarMenuButton size="lg" className="rounded-full" />}
+										>
+											<Avatar>
+												<AvatarImage src={user.image ?? undefined} alt={user.name} />
+												<AvatarFallback
+													className="text-white"
+													style={{ backgroundColor: avatarColor }}
+												>
+													{initials}
+												</AvatarFallback>
+											</Avatar>
+											<div className="grid flex-1 text-left text-sm leading-tight">
+												<span className="truncate font-medium">{user.name}</span>
+												<span className="truncate text-xs">{user.email}</span>
+											</div>
+										</DropdownMenuTrigger>
+									</TooltipTrigger>
+									<TooltipContent side="right">Account settings</TooltipContent>
+								</Tooltip>
+
 								<DropdownMenuContent side="right" align="end" className="min-w-56">
 									<DropdownMenuGroup>
-										<DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+										<DropdownMenuLabel className="flex items-center justify-between gap-3">
+											<span className="truncate">{user.name}</span>
+											<Badge variant="secondary" size="sm" radius="full">
+												<roleConfig.icon aria-hidden="true" />
+												{roleConfig.label}
+											</Badge>
+										</DropdownMenuLabel>
 									</DropdownMenuGroup>
 									<DropdownMenuSeparator />
 									<DropdownMenuItem>
@@ -169,17 +204,13 @@ function DashboardSidebarToggle({ agency }: DashboardSidebarToogleProps) {
 		return (
 			<Tooltip>
 				<TooltipTrigger>
-					<SidebarMenuButton
-						size="lg"
-						className="flex items-center justify-center"
+					<SidebarTrigger
 						onPointerLeave={() => setIsHovering(false)}
+						size="icon-lg"
+						nativeButton={false}
 					>
-						<SidebarTrigger
-							className="cursor-pointer"
-							size="icon-lg"
-							render={<SidebarSimpleIcon />}
-						/>
-					</SidebarMenuButton>
+						<SidebarMenuButton size="lg" className="flex items-center justify-center h-8" />
+					</SidebarTrigger>
 				</TooltipTrigger>
 				<TooltipContent side="right">Open sidebar</TooltipContent>
 			</Tooltip>
@@ -188,7 +219,7 @@ function DashboardSidebarToggle({ agency }: DashboardSidebarToogleProps) {
 
 	// Default version (Expanded OR collapsed when not hovering)
 	return (
-		<SidebarMenuItem
+		<div
 			className="flex items-center gap-2 "
 			onPointerEnter={() => {
 				if (state === 'collapsed') setIsHovering(true);
@@ -212,20 +243,19 @@ function DashboardSidebarToggle({ agency }: DashboardSidebarToogleProps) {
 					</Typography>
 					<Tooltip>
 						<TooltipTrigger>
-							<SidebarMenuButton size="lg" className="flex items-center justify-center h-8">
-								<SidebarTrigger
-									onPointerLeave={() => setIsHovering(false)}
-									className="cursor-pointer"
-									size="icon-lg"
-									render={<SidebarSimpleIcon />}
-								/>
-							</SidebarMenuButton>
+							<SidebarTrigger
+								onPointerLeave={() => setIsHovering(false)}
+								size="icon-lg"
+								nativeButton={false}
+							>
+								<SidebarMenuButton size="lg" className="flex items-center justify-center h-8" />
+							</SidebarTrigger>
 						</TooltipTrigger>
 						<TooltipContent side="right">Close sidebar</TooltipContent>
 					</Tooltip>
 				</div>
 			)}
-		</SidebarMenuItem>
+		</div>
 	);
 }
 

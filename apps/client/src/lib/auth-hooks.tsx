@@ -23,6 +23,14 @@ export function useAgency() {
 		},
 	});
 }
+
+export function useMembership() {
+	return useSuspenseQuery({
+		queryKey: QUERY_KEYS.membership,
+		queryFn: () => authClient.organization.getActiveMember(),
+	});
+}
+
 export function useAgencies() {
 	return useSuspenseQuery({
 		queryKey: QUERY_KEYS.agencies,

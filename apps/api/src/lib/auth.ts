@@ -62,7 +62,7 @@ export function initializeAuthInstance(db: mongo.Db) {
 						console.info('session before hook memberships', memberships);
 						if (membershipErr || !memberships)
 							throw internalServerError("Couldn't get memberships for user");
-						if (memberships.length === 0) throw unauthorized('User has no memberships');
+						if (memberships.length === 0) return { data: session };
 						const defaultOrg = memberships[0] as unknown;
 						if (!defaultOrg || typeof defaultOrg !== 'object' || !('organizationId' in defaultOrg))
 							throw internalServerError("Couldn't get default organization for user");
