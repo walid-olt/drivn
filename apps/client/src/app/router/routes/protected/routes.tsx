@@ -13,28 +13,61 @@ import AcceptInvitation from '@/features/agency/pages/AcceptInvitation';
 import Loading from '@/components/ui/Loading';
 import apiClient from '@/lib/api-client';
 import AgencySetupCompleted from '@/features/agency/pages/AgencySetupCompleted';
+import DashboardLayout from '@/features/agency/components/DashboardLayout';
+import { Suspense } from 'react';
 
 /**
  * @description
  * These are the protected routes for the application.
  * They will combine both customer and agency routes, which will
  * be protected by authentication and authorization.
+ *
+ * We use different middleware and nested routes to handle the
+ * different user types and their access levels.
  */
 export default [
 	{
 		middleware: [requireUserAuth],
 		children: [
-			// Agency-member-only area
 			{
 				middleware: [requireUserOfType(['agency_member']), requireVerifiedUser],
 				children: [
 					{
 						middleware: [requireAgencyMembership],
-						hydrateFallbackElement: <Loading />,
+						hydrateFallbackElement: (
+							<Loading showIndicator={false} message="Loading Agency dashboard..." />
+						),
 						children: [
 							{
 								path: '/agency',
-								lazy: () => import('@/features/agency/pages/Agency'),
+								element: (
+									<Suspense fallback={<Loading />}>
+										<DashboardLayout />
+									</Suspense>
+								),
+
+								children: [
+									{
+										index: true,
+										lazy: () => import('@/features/agency/pages/Agency'),
+									},
+									{
+										path: 'cars',
+										lazy: () => import('@/features/agency/pages/Cars'),
+									},
+									{
+										path: 'reservations',
+										lazy: () => import('@/features/agency/pages/Reservations'),
+									},
+									{
+										path: 'locations',
+										lazy: () => import('@/features/agency/pages/Locations'),
+									},
+									{
+										path: 'members',
+										lazy: () => import('@/features/agency/pages/Members'),
+									},
+								],
 								middleware: [requireAgencyOnboarding],
 							},
 							{

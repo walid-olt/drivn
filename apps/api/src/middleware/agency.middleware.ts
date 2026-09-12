@@ -1,4 +1,5 @@
 import type { RequestHandler } from 'express';
+import { Types } from 'mongoose';
 import { forbidden, notFound } from '../errors';
 import agencyService from '../modules/agency/agency.service';
 
@@ -11,6 +12,8 @@ export const requireAgency: RequestHandler = async (req, _res, next) => {
 	try {
 		const organizationId = req.session?.activeOrganizationId;
 		if (!organizationId) throw forbidden('No active organization selected');
+		if (!Types.ObjectId.isValid(organizationId))
+			throw forbidden('Active organization has invalid ID');
 
 		const [err, agency] = await agencyService.getByOrganizationId(organizationId);
 		if (err) throw err;

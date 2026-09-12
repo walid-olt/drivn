@@ -9,7 +9,7 @@ import { BackgroundEmailService } from './services/BackgroundEmailService';
 import type { BaseUser } from 'better-auth';
 import { z } from 'zod';
 import agencyService from '../modules/agency/agency.service';
-import { internalServerError } from '../errors';
+import { internalServerError, unauthorized } from '../errors';
 import { tryCatch } from './result';
 
 let authInstance: ReturnType<typeof initializeAuthInstance> | null = null;
@@ -32,6 +32,58 @@ export function initializeAuthInstance(db: mongo.Db) {
 		database: mongodbAdapter(db, {
 			usePlural: true,
 		}),
+		databaseHooks: {
+			session: {
+				create: {
+					before: async (session) => {
+						console.info('session before hook', session);
+
+						// NOTE:
+						// we use native mongodb driver syntax because all these entities are
+						// managed by better-auth and not mongoose, so we don't have the models
+						// to use mongoose syntax
+
+						const getUser = db
+							.collection<User>('users')
+							.findOne({ _id: new Types.ObjectId(session.userId) });
+						const [userErr, user] = await tryCatch(getUser);
+						console.info('session before hook user', user);
+						if (userErr || !user) throw unauthorized('Unauthenticated');
+						if (user.type === 'customer')
+							return {
+								data: session,
+							};
+						const getUserMemberShips = db
+							.collection('members')
+							.find({ userId: new Types.ObjectId(session.userId) })
+							.toArray();
+
+						const [membershipErr, memberships] = await tryCatch(getUserMemberShips);
+						console.info('session before hook memberships', memberships);
+						if (membershipErr || !memberships)
+							throw internalServerError("Couldn't get memberships for user");
+						if (memberships.length === 0) return { data: session };
+						const defaultOrg = memberships[0] as unknown;
+						if (!defaultOrg || typeof defaultOrg !== 'object' || !('organizationId' in defaultOrg))
+							throw internalServerError("Couldn't get default organization for user");
+
+						const activeOrganizationId = (
+							defaultOrg as { organizationId: Types.ObjectId }
+						).organizationId.toString();
+						console.info(
+							'session before hook activeOrganizationId',
+							activeOrganizationId.toString(),
+						);
+						return {
+							data: {
+								...session,
+								activeOrganizationId,
+							},
+						};
+					},
+				},
+			},
+		},
 		user: {
 			additionalFields: {
 				type: {
@@ -157,3 +209,5 @@ export function initializeAuthInstance(db: mongo.Db) {
 // it's either this or duplicating the type declaration
 export type User = ReturnType<typeof getAuth>['$Infer']['Session']['user'];
 export type AuthSession = ReturnType<typeof getAuth>['$Infer']['Session']['session'];
+export type ActiveOrganization = ReturnType<typeof getAuth>['$Infer']['ActiveOrganization'];
+export type Member = ReturnType<typeof getAuth>['$Infer']['Member'];

@@ -1,43 +1,54 @@
 {
-  "name": "@drivn/shared",
-  "version": "0.0.2",
-  "private": true,
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      }
-    }
-  },
-  "scripts": {
-    "build": "tsdown src/index.ts --format cjs,esm --dts --clean",
-    "dev": "tsdown src/index.ts --format cjs,esm --dts --no-clean",
-    "format": "oxfmt src/ --write",
-    "lint": "oxlint src/",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
-  "devDependencies": {
-    "oxfmt": "^0.58.0",
-    "oxlint": "^1.73.0",
-    "tsdown": "^0.22.4",
-    "typescript": "^5.7.3",
-    "vitest": "^4.1.10",
-    "zod": "^4.4.3"
-  },
-  "peerDependencies": {
-    "zod": "^4.4.3"
-  },
-  "dependencies": {
-    "libphonenumber-js": "^1.13.8"
-  }
+	"name": "@drivn/shared",
+	"version": "0.0.2",
+	"private": true,
+	"type": "module",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.mts",
+	"exports": {
+		".": {
+			"import": {
+				"types": "./dist/index.d.mts",
+				"default": "./dist/index.mjs"
+			},
+			"require": {
+				"types": "./dist/index.d.cts",
+				"default": "./dist/index.cjs"
+			}
+		},
+		"./permissions": {
+			"import": {
+				"types": "./dist/permissions/index.d.mts",
+				"default": "./dist/permissions/index.mjs"
+			},
+			"require": {
+				"types": "./dist/permissions/index.d.cts",
+				"default": "./dist/permissions/index.cjs"
+			}
+		}
+	},
+	"scripts": {
+		"build": "tsdown src/index.ts --format cjs,esm --dts --clean",
+		"dev": "tsdown src/index.ts --format cjs,esm --dts --no-clean",
+		"format": "oxfmt src/ --write",
+		"lint": "oxlint src/",
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"dependencies": {
+		"@casl/ability": "^7.0.1",
+		"libphonenumber-js": "^1.13.8"
+	},
+	"devDependencies": {
+		"oxfmt": "^0.58.0",
+		"oxlint": "^1.73.0",
+		"tsdown": "^0.22.4",
+		"typescript": "^5.7.3",
+		"vitest": "^4.1.10",
+		"zod": "^4.4.3"
+	},
+	"peerDependencies": {
+		"zod": "^4.4.3"
+	}
 }

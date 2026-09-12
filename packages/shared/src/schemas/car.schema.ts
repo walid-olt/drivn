@@ -85,7 +85,7 @@ export const createCarSchema = carSchema.omit({
 // validate actual image files on the client side.
 export const carImageSchema = z
 	.file()
-	.mime(ACCEPTED_IMAGE_TYPES, 'Only standard image formats are allowed')
+	.mime([...ACCEPTED_IMAGE_TYPES], 'Only standard image formats are allowed')
 	.max(MAX_CAR_IMAGE_SIZE_BYTES, 'Individual file size exceeds the limit');
 
 export const createCarFormSchema = carSchema

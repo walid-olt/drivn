@@ -11,4 +11,5 @@ export const QUERY_KEYS = {
 	agencies: ['agencies'],
 	/** Current active agency */
 	agency: ['agency'],
+	membership: ['membership'],
 } as const;
