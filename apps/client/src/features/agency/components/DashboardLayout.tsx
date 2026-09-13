@@ -48,6 +48,7 @@ import { getAvatarColor, getInitials } from '@/lib/utils';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@ui/tooltip';
 import type { Agency } from '@drivn/shared';
 import { useState } from 'react';
+import { Kbd, KbdGroup } from '@/components/ui/kbd';
 
 const navigation = [
 	{ label: 'Overview', href: '/agency', icon: ChartLineUpIcon },
@@ -76,12 +77,12 @@ const DashboardLayout = () => {
 	const location = useLocation();
 	const navigate = useNavigate();
 
-	const role = membership.data.data?.role;
+	const role = membership.data.data?.role ?? 'member';
 	const roleConfig = {
 		owner: { label: 'Owner', icon: CrownIcon },
 		admin: { label: 'Admin', icon: ShieldStarIcon },
 		member: { label: 'Member', icon: UserIcon },
-	}[role ?? 'member'];
+	}[role];
 	const user = session.data.data?.user;
 	if (!user) {
 		throw new Error('Unable to load the authenticated user.');
@@ -135,28 +136,20 @@ const DashboardLayout = () => {
 					<SidebarMenu>
 						<SidebarMenuItem>
 							<DropdownMenu>
-								<Tooltip>
-									<TooltipTrigger>
-										<DropdownMenuTrigger
-											render={<SidebarMenuButton size="lg" className="rounded-full" />}
-										>
-											<Avatar>
-												<AvatarImage src={user.image ?? undefined} alt={user.name} />
-												<AvatarFallback
-													className="text-white"
-													style={{ backgroundColor: avatarColor }}
-												>
-													{initials}
-												</AvatarFallback>
-											</Avatar>
-											<div className="grid flex-1 text-left text-sm leading-tight">
-												<span className="truncate font-medium">{user.name}</span>
-												<span className="truncate text-xs">{user.email}</span>
-											</div>
-										</DropdownMenuTrigger>
-									</TooltipTrigger>
-									<TooltipContent side="right">Account settings</TooltipContent>
-								</Tooltip>
+								<DropdownMenuTrigger
+									render={<SidebarMenuButton size="lg" className="rounded-full" />}
+								>
+									<Avatar>
+										<AvatarImage src={user.image ?? undefined} alt={user.name} />
+										<AvatarFallback className="text-white" style={{ backgroundColor: avatarColor }}>
+											{initials}
+										</AvatarFallback>
+									</Avatar>
+									<div className="grid flex-1 text-left text-sm leading-tight">
+										<span className="truncate font-medium">{user.name}</span>
+										<span className="truncate text-xs">{user.email}</span>
+									</div>
+								</DropdownMenuTrigger>
 
 								<DropdownMenuContent side="right" align="end" className="min-w-56">
 									<DropdownMenuGroup>
@@ -212,7 +205,13 @@ function DashboardSidebarToggle({ agency }: DashboardSidebarToogleProps) {
 						<SidebarMenuButton size="lg" className="flex items-center justify-center h-8" />
 					</SidebarTrigger>
 				</TooltipTrigger>
-				<TooltipContent side="right">Open sidebar</TooltipContent>
+				<TooltipContent side="right">
+					Open sidebar{' '}
+					<KbdGroup>
+						{' '}
+						<Kbd>Ctrl</Kbd> <span>+</span> <Kbd>b</Kbd>{' '}
+					</KbdGroup>
+				</TooltipContent>
 			</Tooltip>
 		);
 	}
@@ -251,7 +250,12 @@ function DashboardSidebarToggle({ agency }: DashboardSidebarToogleProps) {
 								<SidebarMenuButton size="lg" className="flex items-center justify-center h-8" />
 							</SidebarTrigger>
 						</TooltipTrigger>
-						<TooltipContent side="right">Close sidebar</TooltipContent>
+						<TooltipContent side="right">Close sidebar 
+		<KbdGroup>
+						{' '}
+						<Kbd>Ctrl</Kbd> <span>+</span> <Kbd>b</Kbd>{' '}
+					</KbdGroup>
+            </TooltipContent>
 					</Tooltip>
 				</div>
 			)}
