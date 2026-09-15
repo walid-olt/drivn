@@ -1,3 +1,3 @@
 import AgencyPagePlaceholder from '@/features/agency/components/AgencyPagePlaceholder';
 
-export const Component = () => <AgencyPagePlaceholder title="Cars" />;
+export const Component = () => <AgencyPagePlaceholder title="Fleet" />;

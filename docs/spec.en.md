@@ -33,7 +33,7 @@ The system uses a unified **turborepo monorepo** architecture to enforce compile
 │   ├── client/               # frontend: react + vite + tailwind css + shadcn/ui
 │   └── api/                  # backend: express (modular architecture) + mongoose
 ├── packages/
-│   └── shared/               # shared types, schemas, domain rules and permissions and validation contracts
+│   └── shared/               # shared types, schemas, domain rules, permissions and validation contracts
 ```
 
 ### 2.2 system topography
@@ -42,19 +42,34 @@ The system uses a unified **turborepo monorepo** architecture to enforce compile
 - **application tier:** modular express API.
 - **data tier:** cloud hosted mongodb instance managed via mongoose ODM.
 
----
+## 3. Core functionalities
 
-## 3. System Workflows & State Machines
+### Customer portal
 
-### 3.1 The Reservation Lifecycle (State Machine)
+- Email/password authentication.
+- Email verification.
+- Car search and filtering by make, model, year, price, and location.
+- Reservation request submission with date and time selection.
+- Reservation status tracking (pending, approved, rejected).
+- Email notifications for reservation status updates.
 
-Reservations follow a strict, non-automated lifecycle entirely governed by the agency administrator.
+### Agency dashboard
 
-| Initial Status | Event Trigger              | Authorized Role             | Target Status | Business Action                                        |
-| -------------- | -------------------------- | --------------------------- | ------------- | ------------------------------------------------------ |
-| **None**       | Submit Reservation Request | `customer`                  | `pending`     | Checks date availability collision. Holds time window. |
-| **pending**    | Reject Request             | `agency_admin`              | `rejected`    | Releases car asset for the requested dates.            |
-| **pending**    | Approve Request            | `agency_admin`              | `confirmed`   | Hard-locks car time block.                             |
-| **confirmed**  | Cancel Reservation         | `customer` / `agency_admin` | `cancelled`   | Releases car asset.                                    |
-| **confirmed**  | Process Car Handover       | `agency_admin`              | `active`      | Car leaves the lot; client contract is open.           |
-| **active**     | Return Car & Inspect       | `agency_admin`              | `completed`   | Asset marked available immediately.                    |
+- Email/password authentication.
+- Email verification.
+- Onboarding flow for agency branding, support contact, and operating locations.
+- Organization management (add/remove members).
+- Fleet management (add/remove vehicles, update vehicle details).
+- Reservation management (view incoming requests, approve/reject reservations).
+- Email notifications for new reservation requests and status updates.
+
+### 4. Technical specifications
+
+- **Frontend:** React, Vite, Tailwind CSS, Shadcn/UI.
+- **State Management:** React Query for data fetching and caching, Zustand for local state management.
+- **Backend:** Express.js, Mongoose, Better-auth for authentication, Resend for email notifications.
+- **Database:** MongoDB (cloud-hosted), Mongoose ODM for schema management and data validation.
+- **shared package:** TypeScript interfaces, validation schemas, domain rules, and permission contracts to ensure consistency across client and server.
+- **deployment:** Vercel for frontend, Render for backend, MongoDB Atlas for database hosting.
+- **documentation:** Swagger for API documentation.
+- **testing:**: Vitest and Supertest for unit and integration testing.
