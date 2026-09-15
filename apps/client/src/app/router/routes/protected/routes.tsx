@@ -15,6 +15,7 @@ import apiClient from '@/lib/api-client';
 import AgencySetupCompleted from '@/features/agency/pages/AgencySetupCompleted';
 import DashboardLayout from '@/features/agency/components/DashboardLayout';
 import { Suspense } from 'react';
+import { Typography } from '@/components/ui/typography';
 
 /**
  * @description
@@ -50,10 +51,18 @@ export default [
 									{
 										index: true,
 										lazy: () => import('@/features/agency/pages/Agency'),
+										handle: {
+											title: 'Dashboard',
+											headerContent: () => <Typography variant={'h4'}>Dashboard</Typography>,
+										},
 									},
 									{
-										path: 'cars',
-										lazy: () => import('@/features/agency/pages/Cars'),
+										path: 'fleet',
+										lazy: () => import('@/features/agency/pages/Fleet'),
+										handle: {
+											title: 'Dashboard',
+											headerContent: () => <Typography variant={'h4'}>Fleet</Typography>,
+										},
 									},
 									{
 										path: 'reservations',
@@ -64,8 +73,8 @@ export default [
 										lazy: () => import('@/features/agency/pages/Locations'),
 									},
 									{
-										path: 'members',
-										lazy: () => import('@/features/agency/pages/Members'),
+										path: 'team',
+										lazy: () => import('@/features/agency/pages/Team'),
 									},
 								],
 								middleware: [requireAgencyOnboarding],

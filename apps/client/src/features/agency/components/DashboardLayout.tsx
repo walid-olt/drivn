@@ -9,7 +9,8 @@ import {
 	ShieldStarIcon,
 	UserIcon,
 } from '@phosphor-icons/react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router';
+import { Link, Outlet, useLocation, useMatches, useNavigate } from 'react-router';
+import type { ComponentType } from 'react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/reui/badge';
@@ -49,6 +50,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from '@ui/tooltip';
 import type { Agency } from '@drivn/shared';
 import { useState } from 'react';
 import { Kbd, KbdGroup } from '@/components/ui/kbd';
+import { Separator } from '@ui/separator';
 
 const navigation = [
 	{ label: 'Overview', href: '/agency', icon: ChartLineUpIcon },
@@ -59,36 +61,25 @@ const navigation = [
 		icon: CalendarCheckIcon,
 	},
 	{ label: 'Locations', href: '/agency/locations', icon: MapPinIcon },
-	{ label: 'Members', href: '/agency/members', icon: UsersThreeIcon },
+	{ label: 'Team', href: '/agency/team', icon: UsersThreeIcon },
 ];
 
-/**
- * TODO:: Refactor and break this component into smaller components.
- * Current issues:
- *  - Data fetching: multiple suspending queries are being used in this component,
- *    which cause a waterfall effect (each fetch waits for the previous one to finish).
- *  - Readability: the component is too large and does not have a clear separation of concerns.
- *    It mixes layout, data fetching, and UI logic.
- */
 const DashboardLayout = () => {
 	const agency = useAgency();
 	const session = useSession();
-	const membership = useMembership();
 	const location = useLocation();
+	const matches = useMatches();
 	const navigate = useNavigate();
+	const HeaderContent = [...matches]
+		.reverse()
+		.map((match) => (match.handle as { headerContent?: ComponentType } | undefined)?.headerContent)
+		.find(Boolean);
 
-	const role = membership.data.data?.role ?? 'member';
-	const roleConfig = {
-		owner: { label: 'Owner', icon: CrownIcon },
-		admin: { label: 'Admin', icon: ShieldStarIcon },
-		member: { label: 'Member', icon: UserIcon },
-	}[role];
 	const user = session.data.data?.user;
 	if (!user) {
 		throw new Error('Unable to load the authenticated user.');
 	}
-	const initials = getInitials(user.name);
-	const avatarColor = getAvatarColor(user.name);
+
 	const handleSignOut = async () => {
 		const { error } = await authClient.signOut();
 		if (error) {
@@ -96,101 +87,173 @@ const DashboardLayout = () => {
 			return;
 		}
 		queryClient.clear();
-		navigate('/login');
+		navigate('/login', { replace: true });
 	};
 
 	return (
 		<SidebarProvider defaultOpen={false}>
-			<Sidebar variant="sidebar" collapsible="icon">
-				<SidebarHeader>
-					<SidebarMenu>
-						<SidebarMenuItem>
-							<DashboardSidebarToggle agency={agency.data} />
-						</SidebarMenuItem>
-					</SidebarMenu>
-				</SidebarHeader>
-				<SidebarContent>
-					<SidebarGroup>
-						<SidebarGroupLabel>Dashboard</SidebarGroupLabel>
-						<SidebarGroupContent>
-							<SidebarMenu>
-								{navigation.map(({ label, href, icon: Icon }) => (
-									<SidebarMenuItem key={href}>
-										<SidebarMenuButton
-											isActive={
-												location.pathname === href ||
-												(href !== '/agency' && location.pathname.startsWith(`${href}/`))
-											}
-											render={<Link to={href} />}
-										>
-											<Icon />
-											<span>{label}</span>
-										</SidebarMenuButton>
-									</SidebarMenuItem>
-								))}
-							</SidebarMenu>
-						</SidebarGroupContent>
-					</SidebarGroup>
-				</SidebarContent>
-				<SidebarFooter>
-					<SidebarMenu>
-						<SidebarMenuItem>
-							<DropdownMenu>
-								<DropdownMenuTrigger
-									render={<SidebarMenuButton size="lg" className="rounded-full" />}
-								>
-									<Avatar>
-										<AvatarImage src={user.image ?? undefined} alt={user.name} />
-										<AvatarFallback className="text-white" style={{ backgroundColor: avatarColor }}>
-											{initials}
-										</AvatarFallback>
-									</Avatar>
-									<div className="grid flex-1 text-left text-sm leading-tight">
-										<span className="truncate font-medium">{user.name}</span>
-										<span className="truncate text-xs">{user.email}</span>
-									</div>
-								</DropdownMenuTrigger>
-
-								<DropdownMenuContent side="right" align="end" className="min-w-56">
-									<DropdownMenuGroup>
-										<DropdownMenuLabel className="flex items-center justify-between gap-3">
-											<span className="truncate">{user.name}</span>
-											<Badge variant="secondary" size="sm" radius="full">
-												<roleConfig.icon aria-hidden="true" />
-												{roleConfig.label}
-											</Badge>
-										</DropdownMenuLabel>
-									</DropdownMenuGroup>
-									<DropdownMenuSeparator />
-									<DropdownMenuItem>
-										<UserCircleIcon />
-										Account
-									</DropdownMenuItem>
-									<DropdownMenuItem variant="destructive" onClick={handleSignOut}>
-										<SignOutIcon />
-										Sign out
-									</DropdownMenuItem>
-								</DropdownMenuContent>
-							</DropdownMenu>
-						</SidebarMenuItem>
-					</SidebarMenu>
-				</SidebarFooter>
-			</Sidebar>
-			<SidebarInset>
-				<main className="flex flex-1 flex-col gap-6 p-2">
-					<Outlet />
-				</main>
-			</SidebarInset>
+			<div className="flex min-h-svh w-full flex-col">
+				<header className="flex h-14 shrink-0 items-center gap-3 border-b px-2 md:hidden">
+					<SidebarTrigger size="icon-lg" />
+					<Separator orientation="vertical" className={'h-8 my-auto'} />
+					{HeaderContent ? <HeaderContent /> : null}
+				</header>
+				<div className="flex min-h-0 flex-1 w-full">
+					<DashboardSidebar
+						agency={agency.data}
+						user={user}
+						pathname={location.pathname}
+						onSignOut={handleSignOut}
+					/>
+					<SidebarInset>
+						<main className="flex flex-1 flex-col gap-6 p-3 sm:p-4 md:p-6">
+							<Outlet />
+						</main>
+					</SidebarInset>
+				</div>
+			</div>
 		</SidebarProvider>
 	);
 };
 
-type DashboardSidebarToogleProps = {
+type DashboardSidebarProps = {
+	agency: Agency;
+	user: {
+		name: string;
+		email: string;
+		image?: string | null;
+	};
+	pathname: string;
+	onSignOut: () => Promise<void>;
+};
+
+function DashboardSidebar({ agency, user, pathname, onSignOut }: DashboardSidebarProps) {
+	return (
+		<Sidebar variant="sidebar" collapsible="icon">
+			<SidebarHeader>
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<DashboardSidebarToggle agency={agency} />
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarHeader>
+			<SidebarContent>
+				<SidebarGroup>
+					<SidebarGroupLabel>Dashboard</SidebarGroupLabel>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							{navigation.map(({ label, href, icon: Icon }) => (
+								<SidebarMenuItem key={href}>
+									<SidebarMenuButton
+										isActive={
+											pathname === href || (href !== '/agency' && pathname.startsWith(`${href}/`))
+										}
+										render={<Link to={href} />}
+									>
+										<Icon />
+										<span>{label}</span>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+							))}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
+			</SidebarContent>
+			<SidebarFooter>
+				<UserMenu user={user} onSignOut={onSignOut} />
+			</SidebarFooter>
+		</Sidebar>
+	);
+}
+
+type UserMenuProps = {
+	user: DashboardSidebarProps['user'];
+	onSignOut: () => Promise<void>;
+};
+
+function UserMenu({ user, onSignOut }: UserMenuProps) {
+	const membership = useMembership();
+	const { isMobile } = useSidebar();
+	const role = membership.data.data?.role ?? 'member';
+	const roleConfig = {
+		owner: { label: 'Owner', icon: CrownIcon },
+		admin: { label: 'Admin', icon: ShieldStarIcon },
+		member: { label: 'Member', icon: UserIcon },
+	}[role];
+	const initials = getInitials(user.name);
+	const avatarColor = getAvatarColor(user.name);
+
+	return (
+		<SidebarMenu>
+			<SidebarMenuItem>
+				<DropdownMenu>
+					<DropdownMenuTrigger render={<SidebarMenuButton size="lg" className="rounded-full" />}>
+						<Avatar>
+							<AvatarImage src={user.image ?? undefined} alt={user.name} />
+							<AvatarFallback className="text-white" style={{ backgroundColor: avatarColor }}>
+								{initials}
+							</AvatarFallback>
+						</Avatar>
+						<div className="grid flex-1 text-left text-sm leading-tight">
+							<span className="truncate font-medium">{user.name}</span>
+							<span className="truncate text-xs">{user.email}</span>
+						</div>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent
+						side={isMobile ? 'bottom' : 'right'}
+						align="end"
+						className="min-w-56"
+					>
+						<DropdownMenuGroup>
+							<DropdownMenuLabel className="flex items-center justify-between gap-3">
+								<span className="truncate">{user.name}</span>
+								<Badge variant="secondary" size="sm" radius="full">
+									<roleConfig.icon aria-hidden="true" />
+									{roleConfig.label}
+								</Badge>
+							</DropdownMenuLabel>
+						</DropdownMenuGroup>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem>
+							<UserCircleIcon />
+							Account
+						</DropdownMenuItem>
+						<DropdownMenuItem variant="destructive" onClick={onSignOut}>
+							<SignOutIcon />
+							Sign out
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			</SidebarMenuItem>
+		</SidebarMenu>
+	);
+}
+
+type DashboardSidebarToggleProps = {
 	agency: Agency;
 };
-function DashboardSidebarToggle({ agency }: DashboardSidebarToogleProps) {
-	const { state } = useSidebar();
+
+function DashboardSidebarToggle({ agency }: DashboardSidebarToggleProps) {
+	const { isMobile, state } = useSidebar();
 	const [isHovering, setIsHovering] = useState(false);
+
+	if (isMobile) {
+		return (
+			<div className="flex w-full items-center justify-between gap-2">
+				<div className="flex size-8 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
+					{agency.logo ? (
+						<Avatar className="size-8">
+							<AvatarImage src={agency.logo} alt="" />
+							<AvatarFallback>{agency.name.slice(0, 1).toUpperCase()}</AvatarFallback>
+						</Avatar>
+					) : (
+						<CommandIcon className="size-4" />
+					)}
+				</div>
+				<SidebarTrigger size="icon-lg" />
+			</div>
+		);
+	}
 
 	// If collapsed and hovering, show the trigger version
 	if (state === 'collapsed' && isHovering) {
@@ -250,12 +313,13 @@ function DashboardSidebarToggle({ agency }: DashboardSidebarToogleProps) {
 								<SidebarMenuButton size="lg" className="flex items-center justify-center h-8" />
 							</SidebarTrigger>
 						</TooltipTrigger>
-						<TooltipContent side="right">Close sidebar 
-		<KbdGroup>
-						{' '}
-						<Kbd>Ctrl</Kbd> <span>+</span> <Kbd>b</Kbd>{' '}
-					</KbdGroup>
-            </TooltipContent>
+						<TooltipContent side="right">
+							Close sidebar
+							<KbdGroup>
+								{' '}
+								<Kbd>Ctrl</Kbd> <span>+</span> <Kbd>b</Kbd>{' '}
+							</KbdGroup>
+						</TooltipContent>
 					</Tooltip>
 				</div>
 			)}
