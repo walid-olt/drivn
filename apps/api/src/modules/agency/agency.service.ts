@@ -11,7 +11,7 @@ import type {
 } from '@drivn/shared';
 import { conflict } from '../../errors';
 type OnboardingStatus = AgencyDocument['onboardingStatus'];
-class AgencyService {
+export class AgencyService {
 	constructor(private readonly agencyModel: Model<AgencyDocument>) {}
 	/**
 	 * Returns the status that follows the given one. `onboardingStatus` holds

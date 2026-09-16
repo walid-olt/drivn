@@ -27,7 +27,7 @@ export type ControllerResult<Data = unknown> =
  * ```
  */
 export const handler = <Data>(
-	fn: (req: Request, res: Response, next: NextFunction) => Promise<ControllerResult<Data>>,
+	fn: (req: Request<any>, res: Response, next: NextFunction) => Promise<ControllerResult<Data>>,
 ): RequestHandler => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		Promise.resolve(fn(req, res, next))

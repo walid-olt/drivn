@@ -3,12 +3,17 @@ import { Document, Schema, model, Types } from 'mongoose';
 
 export interface AgencyDocument
 	extends Omit<Agency, 'organizationId' | '_id' | 'operatingLocationIds'>, Document {
+	id: string;
 	organizationId: Types.ObjectId;
 	operatingLocationIds: Types.ObjectId[];
 }
 
 const AgencySchema = new Schema<AgencyDocument>({
-	organizationId: { type: Types.ObjectId, required: true, ref: 'Organization' },
+	organizationId: {
+		type: Schema.Types.ObjectId,
+		required: true,
+		ref: 'Organization',
+	},
 	name: { type: String, required: true, unique: true, index: true },
 	slug: { type: String, required: true, unique: true, index: true },
 	logo: { type: String, required: false },
@@ -28,8 +33,7 @@ const AgencySchema = new Schema<AgencyDocument>({
 		required: true,
 	},
 	operatingLocationIds: {
-		type: [Types.ObjectId],
-		ref: 'Location',
+		type: [{ type: Schema.Types.ObjectId, ref: 'Location' }],
 		default: [],
 		required: true,
 	},

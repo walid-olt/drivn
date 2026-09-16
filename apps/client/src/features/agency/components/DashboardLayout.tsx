@@ -54,7 +54,7 @@ import { Separator } from '@ui/separator';
 
 const navigation = [
 	{ label: 'Overview', href: '/agency', icon: ChartLineUpIcon },
-	{ label: 'Cars', href: '/agency/cars', icon: CarIcon },
+	{ label: 'Fleet', href: '/agency/fleet', icon: CarIcon },
 	{
 		label: 'Reservations',
 		href: '/agency/reservations',
@@ -93,11 +93,6 @@ const DashboardLayout = () => {
 	return (
 		<SidebarProvider defaultOpen={false}>
 			<div className="flex min-h-svh w-full flex-col">
-				<header className="flex h-14 shrink-0 items-center gap-3 border-b px-2 md:hidden">
-					<SidebarTrigger size="icon-lg" />
-					<Separator orientation="vertical" className={'h-8 my-auto'} />
-					{HeaderContent ? <HeaderContent /> : null}
-				</header>
 				<div className="flex min-h-0 flex-1 w-full">
 					<DashboardSidebar
 						agency={agency.data}
@@ -106,6 +101,11 @@ const DashboardLayout = () => {
 						onSignOut={handleSignOut}
 					/>
 					<SidebarInset>
+						<header className="flex h-12 shrink-0 items-center gap-3 border-b px-2 ">
+							<SidebarTrigger size="icon-lg" className={'md:hidden'} />
+							<Separator orientation="vertical" className={'h-8 my-auto md:hidden'} />
+							{HeaderContent ? <HeaderContent /> : null}
+						</header>
 						<main className="flex flex-1 flex-col gap-6 p-3 sm:p-4 md:p-6">
 							<Outlet />
 						</main>
