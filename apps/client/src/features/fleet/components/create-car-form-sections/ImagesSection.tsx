@@ -1,12 +1,8 @@
-import {
-	ACCEPTED_IMAGE_TYPES,
-	MAX_CAR_IMAGE_SIZE_BYTES,
-	MAX_CAR_IMAGES,
-} from '@drivn/shared';
+import { ACCEPTED_IMAGE_TYPES, MAX_CAR_IMAGE_SIZE_BYTES, MAX_CAR_IMAGES } from '@drivn/shared';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { ImageUploader } from '@/components/ImageUploader';
-import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Field, FieldDescription, FieldError } from '@/components/ui/field';
 import { Typography } from '@/components/ui/typography';
 import { getExtensionFromMime } from '@/lib/utils';
 
@@ -47,9 +43,6 @@ export default function ImagesSection() {
 				</Typography>
 			</div>
 			<Field>
-				<FieldLabel htmlFor="images" className="sr-only">
-					Vehicle photos
-				</FieldLabel>
 				<Controller
 					name="images"
 					control={control}
@@ -61,7 +54,6 @@ export default function ImagesSection() {
 							acceptedFileTypes={[...ACCEPTED_IMAGE_TYPES]}
 							multiple
 							maxFiles={MAX_CAR_IMAGES}
-							className="[&>[data-slot=card]]:rounded-none [&>[data-slot=card]]:border-0 [&>[data-slot=card]]:bg-transparent [&>[data-slot=card]]:p-0 [&>[data-slot=card]]:shadow-none [&>[data-slot=card]]:ring-0 [&_[data-slot=card-header]]:hidden [&_[data-slot=card-content]]:px-0 [&_[data-slot=card-footer]]:px-0"
 							copy={imageUploaderCopy}
 							onImagesCropped={(images) => {
 								const files = images.map((image, index) => {

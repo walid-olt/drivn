@@ -4,7 +4,7 @@ import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 
 export const useAgencyCars = () => {
 	return useSuspenseQuery({
-		queryKey: ['agency', 'cars'],
+		queryKey: ['cars'],
 		queryFn: async () => {
 			const [err, cars] = await apiClient.cars.getAgencyCars();
 			if (err) throw err;
@@ -19,7 +19,20 @@ export const useCreateCarMutation = () => {
 		mutationFn: apiClient.cars.create,
 		onSuccess: async ([error]) => {
 			if (error) return;
-			await queryClient.invalidateQueries({ queryKey: ['agency', 'cars'] });
+			await queryClient.invalidateQueries({ queryKey: ['cars'] });
 		},
 	});
 };
+
+export const useUpdateCarStatusMutation = () => {
+	return useMutation({
+		mutationFn: ({ id, status }: { id: string; status: CarStatus }) =>
+			apiClient.cars.update(id, { status }),
+		onSuccess: async ([error]) => {
+			if (error) return;
+			await queryClient.invalidateQueries({ queryKey: ['cars'] });
+		},
+	});
+};
+
+type CarStatus = 'available' | 'rented' | 'maintenance' | 'inactive';

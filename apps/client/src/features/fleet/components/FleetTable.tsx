@@ -12,16 +12,17 @@ import { Button } from '@/components/ui/button';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
+	DropdownMenuGroup,
 	DropdownMenuItem,
-	DropdownMenuSeparator,
+	DropdownMenuLabel,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
+	CheckCircleIcon,
 	DotsThreeIcon,
-	PencilSimpleIcon,
-	CopyIcon,
-	ArchiveIcon,
-	ArrowClockwiseIcon,
+	KeyIcon,
+	ProhibitIcon,
+	WrenchIcon,
 } from '@phosphor-icons/react';
 
 type CarStatus = 'available' | 'rented' | 'maintenance' | 'inactive';
@@ -64,13 +65,20 @@ const STATUS_LABELS: Record<CarStatus, string> = {
 	inactive: 'Inactive',
 };
 
-const currency = new Intl.NumberFormat('en-US', {
+const STATUS_ICONS: Record<CarStatus, typeof CheckCircleIcon> = {
+	available: CheckCircleIcon,
+	rented: KeyIcon,
+	maintenance: WrenchIcon,
+	inactive: ProhibitIcon,
+};
+
+const currency = new Intl.NumberFormat('fr-MA', {
 	style: 'currency',
-	currency: 'USD',
+	currency: 'MAD',
 	maximumFractionDigits: 0,
 });
 
-const km = new Intl.NumberFormat('en-US');
+const km = new Intl.NumberFormat('fr-MA');
 
 function CarThumbnail({ car }: { car: Car }) {
 	const src = car.images?.[0];
@@ -83,19 +91,15 @@ function CarThumbnail({ car }: { car: Car }) {
 
 export function FleetTable({
 	cars,
-	onEdit,
-	onDuplicate,
-	onArchive,
 	onChangeStatus,
+	emptyMessage = 'No vehicles in this fleet yet.',
 }: {
 	cars: Car[];
-	onEdit?: (car: Car) => void;
-	onDuplicate?: (car: Car) => void;
-	onArchive?: (car: Car) => void;
 	onChangeStatus?: (car: Car, status: CarStatus) => void;
+	emptyMessage?: string;
 }) {
 	return (
-		<div className="rounded-lg border">
+		<div className="overflow-hidden rounded-lg border">
 			<Table>
 				<TableHeader>
 					<TableRow>
@@ -112,8 +116,8 @@ export function FleetTable({
 				<TableBody>
 					{cars.length === 0 ? (
 						<TableRow>
-							<TableCell colSpan={9} className="h-32 text-center text-muted-foreground">
-								No vehicles in this fleet yet.
+							<TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
+								{emptyMessage}
 							</TableCell>
 						</TableRow>
 					) : (
@@ -148,38 +152,34 @@ export function FleetTable({
 								<TableCell>
 									<DropdownMenu>
 										<DropdownMenuTrigger
-											render={<Button variant="ghost" size="icon" className="h-8 w-8" />}
+											render={
+												<Button
+													variant="ghost"
+													size="icon"
+													className="h-8 w-8"
+													aria-label={`Change status for ${car.make} ${car.model}`}
+												/>
+											}
 										>
 											<DotsThreeIcon className="h-4 w-4" />
 										</DropdownMenuTrigger>
 										<DropdownMenuContent align="end">
-											<DropdownMenuItem onClick={() => onEdit?.(car)}>
-												<PencilSimpleIcon className="mr-2 h-4 w-4" />
-												Edit
-											</DropdownMenuItem>
-											<DropdownMenuItem onClick={() => onDuplicate?.(car)}>
-												<CopyIcon className="mr-2 h-4 w-4" />
-												Duplicate
-											</DropdownMenuItem>
-											<DropdownMenuSeparator />
-											<DropdownMenuItem
-												onClick={() =>
-													onChangeStatus?.(
-														car,
-														car.status === 'maintenance' ? 'available' : 'maintenance',
-													)
-												}
-											>
-												<ArrowClockwiseIcon className="mr-2 h-4 w-4" />
-												{car.status === 'maintenance' ? 'Mark available' : 'Send to maintenance'}
-											</DropdownMenuItem>
-											<DropdownMenuItem
-												onClick={() => onArchive?.(car)}
-												className="text-destructive"
-											>
-												<ArchiveIcon className="mr-2 h-4 w-4" />
-												Archive
-											</DropdownMenuItem>
+											<DropdownMenuGroup>
+												<DropdownMenuLabel>Change status</DropdownMenuLabel>
+												{(Object.keys(STATUS_LABELS) as CarStatus[]).map((status) => {
+													const StatusIcon = STATUS_ICONS[status];
+													return (
+														<DropdownMenuItem
+															key={status}
+															disabled={status === car.status}
+															onClick={() => onChangeStatus?.(car, status)}
+														>
+															<StatusIcon className="mr-2 h-4 w-4" />
+															{STATUS_LABELS[status]}
+														</DropdownMenuItem>
+													);
+												})}
+											</DropdownMenuGroup>
 										</DropdownMenuContent>
 									</DropdownMenu>
 								</TableCell>

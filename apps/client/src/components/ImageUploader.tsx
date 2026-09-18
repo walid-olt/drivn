@@ -1,3 +1,8 @@
+/**
+ * @author [Thinesh Rasla](https://github.com/0xrasla)
+ * @link [gtihub](https://github.com/0xrasla/shadcn-image-uploader)
+ * */
+
 import { cn } from '@/lib/utils';
 import {
 	CropIcon,

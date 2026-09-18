@@ -8,9 +8,11 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Typography } from '@/components/ui/typography';
 import { Button } from '@ui/button';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 export function FleetNewHeader() {
+	const navigate = useNavigate();
+	const goBack = () => navigate(-1);
 	return (
 		<div className="flex justify-between w-full items-center">
 			<Breadcrumb>
@@ -28,7 +30,7 @@ export function FleetNewHeader() {
 					</BreadcrumbItem>
 				</BreadcrumbList>
 			</Breadcrumb>
-			<Button role="link" render={<Link to={'/agency/fleet/'} />}>
+			<Button role="link" onClick={goBack}>
 				Cancel
 			</Button>
 		</div>

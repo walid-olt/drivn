@@ -66,10 +66,7 @@ const apiClient = {
 			},
 		) {
 			const fd = new FormData();
-			Object.entries(data).forEach(([key, val]) => {
-				if (val) fd.append(key, val);
-			});
-
+			appendCarFields(fd, data);
 			const promise = httpClient.put<ApiResult<Agency>>('/agency/onboarding/branding', {
 				body: fd,
 			});
@@ -145,7 +142,5 @@ const apiClient = {
 		},
 	},
 };
-
-export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default apiClient;

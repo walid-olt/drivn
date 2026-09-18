@@ -106,7 +106,7 @@ const DashboardLayout = () => {
 						pathname={location.pathname}
 						onSignOut={handleSignOut}
 					/>
-					<SidebarInset>
+					<SidebarInset className="min-w-0">
 						<header className="flex h-12 shrink-0 items-center gap-3 border-b px-2 sticky top-0 z-10 bg-background/80 backdrop-blur-md md:px-4">
 							<SidebarTrigger size="icon-lg" className={'md:hidden'} />
 							<Separator orientation="vertical" className={'h-8 my-auto md:hidden'} />
