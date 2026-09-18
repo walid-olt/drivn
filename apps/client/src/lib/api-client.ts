@@ -9,8 +9,9 @@ import {
 	type UpdateAgencySupportDto,
 	type Location as AgencyLocation, // Renamed to avoid naming conflict with the Window Location type
 	type Car,
-	type CreateCarDto,
 	type UpdateCarDto,
+	type ApiResponse,
+	type CarCreateFormData,
 } from '@drivn/shared';
 const httpClient = ky.create({
 	baseUrl: API_URL,
@@ -35,10 +36,6 @@ const httpClient = ky.create({
 		],
 	},
 });
-
-type CreateCarRequest = Omit<CreateCarDto, 'images'> & {
-	images: File[] | string[];
-};
 
 type UpdateCarRequest = Omit<UpdateCarDto, 'images'> & {
 	images?: File[] | string[];
@@ -106,28 +103,23 @@ const apiClient = {
 		},
 
 		async getById(id: string) {
-			const promise = httpClient.get(`/cars/${id}`).json<ApiResult<Car>>();
+			const promise = httpClient.get(`/cars/${id}`).json<ApiResponse<Car>>();
 			return tryCatch(promise);
 		},
 
 		async getAgencyCars() {
-			const promise = httpClient.get('/cars/agency').json<ApiResult<Car[]>>();
+			const promise = httpClient.get('/cars/agency').json<ApiResponse<Car[]>>();
 			return tryCatch(promise);
 		},
 
-		async create(data: CreateCarRequest) {
-			const hasFileUploads = data.images.some((image) => image instanceof File);
-			const promise = hasFileUploads
-				? httpClient
-						.post('/cars', {
-							body: (() => {
-								const formData = new FormData();
-								appendCarFields(formData, data);
-								return formData;
-							})(),
-						})
-						.json<ApiResult<Car>>()
-				: httpClient.post('/cars', { json: data }).json<ApiResult<Car>>();
+		async create(data: CarCreateFormData) {
+			const formData = new FormData();
+			appendCarFields(formData, data);
+			const promise = httpClient
+				.post('/cars', {
+					body: formData,
+				})
+				.json<ApiResponse<Car>>();
 			return tryCatch(promise);
 		},
 
@@ -143,9 +135,7 @@ const apiClient = {
 							})(),
 						})
 						.json<ApiResult<Car>>()
-				: httpClient
-						.patch(`/cars/${id}`, { json: data })
-						.json<ApiResult<Car>>();
+				: httpClient.patch(`/cars/${id}`, { json: data }).json<ApiResult<Car>>();
 			return tryCatch(promise);
 		},
 
@@ -155,5 +145,7 @@ const apiClient = {
 		},
 	},
 };
+
+export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default apiClient;

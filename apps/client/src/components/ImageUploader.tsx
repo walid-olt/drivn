@@ -262,7 +262,7 @@ export function ImageUploader({
 						)}
 					</CardTitle>
 				</CardHeader>
-				<CardContent>
+				<CardContent className="space-y-4">
 					{(multiple || previews.length === 0) && previews.length < maxFiles && (
 						<div
 							className="cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors hover:bg-muted/20"
@@ -292,8 +292,13 @@ export function ImageUploader({
 							{error && <p className="mt-2 text-sm text-destructive">{error}</p>}
 						</div>
 					)}
-					{previews.length > 0 && (
-						<div className={cn('grid gap-4', multiple && 'sm:grid-cols-2')}>
+					{(previews.length > 0 || (multiple && Number.isFinite(maxFiles))) && (
+						<div
+							className={cn(
+								'grid max-w-3xl grid-cols-2 gap-3',
+								multiple && 'sm:grid-cols-3 lg:grid-cols-4',
+							)}
+						>
 							{previews.map((preview, index) => (
 								<div className="relative overflow-hidden rounded-lg" key={preview.url}>
 									<img
@@ -314,6 +319,23 @@ export function ImageUploader({
 									</div>
 								</div>
 							))}
+							{multiple &&
+								Number.isFinite(maxFiles) &&
+								previews.length < maxFiles &&
+								Array.from({ length: maxFiles - previews.length }, (_, index) => (
+									<button
+										key={`empty-slot-${index}`}
+										type="button"
+										className="group flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border/80 bg-muted/10 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/5 hover:text-primary"
+										style={{ aspectRatio }}
+										onClick={() => inputRef.current?.click()}
+									>
+										<span className="flex size-9 items-center justify-center rounded-full border border-current/20 bg-background text-sm font-medium">
+											{previews.length + index + 1}
+										</span>
+										<span className="text-xs font-medium">Add photo</span>
+									</button>
+								))}
 						</div>
 					)}
 				</CardContent>

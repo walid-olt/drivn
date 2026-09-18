@@ -48,7 +48,7 @@ import { Typography } from '@/components/ui/typography';
 import { getAvatarColor, getInitials } from '@/lib/utils';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@ui/tooltip';
 import type { Agency } from '@drivn/shared';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Kbd, KbdGroup } from '@/components/ui/kbd';
 import { Separator } from '@ui/separator';
 
@@ -70,10 +70,13 @@ const DashboardLayout = () => {
 	const location = useLocation();
 	const matches = useMatches();
 	const navigate = useNavigate();
-	const HeaderContent = [...matches]
+	const handle = [...matches]
 		.reverse()
-		.map((match) => (match.handle as { headerContent?: ComponentType } | undefined)?.headerContent)
+		.map((match) => match.handle as { headerContent?: ComponentType; title?: string } | undefined)
 		.find(Boolean);
+
+	const HeaderContent = handle?.headerContent;
+	const title = `Dashboard - ${handle?.title}`;
 
 	const user = session.data.data?.user;
 	if (!user) {
@@ -89,6 +92,9 @@ const DashboardLayout = () => {
 		queryClient.clear();
 		navigate('/login', { replace: true });
 	};
+	useEffect(() => {
+		document.title = title;
+	}, [title]);
 
 	return (
 		<SidebarProvider defaultOpen={false}>
@@ -101,12 +107,12 @@ const DashboardLayout = () => {
 						onSignOut={handleSignOut}
 					/>
 					<SidebarInset>
-						<header className="flex h-12 shrink-0 items-center gap-3 border-b px-2 ">
+						<header className="flex h-12 shrink-0 items-center gap-3 border-b px-2 sticky top-0 z-10 bg-background/80 backdrop-blur-md md:px-4">
 							<SidebarTrigger size="icon-lg" className={'md:hidden'} />
 							<Separator orientation="vertical" className={'h-8 my-auto md:hidden'} />
 							{HeaderContent ? <HeaderContent /> : null}
 						</header>
-						<main className="flex flex-1 flex-col gap-6 p-3 sm:p-4 md:p-6">
+						<main className="flex flex-1 flex-col gap-6 p-4">
 							<Outlet />
 						</main>
 					</SidebarInset>

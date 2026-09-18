@@ -34,7 +34,7 @@ export const carSchema = z.object({
 		})
 		.default('available'),
 	category: z
-		.enum(['sedan', 'suv', 'hatchback', 'coupe', 'convertible', 'minivan', 'truck', 'luxury'], {
+		.enum(['sedan', 'suv', 'hatchback', 'coupe', 'convertible', 'minivan', 'luxury'], {
 			error: 'Choose a valid car category.',
 		})
 		.default('sedan'),

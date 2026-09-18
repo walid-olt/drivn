@@ -16,6 +16,8 @@ import AgencySetupCompleted from '@/features/agency/pages/AgencySetupCompleted';
 import DashboardLayout from '@/features/agency/components/DashboardLayout';
 import { Suspense } from 'react';
 import { Typography } from '@/components/ui/typography';
+import FleetHeader from '@/features/fleet/components/FleetHeader';
+import { FleetNewHeader } from '@/features/fleet/components/FleetNewHeader';
 
 /**
  * @description
@@ -52,16 +54,25 @@ export default [
 										index: true,
 										lazy: () => import('@/features/agency/pages/Agency'),
 										handle: {
-											title: 'Dashboard',
+											title: 'overview',
 											headerContent: () => <Typography variant={'h4'}>Dashboard</Typography>,
 										},
 									},
 									{
 										path: 'fleet',
-										lazy: () => import('@/features/agency/pages/Fleet'),
+										lazy: () => import('@/features/fleet/pages/AgencyCars'),
+
 										handle: {
-											title: 'Dashboard',
-											headerContent: () => <Typography variant={'h4'}>Fleet</Typography>,
+											title: 'Fleet',
+											headerContent: () => <FleetHeader />,
+										},
+									},
+									{
+										path: 'fleet/new',
+										lazy: () => import('@/features/fleet/pages/AgencyCreateCar'),
+										handle: {
+											title: 'New car',
+											headerContent: () => <FleetNewHeader />,
 										},
 									},
 									{
