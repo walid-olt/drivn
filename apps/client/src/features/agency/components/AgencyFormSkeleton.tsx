@@ -7,7 +7,7 @@ const AgencyFormSkeleton = () => {
 				Make your agency recognizable
 			</TypographySkeleton>
 			<TypographySkeleton variant={'body'}>
-				Add your logo and a cover image to help customers recognize your agency.
+				Add your logo and a cover image to keep your agency workspace recognizable.
 			</TypographySkeleton>
 			<TypographySkeleton variant={'body'} className="w-full h-48"></TypographySkeleton>
 		</div>

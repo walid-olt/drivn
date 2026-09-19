@@ -20,7 +20,6 @@ export interface VerificationEmailParams {
 
 export interface OrganizationInviteParams {
 	inviteeEmail: string;
-	inviteeName: string;
 	inviterName: string;
 	inviterEmail: string;
 	agencyName: string;

@@ -55,9 +55,9 @@ const AgencySupportForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 
 	return (
 		<div>
-			<Typography variant={'h3'}>How can customers reach you?</Typography>
+			<Typography variant={'h3'}>How can renters reach you?</Typography>
 			<Typography variant={'body'}>
-				Add the contact details customers can use when they need help with a booking or have a
+				Add the contact details renters can use when they need help with a booking or have a
 				question.
 			</Typography>
 			<form

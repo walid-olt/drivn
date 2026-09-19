@@ -8,6 +8,7 @@ import authClient from '@/lib/auth-client';
 import { useSession } from '@/lib/auth-hooks';
 
 export default function EmailVerificationRequestPage() {
+	const redirectTo = new URLSearchParams(window.location.search).get('redirectTo');
 	const { isError, data: result, error, isPending } = useSession();
 
 	const {
@@ -15,7 +16,11 @@ export default function EmailVerificationRequestPage() {
 		isPending: isVerifying,
 		isSuccess: isEmailVerificationSent,
 	} = useMutation({
-		mutationFn: (email: string) => authClient.sendVerificationEmail({ email }),
+		mutationFn: (email: string) =>
+			authClient.sendVerificationEmail({
+				email,
+				callbackURL: new URL(redirectTo || '/agency', window.location.origin).toString(),
+			}),
 	});
 
 	if (isPending) {

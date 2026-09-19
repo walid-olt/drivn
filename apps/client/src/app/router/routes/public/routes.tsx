@@ -5,14 +5,13 @@ import { type RouteObject } from 'react-router';
 import Login from '@/pages/public/Login';
 import Register from '@/pages/public/Register';
 import RegisterAgency from '@/pages/public/RegisterAgency';
-import RegisterCustomer from '@/pages/public/RegisterCustomer';
+import AcceptInvitation from '@/features/agency/pages/AcceptInvitation';
 import { redirectIfAuthenticated } from '../../middleware/redirectIfAuthenticated';
 import PublicLayout from '@/components/layouts/PublicLayout';
 
 /**
  * @description
- * These are the public routes for the application.
- * They will include the home page, car listings , login, register, and other public pages.
+ * These are the public authentication and landing routes.
  */
 export default [
 	{
@@ -27,10 +26,6 @@ export default [
 						element: <Home />,
 					},
 					{
-						path: '/cars',
-						lazy: () => import('@/pages/public/Cars'),
-					},
-					{
 						path: '/unauthorized',
 						element: <Unauthorized />,
 					},
@@ -39,6 +34,10 @@ export default [
 			{
 				path: '/verify-email',
 				element: <VerifyEmail />,
+			},
+			{
+				path: '/accept-invitation/:invitationId',
+				element: <AcceptInvitation />,
 			},
 		],
 	},
@@ -52,10 +51,6 @@ export default [
 			{
 				path: '/register',
 				element: <Register />,
-			},
-			{
-				path: '/register/customer',
-				element: <RegisterCustomer />,
 			},
 			{
 				path: '/register/agency',

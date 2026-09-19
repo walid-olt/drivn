@@ -1,15 +1,12 @@
 import { type RouteObject } from 'react-router';
-import Profile from '@/pages/protected/Profile';
 import NoAgency from '@/features/agency/pages/NoAgency';
 import EmailVerificationRequestPage from '@/pages/public/EmailVerificationRequestPage';
 import requireUserAuth from '../../middleware/requireUserAuth';
-import requireUserOfType from '../../middleware/requireUserOfType';
 import requireVerifiedUser from '../../middleware/requireVerifiedUser';
 import requireAgencyMembership from '../../middleware/requireAgencyMembership';
 import requireNoAgency from '../../middleware/requireNoAgency';
 import requireAgencyOnboarding from '../../middleware/requireAgencyOnBoarding';
 import CreateAgency from '@/features/agency/pages/CreateAgency';
-import AcceptInvitation from '@/features/agency/pages/AcceptInvitation';
 import Loading from '@/components/ui/Loading';
 import apiClient from '@/lib/api-client';
 import AgencySetupCompleted from '@/features/agency/pages/AgencySetupCompleted';
@@ -18,22 +15,18 @@ import { Suspense } from 'react';
 import { Typography } from '@/components/ui/typography';
 import FleetHeader from '@/features/fleet/components/FleetHeader';
 import { FleetNewHeader } from '@/features/fleet/components/FleetNewHeader';
+import TeamHeader from '@/features/agency/components/TeamHeader';
 
 /**
  * @description
- * These are the protected routes for the application.
- * They will combine both customer and agency routes, which will
- * be protected by authentication and authorization.
- *
- * We use different middleware and nested routes to handle the
- * different user types and their access levels.
+ * These are the protected routes for the agency CRM.
  */
 export default [
 	{
 		middleware: [requireUserAuth],
 		children: [
 			{
-				middleware: [requireUserOfType(['agency_member']), requireVerifiedUser],
+				middleware: [requireVerifiedUser],
 				children: [
 					{
 						middleware: [requireAgencyMembership],
@@ -86,6 +79,10 @@ export default [
 									{
 										path: 'team',
 										lazy: () => import('@/features/agency/pages/Team'),
+										handle: {
+											title: 'Team',
+											headerContent: () => <TeamHeader />,
+										},
 									},
 								],
 								middleware: [requireAgencyOnboarding],
@@ -120,23 +117,8 @@ export default [
 							},
 						],
 					},
-					{
-						path: '/accept-invitation/:invitationId',
-						element: <AcceptInvitation />,
-					},
 				],
 			},
-			// Customer-only area
-			{
-				middleware: [requireUserOfType(['customer']), requireVerifiedUser],
-				children: [
-					{
-						path: '/profile',
-						element: <Profile />,
-					},
-				],
-			},
-			// Any authenticated user
 			{
 				path: '/verify-email/request',
 				element: <EmailVerificationRequestPage />,

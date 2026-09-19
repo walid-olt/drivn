@@ -130,7 +130,7 @@ const AgencyBrandingForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 		<div>
 			<Typography variant={'h3'}>Make your agency recognizable</Typography>
 			<Typography variant={'body'}>
-				Add your logo and a cover image to help customers recognize your agency.
+				Add your logo and a cover image to keep your agency workspace recognizable.
 			</Typography>
 			<form
 				className={`py-12 ${isSubmitting && 'opacity-80 pointer-events-none'}`}
@@ -142,7 +142,7 @@ const AgencyBrandingForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 					</Label>
 
 					<Typography variant={'body'}>
-						Your logo will appear on your agency profile, listings, and other customer-facing areas.
+						Your logo will appear across your agency workspace and documents.
 					</Typography>
 					<div className="py-4">
 						<Controller

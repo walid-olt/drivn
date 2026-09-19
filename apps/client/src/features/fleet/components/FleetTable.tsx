@@ -53,7 +53,7 @@ type Car = {
 // once they're wired up as Tailwind theme colors.
 const STATUS_STYLES: Record<CarStatus, string> = {
 	available: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30',
-	rented: 'bg-fuchsia-500/15 text-fuchsia-400 border-fuchsia-500/30',
+	rented: 'bg-fuchsia-500/15 text-fuchsia-400 border-fuchsia-500/30 ',
 	maintenance: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
 	inactive: 'bg-zinc-500/15 text-zinc-400 border-zinc-500/30',
 };
@@ -139,7 +139,11 @@ export function FleetTable({
 								</TableCell>
 								<TableCell>
 									<Badge variant="outline" className={STATUS_STYLES[car.status]}>
-										{STATUS_LABELS[car.status]}
+										<span
+											className={car.status === 'rented' ? 'shimmer shimmer-color-fuchsia-100' : ''}
+										>
+											{car.status}
+										</span>
 									</Badge>
 								</TableCell>
 								<TableCell className="capitalize text-sm">{car.category}</TableCell>
@@ -152,14 +156,7 @@ export function FleetTable({
 								<TableCell>
 									<DropdownMenu>
 										<DropdownMenuTrigger
-											render={
-												<Button
-													variant="ghost"
-													size="icon"
-													className="h-8 w-8"
-													aria-label={`Change status for ${car.make} ${car.model}`}
-												/>
-											}
+											render={<Button variant="ghost" size="icon" className="h-8 w-8" />}
 										>
 											<DotsThreeIcon className="h-4 w-4" />
 										</DropdownMenuTrigger>

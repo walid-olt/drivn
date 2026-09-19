@@ -1,11 +1,11 @@
 import EmptyFleet from '../components/EmptyFleet';
 import AsyncContainer from '@/components/AsyncContainer';
-import { Spinner } from '@/components/ui/spinner';
 import { FleetTable } from '../components/FleetTable';
 import { useAgencyCars, useUpdateCarStatusMutation } from '../hooks';
 import { toast } from '@/components/ui/toast';
 import { useSearchParams } from 'react-router';
 import type { Car } from '@drivn/shared';
+import Loading from '@/components/ui/Loading';
 
 const useCarFilters = (cars: Car[]) => {
 	const [searchParams] = useSearchParams();
@@ -56,7 +56,9 @@ const AgencyCars = () => {
 };
 
 export const Component = () => (
-	<AsyncContainer loadingMessage={'Getting agency fleet'} loadingIndicator={<Spinner />}>
+	<AsyncContainer
+		loadingComponent={<Loading showIndicator message={'Getting agency fleet'} className="h-64" />}
+	>
 		<AgencyCars />
 	</AsyncContainer>
 );

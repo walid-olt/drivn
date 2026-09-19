@@ -1,6 +1,5 @@
 import {
 	BuildingsIcon,
-	CarIcon,
 	HouseIcon,
 	ListIcon as Menu,
 	SignInIcon,
@@ -21,8 +20,7 @@ import Logo from './Logo';
 
 const menu = [
 	{ title: 'Home', url: '/', icon: <HouseIcon /> },
-	{ title: 'Cars', url: '/cars', icon: <CarIcon /> },
-	{ title: 'Agencies', url: '/agencies', icon: <BuildingsIcon /> },
+	{ title: 'Agency CRM', url: '/agency', icon: <BuildingsIcon /> },
 ];
 
 const Navbar = () => {

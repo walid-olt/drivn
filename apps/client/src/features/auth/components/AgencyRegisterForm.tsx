@@ -44,6 +44,7 @@ type AgencyRegisterFormData = z.infer<typeof agencyRegisterSchema>;
 
 export default function AgencyRegisterForm() {
 	const navigate = useNavigate();
+	const invitationId = new URLSearchParams(window.location.search).get('invitationId');
 	const {
 		register,
 		handleSubmit,
@@ -67,7 +68,11 @@ export default function AgencyRegisterForm() {
 		}
 
 		await queryClient.invalidateQueries({ queryKey: ['session'] });
-		navigate('/no-agency');
+		navigate(
+			invitationId
+				? `/accept-invitation/${encodeURIComponent(invitationId)}`
+				: '/no-agency',
+		);
 	}
 
 	return (
@@ -157,9 +162,9 @@ export default function AgencyRegisterForm() {
 			</form>
 
 			<Typography variant="caption" className="text-center">
-				Signing up as a customer instead?{' '}
-				<Link to="/register/customer" className="font-medium text-primary hover:underline">
-					Go to customer signup
+				Need to sign in instead?{' '}
+				<Link to="/login" className="font-medium text-primary hover:underline">
+					Go to login
 				</Link>
 			</Typography>
 		</div>

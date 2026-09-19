@@ -4,21 +4,21 @@
 
 # Overview
 
-Drivn is car rental platform built to provide a unified experience for both customers and agencies. It offers a interface for customers to browse and book cars, while providing agencies with tools to manage their fleet and reservations efficiently.
+Drivn is a multi-tenant car-rental CRM for agencies. It gives agency teams tools to manage their fleet, locations, renters, reservations, and support operations from one workspace.
 
 # The Problem
 
-The car rental industry is fragmented, and most agencies operate independently, leading to a lack of standardization and inefficiencies in the booking process. Customers often have to navigate multiple platforms to find the best deals, while agencies struggle with managing their inventory and reservations effectively.
+Independent agencies need a consistent internal system for managing vehicles, locations, renter records, and reservations without relying on a marketplace.
 
 # The Solution
 
-Drivn aims to solve these problems by creating a centralized platform that connects customers with multiple car rental agencies. This allows customers to easily compare prices and availability, while providing agencies with a solid system to manage their fleet and reservations.
+Drivn provides each agency with an isolated CRM workspace and role-based team access, while keeping renter and reservation data owned by the agency.
 
 # Features roadmap
 
-- [ ] Agency Dashboard: A comprehensive dashboard for agencies to manage their fleet and reservations.
-- [ ] Customer Interface: A user-friendly interface for customers to browse and book cars.
-- [ ] Email Notifications: Automated email notifications for reservation confirmations, cancellations, and reminders.
+- [ ] Agency Dashboard: Manage fleet, locations, renters, and reservations.
+- [ ] Team management: Invite and manage agency members.
+- [ ] Email Notifications: Reservation, invitation, and account notifications.
 
 # Tech Stack
 

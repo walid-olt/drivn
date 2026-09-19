@@ -2,8 +2,7 @@ import { Link } from 'react-router';
 
 const footerLinks = [
 	{ title: 'Home', url: '/' },
-	{ title: 'Cars', url: '/cars' },
-	{ title: 'For agencies', url: '/for-agencies' },
+	{ title: 'Agency CRM', url: '/agency' },
 ];
 
 const Footer = () => {
@@ -14,7 +13,7 @@ const Footer = () => {
 					<Link to="/" className="flex w-fit items-center gap-2">
 						<img src="/Drivn-logo.svg" alt="Drivn" className="max-h-7 dark:invert" />
 					</Link>
-					<p className="text-sm text-muted-foreground">Car rentals</p>
+					<p className="text-sm text-muted-foreground">Agency operations</p>
 				</div>
 				<nav aria-label="Footer" className="flex flex-wrap items-center gap-1">
 					{footerLinks.map((link) => (

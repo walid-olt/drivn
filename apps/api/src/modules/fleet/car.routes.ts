@@ -5,13 +5,8 @@ import { handler } from '../../lib/handler';
 import { handleUploadCarImages } from './car.middleware';
 
 const agencyCarsRouter = Router();
-const publicCarsRouter = Router();
-
 const router = Router();
 router.get('/agency', authenticate, requireAgency, handler(carController.getAgencyCars));
-publicCarsRouter.get('/', handler(carController.getAll));
-publicCarsRouter.get('/:id', handler(carController.getById));
-
 agencyCarsRouter.post(
 	'/',
 	handleUploadCarImages,
@@ -21,7 +16,6 @@ agencyCarsRouter.put('/:id', handleUploadCarImages, handler(carController.update
 agencyCarsRouter.patch('/:id', handleUploadCarImages, handler(carController.update));
 agencyCarsRouter.delete('/:id', handler(carController.delete));
 
-router.use(publicCarsRouter);
 router.use(authenticate, requireAgency, agencyCarsRouter);
 
 export default router;

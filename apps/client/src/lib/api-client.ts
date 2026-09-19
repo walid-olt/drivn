@@ -94,16 +94,6 @@ const apiClient = {
 		},
 	},
 	cars: {
-		async getAll() {
-			const promise = httpClient.get('/cars').json<ApiResult<Car[]>>();
-			return tryCatch(promise);
-		},
-
-		async getById(id: string) {
-			const promise = httpClient.get(`/cars/${id}`).json<ApiResponse<Car>>();
-			return tryCatch(promise);
-		},
-
 		async getAgencyCars() {
 			const promise = httpClient.get('/cars/agency').json<ApiResponse<Car[]>>();
 			return tryCatch(promise);

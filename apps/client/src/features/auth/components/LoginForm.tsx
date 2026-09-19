@@ -42,7 +42,7 @@ export default function LoginForm({ initialMessage }: LoginFormProps) {
 
 	async function onSubmit(data: LoginFormData) {
 		setSubmitError(null);
-		const { error, data: session } = await authClient.signIn.email({
+		const { error } = await authClient.signIn.email({
 			email: data.email,
 			password: data.password,
 		});
@@ -51,11 +51,9 @@ export default function LoginForm({ initialMessage }: LoginFormProps) {
 			setSubmitError(getAuthErrorMessage(error, 'Unable to sign in.'));
 			return;
 		}
-		const user = session.user;
-
 		await queryClient.invalidateQueries({ queryKey: ['session'] });
 		if (redirectTo) return navigate(redirectTo);
-		navigate((user as any).type === 'customer' ? '/profile' : '/agency');
+		navigate('/agency');
 	}
 
 	return (

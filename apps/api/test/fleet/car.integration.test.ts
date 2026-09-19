@@ -59,18 +59,22 @@ describe('[FLEET CARS]', () => {
 		images: ['https://example.com/corolla.jpg'],
 	});
 
-	it('lists only available cars publicly', async () => {
-		const { _app, agency } = await setupAgency();
+	it('lists the agency fleet for authenticated members', async () => {
+		const { _app, cookies, agency } = await setupAgency();
 		await CarModel.create([car(agency), car(agency, 'rented')]);
 
-		const response = await request(_app).get(CARS_URL).expect(200);
+		const response = await request(_app).get(`${CARS_URL}/agency`).set('Cookie', cookies).expect(200);
 
 		expect(response.body.success).toBe(true);
-		expect(response.body.data).toHaveLength(1);
-		expect(response.body.data[0]).toMatchObject({
+		expect(response.body.data).toHaveLength(2);
+		expect(response.body.data).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
 			make: 'Toyota',
 			status: 'available',
-		});
+				}),
+			]),
+		);
 	});
 
 	it('creates a car for the authenticated agency and derives its ownership fields', async () => {

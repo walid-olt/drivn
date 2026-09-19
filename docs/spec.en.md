@@ -1,4 +1,4 @@
-# Product & Technical Specification: Unified Car Rental Marketplace (MVP)
+# Product & Technical Specification: Agency Rental CRM (MVP)
 
 ---
 
@@ -6,11 +6,11 @@
 
 ### 1.1 problem statement
 
-Local car rental agencies frequently operate without a dedicated digital presence or rely on rigid, poorly optimized website templates. this fragmentation reduces market visibility for agencies and forces consumers to navigate disjointed channels to compare and reserve vehicles.
+Local car rental agencies frequently operate without a dedicated operational system, which creates fragmented fleet, renter, and reservation workflows.
 
 ### 1.2 solution
 
-A unified, multi-tenant b2b2c marketplace that standardizes the rental process. small and mid-sized agencies get a dedicated dashboard to manage and list their fleets, while customers gain access to a centralized portal to search, compare, and request vehicle reservations.
+A unified, multi-tenant B2B CRM that standardizes rental operations. Small and mid-sized agencies get a dedicated workspace to manage fleets, locations, renter records, and reservations.
 
 ### 1.3 use cases
 
@@ -38,18 +38,18 @@ The system uses a unified **turborepo monorepo** architecture to enforce compile
 
 ### 2.2 system topography
 
-- **client tier:** single page application (spa) utilizing a role-based router layout (public, renter, agency admin).
+- **client tier:** single page application (SPA) with public and agency CRM routes.
 - **application tier:** modular express API.
 - **data tier:** cloud hosted mongodb instance managed via mongoose ODM.
 
 ## 3. Core functionalities
 
-### Customer portal
+### Agency CRM
 
 - Email/password authentication.
 - Email verification.
-- Car search and filtering by make, model, year, price, and location.
-- Reservation request submission with date and time selection.
+- Renter records with contact details.
+- Reservation creation with date and time selection.
 - Reservation status tracking (pending, approved, rejected).
 - Email notifications for reservation status updates.
 
@@ -60,7 +60,7 @@ The system uses a unified **turborepo monorepo** architecture to enforce compile
 - Onboarding flow for agency branding, support contact, and operating locations.
 - Organization management (add/remove members).
 - Fleet management (add/remove vehicles, update vehicle details).
-- Reservation management (view incoming requests, approve/reject reservations).
+- Reservation management (view reservations, approve/reject reservations).
 - Email notifications for new reservation requests and status updates.
 
 ### 4. Technical specifications

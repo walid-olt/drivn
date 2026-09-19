@@ -47,6 +47,7 @@ function VerifyEmailStatus({
 
 export default function VerifyEmail() {
 	const token = new URLSearchParams(window.location.search).get('token');
+	const redirectTo = new URLSearchParams(window.location.search).get('redirectTo');
 	const navigate = useNavigate();
 
 	const {
@@ -61,7 +62,7 @@ export default function VerifyEmail() {
 				type: 'success',
 				description: 'Your email has been verified.',
 			});
-			navigate(await resolvePostAuthPath());
+			navigate(redirectTo ?? (await resolvePostAuthPath()));
 		},
 	});
 

@@ -20,8 +20,8 @@ const authClient = createAuthClient({
 					required: true,
 					fieldName: 'type',
 					validator: {
-						input: z.enum(['customer', 'agency_member']),
-						output: z.enum(['customer', 'agency_member']),
+						input: z.literal('agency_member'),
+						output: z.literal('agency_member'),
 					},
 				},
 			},

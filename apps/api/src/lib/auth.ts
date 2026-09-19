@@ -1,12 +1,11 @@
-import { APIError, betterAuth } from 'better-auth';
+import { betterAuth } from 'better-auth';
 import { createAuthMiddleware } from 'better-auth/api';
 import { organization } from 'better-auth/plugins/organization';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
-import { mongo, Types, type Document } from 'mongoose';
+import { mongo, Types } from 'mongoose';
 import { ResendProvider } from './providers/resend';
 import { TestingEmailProvider } from './providers/testing';
 import { BackgroundEmailService } from './services/BackgroundEmailService';
-import type { BaseUser } from 'better-auth';
 import { z } from 'zod';
 import agencyService from '../modules/agency/agency.service';
 import { internalServerError, unauthorized } from '../errors';
@@ -24,7 +23,7 @@ export function initializeAuthInstance(db: mongo.Db) {
 	const useTesting = process.env.NODE_ENV === 'test';
 	const provider = useTesting
 		? new TestingEmailProvider()
-		: new ResendProvider(process.env.RESEND_API_KEY ?? '');
+		: new ResendProvider(process.env.RESEND_API_KEY);
 	const emailService = new BackgroundEmailService(provider);
 	const auth = betterAuth({
 		baseURL: process.env.BACKEND_URL,
@@ -49,13 +48,10 @@ export function initializeAuthInstance(db: mongo.Db) {
 						const [userErr, user] = await tryCatch(getUser);
 						console.info('session before hook user', user);
 						if (userErr || !user) throw unauthorized('Unauthenticated');
-						if (user.type === 'customer')
-							return {
-								data: session,
-							};
 						const getUserMemberShips = db
 							.collection('members')
 							.find({ userId: new Types.ObjectId(session.userId) })
+							.sort({ createdAt: 1, _id: 1 })
 							.toArray();
 
 						const [membershipErr, memberships] = await tryCatch(getUserMemberShips);
@@ -91,8 +87,8 @@ export function initializeAuthInstance(db: mongo.Db) {
 					required: true,
 					fieldName: 'type',
 					validator: {
-						input: z.enum(['customer', 'agency_member']),
-						output: z.enum(['customer', 'agency_member']),
+						input: z.literal('agency_member'),
+						output: z.literal('agency_member'),
 					},
 				},
 			},
@@ -101,13 +97,10 @@ export function initializeAuthInstance(db: mongo.Db) {
 			before: createAuthMiddleware(async (ctx) => {
 				if (ctx.path !== '/sign-up/email') return;
 				const body = (ctx.body ?? {}) as Record<string, unknown>;
-				// `type` is a required user additionalField; honor an explicit one, default to customer
-				const type =
-					body.type === 'agency_member' || body.type === 'customer' ? body.type : 'customer';
 				return {
 					context: {
 						...ctx,
-						body: { ...body, type },
+						body: { ...body, type: 'agency_member' },
 					},
 				};
 			}),
@@ -116,10 +109,7 @@ export function initializeAuthInstance(db: mongo.Db) {
 			sendOnSignUp: false, // We will allow the user to request email verification manually after sign-up
 			sendVerificationEmail: async (data) => {
 				emailService.emit('verification', {
-					verificationUrl: new URL(
-						`/verify-email?token=${data.token}`,
-						process.env.FRONTEND_URL,
-					).toString(),
+					verificationUrl: data.url,
 					userName: data.user.name || data.user.email,
 					to: data.user.email,
 				});
@@ -144,18 +134,9 @@ export function initializeAuthInstance(db: mongo.Db) {
 						email: inviteeEmail,
 					} = data;
 
-					const userColl = db.collection<Document<BaseUser>>('users');
-
-					const existingUser = await userColl.findOne<BaseUser>({
-						emai: inviteeEmail,
-					});
-
-					if (!existingUser) throw new APIError('NOT_FOUND', { message: 'User not found' });
-
 					const [err, agency] = await agencyService.getByOrganizationId(orgId);
 					if (err || !agency) throw internalServerError("Couldn't get Agency");
 
-					const inviteeName = existingUser.name || '';
 					const agencyName = agency.name || organizationName;
 					const agencyLogo = agency.logo;
 
@@ -172,7 +153,6 @@ export function initializeAuthInstance(db: mongo.Db) {
 						agencyName,
 						agencyLogo,
 						inviteeEmail,
-						inviteeName,
 					});
 				},
 				organizationHooks: {

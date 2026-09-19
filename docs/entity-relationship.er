@@ -128,7 +128,9 @@ reservation [icon: calendar, color: darkgreen] {
   organizationId string fk
   agencyId string fk
   carId string fk
-  customerId string fk
+  renterName string
+  renterEmail string
+  renterPhone string
   startDate datetime
   endDate datetime
   status string enum
@@ -146,7 +148,6 @@ user.id <  account.userId
 user.id - member.userId
 user.id - invitation.inviterId
 user.id - profile.userId
-user.id < reservation.customerId
 organization.id < member.organizationId
 organization.id < invitation.organizationId
 organization.id < agency.organizationId

@@ -34,7 +34,6 @@ export async function resolvePostAuthPath() {
 	});
 
 	if (!isOk(sessionResult)) return '/login';
-	if (sessionResult.data.user.type === 'customer') return '/profile';
 	const orgResult: AuthResult<(typeof authClient.$Infer.Organization)[]> =
 		await queryClient.ensureQueryData({
 			queryKey: QUERY_KEYS.agencies,
