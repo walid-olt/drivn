@@ -75,7 +75,14 @@ export default function PricingStatusSection() {
 				</Field>
 				<Field>
 					<FieldLabel htmlFor="kilometrage">Kilometrage</FieldLabel>
-					<Input id="kilometrage" type="number" min={0} step="1" aria-invalid={errors.kilometrage ? true : undefined} {...register('kilometrage', { valueAsNumber: true })} />
+					<Input
+						id="kilometrage"
+						type="number"
+						min={0}
+						step="1"
+						aria-invalid={errors.kilometrage ? true : undefined}
+						{...register('kilometrage', { valueAsNumber: true })}
+					/>
 					<FieldError errors={[errors.kilometrage]} />
 				</Field>
 			</div>

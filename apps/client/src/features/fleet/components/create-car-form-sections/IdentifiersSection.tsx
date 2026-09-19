@@ -18,12 +18,24 @@ export default function IdentifiersSection() {
 			<div className="grid gap-4 md:grid-cols-2">
 				<Field>
 					<FieldLabel htmlFor="vin">VIN</FieldLabel>
-					<Input id="vin" type="text" placeholder="WBA1234567890" aria-invalid={errors.vin ? true : undefined} {...register('vin')} />
+					<Input
+						id="vin"
+						type="text"
+						placeholder="WBA1234567890"
+						aria-invalid={errors.vin ? true : undefined}
+						{...register('vin')}
+					/>
 					<FieldError errors={[errors.vin]} />
 				</Field>
 				<Field>
 					<FieldLabel htmlFor="licensePlate">License plate</FieldLabel>
-					<Input id="licensePlate" type="text" placeholder="ABC-1234" aria-invalid={errors.licensePlate ? true : undefined} {...register('licensePlate')} />
+					<Input
+						id="licensePlate"
+						type="text"
+						placeholder="ABC-1234"
+						aria-invalid={errors.licensePlate ? true : undefined}
+						{...register('licensePlate')}
+					/>
 					<FieldDescription>Optional but useful for in-person tracking.</FieldDescription>
 					<FieldError errors={[errors.licensePlate]} />
 				</Field>

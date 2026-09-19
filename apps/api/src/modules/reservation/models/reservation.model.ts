@@ -5,12 +5,7 @@ interface ReservationDocument
 	extends
 		Omit<
 			Reservation,
-			| 'organizationId'
-			| '_id'
-			| 'agencyId'
-			| 'carId'
-			| 'pickupLocationId'
-			| 'dropoffLocationId'
+			'organizationId' | '_id' | 'agencyId' | 'carId' | 'pickupLocationId' | 'dropoffLocationId'
 		>,
 		Document {
 	organizationId: Types.ObjectId;

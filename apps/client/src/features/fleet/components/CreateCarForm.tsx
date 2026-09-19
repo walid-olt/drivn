@@ -64,7 +64,8 @@ const CreateCarForm = () => {
 						Add a car to your fleet
 					</Typography>
 					<Typography variant="body">
-						Set the essentials once. We’ll use them to present this vehicle clearly across your fleet.
+						Set the essentials once. We’ll use them to present this vehicle clearly across your
+						fleet.
 					</Typography>
 				</div>
 

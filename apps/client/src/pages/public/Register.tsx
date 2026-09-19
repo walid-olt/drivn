@@ -11,9 +11,7 @@ const Register = () => {
 			<div className="flex flex-col gap-6">
 				<div className="flex flex-col gap-1 text-center">
 					<Typography variant="h3">Create your account</Typography>
-					<Typography variant="body">
-						Create an account to manage your agency workspace.
-					</Typography>
+					<Typography variant="body">Create an account to manage your agency workspace.</Typography>
 				</div>
 
 				<div className="flex flex-col gap-3">

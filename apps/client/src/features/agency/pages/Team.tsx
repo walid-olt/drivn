@@ -8,7 +8,13 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/reui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserMinusIcon, PaperPlaneTiltIcon, XIcon } from '@phosphor-icons/react';
+import {
+	UserMinusIcon,
+	PaperPlaneTiltIcon,
+	XIcon,
+	UserListIcon,
+	UserPlusIcon,
+} from '@phosphor-icons/react';
 
 const membersQueryKey = ['organization', 'members'];
 const invitationsQueryKey = ['organization', 'invitations'];
@@ -39,7 +45,9 @@ export const Component = () => {
 
 	const removeMember = useMutation({
 		mutationFn: async (memberId: string) => {
-			const result = await authClient.organization.removeMember({ memberIdOrEmail: memberId });
+			const result = await authClient.organization.removeMember({
+				memberIdOrEmail: memberId,
+			});
 			if (result.error) throw new Error(result.error.message);
 		},
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: membersQueryKey }),
@@ -51,6 +59,8 @@ export const Component = () => {
 				email: memberEmail,
 				role: 'member',
 			});
+
+			// throw so error boundary can display the fallback
 			if (result.error) throw new Error(result.error.message);
 		},
 		onSuccess: async () => {
@@ -61,7 +71,10 @@ export const Component = () => {
 
 	const cancelInvitation = useMutation({
 		mutationFn: async (invitationId: string) => {
-			const result = await authClient.organization.cancelInvitation({ invitationId });
+			const result = await authClient.organization.cancelInvitation({
+				invitationId,
+			});
+			// throw so error boundary can display the fallback
 			if (result.error) throw new Error(result.error.message);
 		},
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: invitationsQueryKey }),
@@ -80,9 +93,15 @@ export const Component = () => {
 
 	return (
 		<Tabs defaultValue="members" className="w-full">
-			<TabsList>
-				<TabsTrigger value="members">Members</TabsTrigger>
-				<TabsTrigger value="invitations">Invitations</TabsTrigger>
+			<TabsList variant={'line'}>
+				<TabsTrigger value="members">
+					<UserListIcon />
+					Members ( {memberRows.length} )
+				</TabsTrigger>
+				<TabsTrigger value="invitations">
+					<UserPlusIcon />
+					Invitations ( {invitationRows.length} )
+				</TabsTrigger>
 			</TabsList>
 
 			<TabsContent value="members" className="mt-4">

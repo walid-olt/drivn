@@ -69,9 +69,7 @@ export default function AgencyRegisterForm() {
 
 		await queryClient.invalidateQueries({ queryKey: ['session'] });
 		navigate(
-			invitationId
-				? `/accept-invitation/${encodeURIComponent(invitationId)}`
-				: '/no-agency',
+			invitationId ? `/accept-invitation/${encodeURIComponent(invitationId)}` : '/no-agency',
 		);
 	}
 
