@@ -101,7 +101,6 @@ const AgencyBrandingForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 	const summary = watch('summary');
 	const onSubmit = async (data: z.infer<typeof updateAgencyBrandingSchema>) => {
 		startSubmit();
-		setIsSkipping(true);
 
 		const [err, res] = await apiClient.agency.updateAgencyBranding(data);
 		if (err) {
@@ -109,7 +108,6 @@ const AgencyBrandingForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 				message: err.message || 'Failed to save your changes, please try again',
 			});
 			console.info('[SERVER]: ', res);
-			setIsSkipping(false);
 			return;
 		}
 		onSuccess();
@@ -158,14 +156,12 @@ const AgencyBrandingForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 										copy={logoUploaderCopy}
 										onImagesCropped={(images) => {
 											const image = images[0];
+											if (!image) {
+												onChange(undefined);
+												return;
+											}
 											const ext = getExtensionFromMime(image.type);
-											onChange(
-												image
-													? new File([image], `logo.${ext}`, {
-															type: image.type,
-														})
-													: undefined,
-											);
+											onChange(new File([image], `logo.${ext}`, { type: image.type }));
 										}}
 									/>
 								);
@@ -196,14 +192,12 @@ const AgencyBrandingForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 									copy={bannerUploaderCopy}
 									onImagesCropped={(images) => {
 										const image = images[0];
+										if (!image) {
+											onChange(undefined);
+											return;
+										}
 										const ext = getExtensionFromMime(image.type);
-										onChange(
-											image
-												? new File([image], `banner.${ext}`, {
-														type: image.type,
-													})
-												: undefined,
-										);
+										onChange(new File([image], `banner.${ext}`, { type: image.type }));
 									}}
 								/>
 							)}

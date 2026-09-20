@@ -36,6 +36,8 @@ export default [
 						children: [
 							{
 								path: '/agency',
+
+								middleware: [requireAgencyOnboarding],
 								element: (
 									<Suspense fallback={<Loading />}>
 										<DashboardLayout />
@@ -85,7 +87,6 @@ export default [
 										},
 									},
 								],
-								middleware: [requireAgencyOnboarding],
 							},
 							{
 								path: '/agency/setup-completed',

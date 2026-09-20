@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/ui/typography';
 
 const Register = () => {
+	const redirectTo = new URLSearchParams(window.location.search).get('redirectTo');
+	const redirectSearch = redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : '';
+
 	return (
 		<AuthLayout>
 			<div className="flex flex-col gap-6">
@@ -17,7 +20,7 @@ const Register = () => {
 				<div className="flex flex-col gap-3">
 					<Button
 						nativeButton={false}
-						render={<Link to="/register/agency" />}
+						render={<Link to={`/register/agency${redirectSearch}`} />}
 						size="lg"
 						className="w-full"
 					>
@@ -28,7 +31,7 @@ const Register = () => {
 
 				<Typography variant="caption" className="text-center">
 					Already have an account?{' '}
-					<Link to="/login" className="font-medium text-primary hover:underline">
+					<Link to={`/login${redirectSearch}`} className="font-medium text-primary hover:underline">
 						Log in
 					</Link>
 				</Typography>

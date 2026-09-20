@@ -44,6 +44,10 @@ type UpdateCarRequest = Omit<UpdateCarDto, 'images'> & {
 function appendCarFields(formData: FormData, data: Record<string, unknown>) {
 	Object.entries(data).forEach(([key, value]) => {
 		if (value === undefined || value === null) return;
+		if (value instanceof Blob) {
+			formData.append(key, value);
+			return;
+		}
 		if (key === 'images' && Array.isArray(value)) {
 			value.forEach((image) => formData.append('images', image as Blob | string));
 			return;
@@ -67,9 +71,9 @@ const apiClient = {
 		) {
 			const fd = new FormData();
 			appendCarFields(fd, data);
-			const promise = httpClient.put<ApiResult<Agency>>('/agency/onboarding/branding', {
-				body: fd,
-			});
+			const promise = httpClient
+				.put<ApiResult<Agency>>('/agency/onboarding/branding', { body: fd })
+				.json<ApiResult<Agency>>();
 			return tryCatch(promise);
 		},
 

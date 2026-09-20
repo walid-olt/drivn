@@ -19,7 +19,9 @@ import {
 } from '@phosphor-icons/react';
 import type { Agency } from '@drivn/shared';
 import AgencyFormSkeleton from './AgencyFormSkeleton.tsx';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
+import queryClient from '@/lib/query-client.ts';
+import { QUERY_KEYS } from '@/lib/query-keys.ts';
 
 type OnboardingStep = {
 	title: Agency['onboardingStatus'];
@@ -55,7 +57,6 @@ type Props = {
 
 export default function AgencyOnBoardingFlow({ agency }: Props) {
 	const navigate = useNavigate();
-	const location = useLocation();
 	const [currentStep, setCurrentStep] = useState(() => {
 		const current = steps.findIndex((s) => s.title === agency.onboardingStatus);
 		return current != -1 ? current + 1 : 0;
@@ -114,9 +115,12 @@ export default function AgencyOnBoardingFlow({ agency }: Props) {
 								<Form
 									onSuccess={() => {
 										if (index === steps.length - 1) {
-											navigate(`/agency/setup-completed${location.search}`);
+											navigate(`/agency/setup-completed`);
 											return;
 										}
+										queryClient.invalidateQueries({
+											queryKey: QUERY_KEYS.agency,
+										});
 										setCurrentStep(index + 1);
 										setcurrentLoading(-1);
 									}}

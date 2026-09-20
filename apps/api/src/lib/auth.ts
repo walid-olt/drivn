@@ -109,7 +109,11 @@ export function initializeAuthInstance(db: mongo.Db) {
 			sendOnSignUp: false, // We will allow the user to request email verification manually after sign-up
 			sendVerificationEmail: async (data) => {
 				emailService.emit('verification', {
-					verificationUrl: data.url,
+					verificationUrl: new URL(
+						`/verify-email?token=${data.token}`,
+
+						process.env.FRONTEND_URL,
+					).toString(),
 					userName: data.user.name || data.user.email,
 					to: data.user.email,
 				});
