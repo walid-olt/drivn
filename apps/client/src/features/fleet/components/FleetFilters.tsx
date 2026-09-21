@@ -13,38 +13,21 @@ const filters = [
 		key: 'status',
 		label: 'Status',
 		placeholder: 'Status: Any',
-		options: [
-			['available', 'Available'],
-			['rented', 'Rented'],
-			['maintenance', 'Maintenance'],
-			['inactive', 'Inactive'],
-		],
+		options: ['available', 'rented', 'maintenance', 'inactive'],
 	},
 	{
 		key: 'type',
 		label: 'Type',
 		placeholder: 'Type: Any',
-		options: [
-			['sedan', 'Sedan'],
-			['suv', 'SUV'],
-			['hatchback', 'Hatchback'],
-			['coupe', 'Coupe'],
-			['convertible', 'Convertible'],
-			['minivan', 'Minivan'],
-			['luxury', 'Luxury'],
-		],
+		options: ['sedan', 'suv', 'hatchback', 'coupe', 'convertible', 'minivan', 'luxury'],
 	},
 	{
 		key: 'transmission',
 		label: 'Transmission',
 		placeholder: 'Transmission: Any',
-		options: [
-			['automatic', 'Automatic'],
-			['manual', 'Manual'],
-			['semi-automatic', 'Semi-automatic'],
-		],
+		options: ['automatic', 'manual', 'semi-automatic'],
 	},
-] as const;
+];
 
 export function FleetFilters() {
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -58,7 +41,7 @@ export function FleetFilters() {
 
 	return (
 		<div className="flex items-center gap-1.5">
-			<FunnelIcon className="size-4 text-muted-foreground" aria-hidden="true" />
+			<FunnelIcon className="size-4 text-muted-foreground" />
 			<span className="mr-1 text-xs font-medium text-muted-foreground">Filters</span>
 			{filters.map((filter) => (
 				<Select
@@ -66,14 +49,14 @@ export function FleetFilters() {
 					value={searchParams.get(filter.key) ?? 'all'}
 					onValueChange={(value) => updateFilter(filter.key, value)}
 				>
-					<SelectTrigger aria-label={filter.label} size="sm">
+					<SelectTrigger size="default">
 						<SelectValue placeholder={filter.placeholder} />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectItem value="all">{filter.placeholder}</SelectItem>
-						{filter.options.map(([value, label]) => (
-							<SelectItem key={value} value={value}>
-								{label}
+						{filter.options.map((value) => (
+							<SelectItem key={value} value={value} className="capitalize">
+								{value}
 							</SelectItem>
 						))}
 					</SelectContent>

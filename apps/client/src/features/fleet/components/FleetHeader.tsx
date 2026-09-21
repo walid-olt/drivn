@@ -7,7 +7,7 @@ import { FleetFilters } from './FleetFilters';
 const FleetHeader = () => {
 	return (
 		<div className="relative flex w-full items-center justify-between">
-			<Typography variant={'bodyStrong'}>Fleet</Typography>
+			<Typography variant={'h4'}>Fleet</Typography>
 			<div className="absolute left-1/2 -translate-x-1/2">
 				<FleetFilters />
 			</div>
