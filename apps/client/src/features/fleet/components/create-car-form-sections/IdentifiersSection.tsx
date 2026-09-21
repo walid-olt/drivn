@@ -21,7 +21,7 @@ export default function IdentifiersSection() {
 					<Input
 						id="vin"
 						type="text"
-						placeholder="WBA1234567890"
+						placeholder="1FA6P8CF0H5123456"
 						aria-invalid={errors.vin ? true : undefined}
 						{...register('vin')}
 					/>

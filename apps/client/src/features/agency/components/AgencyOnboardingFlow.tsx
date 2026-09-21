@@ -114,15 +114,16 @@ export default function AgencyOnBoardingFlow({ agency }: Props) {
 							<Suspense fallback={<AgencyFormSkeleton />}>
 								<Form
 									onSuccess={() => {
-										if (index === steps.length - 1) {
-											navigate(`/agency/setup-completed`);
-											return;
-										}
 										queryClient.invalidateQueries({
 											queryKey: QUERY_KEYS.agency,
 										});
 										setCurrentStep(index + 1);
 										setcurrentLoading(-1);
+
+										if (index === steps.length - 1) {
+											navigate(`/agency/setup-completed`);
+											return;
+										}
 									}}
 									onSubmit={() => setcurrentLoading(index)}
 								/>

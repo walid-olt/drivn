@@ -44,7 +44,7 @@ type AgencyRegisterFormData = z.infer<typeof agencyRegisterSchema>;
 
 export default function AgencyRegisterForm() {
 	const navigate = useNavigate();
-	const redirectTo = new URLSearchParams(window.location.search).get('redirectTo');
+	const redirectTo = localStorage.getItem('redirectTo');
 	const {
 		register,
 		handleSubmit,

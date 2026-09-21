@@ -48,10 +48,7 @@ function VerifyEmailStatus({
 export default function VerifyEmail() {
 	const params = new URLSearchParams(window.location.search);
 	const token = params.get('token');
-	const redirectTo = params.get('redirectTo') ?? params.get('callbackURL');
-	const requestVerificationUrl = redirectTo
-		? `/verify-email/request?redirectTo=${encodeURIComponent(redirectTo)}`
-		: '/verify-email/request';
+	const redirectTo = localStorage.getItem('redirectTo') || '/agency';
 	const navigate = useNavigate();
 
 	const {
@@ -81,7 +78,11 @@ export default function VerifyEmail() {
 				title="Invalid verification link"
 				description="This link is missing a verification token."
 			>
-				<Button nativeButton={false} render={<Link to={requestVerificationUrl} />} variant="outline">
+				<Button
+					nativeButton={false}
+					render={<Link to={'/verify-email/request'} />}
+					variant="outline"
+				>
 					Request a new email
 				</Button>
 			</VerifyEmailStatus>
@@ -105,7 +106,11 @@ export default function VerifyEmail() {
 				title="Verification failed"
 				description={error.message ?? 'The link may have expired. Please request a new one.'}
 			>
-				<Button nativeButton={false} render={<Link to={requestVerificationUrl} />} variant="outline">
+				<Button
+					nativeButton={false}
+					render={<Link to={'/verify-email/request'} />}
+					variant="outline"
+				>
 					Request a new email
 				</Button>
 			</VerifyEmailStatus>

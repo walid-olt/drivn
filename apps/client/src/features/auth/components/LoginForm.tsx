@@ -29,9 +29,7 @@ type LoginFormProps = {
 
 export default function LoginForm({ initialMessage }: LoginFormProps) {
 	const navigate = useNavigate();
-	const params = new URLSearchParams(window.location.search);
-	const redirectTo = params.get('redirectTo');
-	const redirectSearch = redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : '';
+	const redirectTo = localStorage.getItem('redirectTo') || '/';
 	const {
 		register,
 		handleSubmit,
@@ -114,7 +112,7 @@ export default function LoginForm({ initialMessage }: LoginFormProps) {
 
 			<Typography variant="caption" className="text-center">
 				Need an account?{' '}
-				<Link to={`/register${redirectSearch}`} className="font-medium text-primary hover:underline">
+				<Link to={`/register`} className="font-medium text-primary hover:underline">
 					Choose signup type
 				</Link>
 			</Typography>

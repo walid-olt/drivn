@@ -16,6 +16,8 @@ import { Typography } from '@/components/ui/typography';
 import FleetHeader from '@/features/fleet/components/FleetHeader';
 import { FleetNewHeader } from '@/features/fleet/components/FleetNewHeader';
 import TeamHeader from '@/features/agency/components/TeamHeader';
+import AcceptInvitation from '@/features/agency/pages/AcceptInvitation';
+import VerifyEmail from '@/pages/public/VerifyEmail';
 
 /**
  * @description
@@ -24,7 +26,12 @@ import TeamHeader from '@/features/agency/components/TeamHeader';
 export default [
 	{
 		middleware: [requireUserAuth],
+
 		children: [
+			{
+				path: '/verify-email',
+				element: <VerifyEmail />,
+			},
 			{
 				middleware: [requireVerifiedUser],
 				children: [
@@ -117,6 +124,11 @@ export default [
 								element: <CreateAgency />,
 							},
 						],
+					},
+
+					{
+						path: '/accept-invitation/:invitationId',
+						element: <AcceptInvitation />,
 					},
 				],
 			},

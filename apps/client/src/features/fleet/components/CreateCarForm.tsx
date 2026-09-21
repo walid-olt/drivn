@@ -69,11 +69,7 @@ const CreateCarForm = () => {
 					</Typography>
 				</div>
 
-				<form
-					className="flex flex-col gap-12"
-					onSubmit={methods.handleSubmit(createCar)}
-					aria-busy={isSubmitting || isPending}
-				>
+				<form className="flex flex-col gap-12" onSubmit={methods.handleSubmit(createCar)}>
 					<VehicleDetailsSection />
 					<section>
 						<Typography variant="h4" className="mb-5">

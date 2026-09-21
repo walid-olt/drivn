@@ -1,15 +1,27 @@
-import { CheckCircleIcon, EnvelopeSimpleIcon, SpinnerIcon } from '@phosphor-icons/react';
+import { EnvelopeSimpleIcon, SpinnerIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 import AuthLayout from '@/components/layouts/AuthLayout';
 import { Button } from '@ui/button';
 import { Typography } from '@/components/ui/typography';
 import authClient from '@/lib/auth-client';
 import { useSession } from '@/lib/auth-hooks';
+import { resolvePostAuthPath } from '@/lib/auth-space';
+import { useNavigate } from 'react-router';
 
 export default function EmailVerificationRequestPage() {
-	const redirectTo = new URLSearchParams(window.location.search).get('redirectTo');
+	const redirectTo = localStorage.getItem('redirectTo');
 	const { isError, data: result, error, isPending } = useSession();
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (result?.data?.user.emailVerified) {
+			void (async () => {
+				navigate(redirectTo || (await resolvePostAuthPath()), { replace: true });
+			})();
+		}
+	}, [navigate, redirectTo, result]);
 
 	const {
 		mutate: sendVerificationEmail,
@@ -19,7 +31,6 @@ export default function EmailVerificationRequestPage() {
 		mutationFn: (email: string) =>
 			authClient.sendVerificationEmail({
 				email,
-				callbackURL: new URL(redirectTo || '/agency', window.location.origin).toString(),
 			}),
 	});
 
@@ -55,17 +66,7 @@ export default function EmailVerificationRequestPage() {
 	const user = result.data.user;
 
 	if (user.emailVerified) {
-		return (
-			<AuthLayout>
-				<div className="flex flex-col items-center gap-3 text-center">
-					<div className="flex size-12 items-center justify-center rounded-full bg-muted">
-						<CheckCircleIcon className="size-6 text-primary" weight="fill" />
-					</div>
-					<Typography variant="h3">Your email is verified</Typography>
-					<Typography variant="body">No further action is needed.</Typography>
-				</div>
-			</AuthLayout>
-		);
+		return null;
 	}
 
 	return (

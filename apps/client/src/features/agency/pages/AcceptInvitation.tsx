@@ -28,10 +28,12 @@ export default function AcceptInvitation() {
 			.then(async (sessionResult) => {
 				if (cancelled) return;
 				if (!sessionResult.data) {
+					localStorage.setItem('redirectTo', `/accept-invitation/${invitationId}`);
 					navigate(`/login?redirectTo=${encodeURIComponent(`/accept-invitation/${invitationId}`)}`);
 					return;
 				}
 				if (!sessionResult.data.user.emailVerified) {
+					localStorage.setItem('redirectTo', `/accept-invitation/${invitationId}`);
 					navigate(
 						`/verify-email/request?redirectTo=${encodeURIComponent(`/accept-invitation/${invitationId}`)}`,
 					);
@@ -48,6 +50,7 @@ export default function AcceptInvitation() {
 					queryClient.invalidateQueries({ queryKey: ['session'] }),
 					queryClient.removeQueries({ queryKey: ['agencies'] }),
 				]);
+				localStorage.removeItem('redirectTo');
 				toast.add({ type: 'success', title: 'Invitation accepted!' });
 				navigate('/agency');
 			})
