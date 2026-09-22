@@ -53,15 +53,36 @@ import { Kbd, KbdGroup } from '@/components/ui/kbd';
 import { Separator } from '@ui/separator';
 
 const navigation = [
-	{ label: 'Overview', href: '/agency', icon: ChartLineUpIcon },
-	{ label: 'Fleet', href: '/agency/fleet', icon: CarIcon },
+	{
+		label: 'Overview',
+		href: '/agency',
+		icon: ChartLineUpIcon,
+		roles: ['member', 'admin', 'owner'],
+	},
+	{
+		label: 'Fleet',
+		href: '/agency/fleet',
+		icon: CarIcon,
+		roles: ['member', 'admin', 'owner'],
+	},
 	{
 		label: 'Reservations',
 		href: '/agency/reservations',
 		icon: CalendarCheckIcon,
+		roles: ['member', 'admin', 'owner'],
 	},
-	{ label: 'Locations', href: '/agency/locations', icon: MapPinIcon },
-	{ label: 'Team', href: '/agency/team', icon: UsersThreeIcon },
+	{
+		label: 'Locations',
+		href: '/agency/locations',
+		icon: MapPinIcon,
+		roles: ['member', 'admin', 'owner'],
+	},
+	{
+		label: 'Team',
+		href: '/agency/team',
+		icon: UsersThreeIcon,
+		roles: ['admin', 'owner'],
+	},
 ];
 
 const DashboardLayout = () => {
@@ -69,6 +90,8 @@ const DashboardLayout = () => {
 	const session = useSession();
 	const location = useLocation();
 	const matches = useMatches();
+	const { data: membership } = useMembership();
+
 	const navigate = useNavigate();
 	const handle = [...matches]
 		.reverse()
@@ -101,6 +124,7 @@ const DashboardLayout = () => {
 			<div className="flex min-h-svh w-full flex-col">
 				<div className="flex min-h-0 flex-1 w-full">
 					<DashboardSidebar
+						membership={membership}
 						agency={agency.data}
 						user={user}
 						pathname={location.pathname}
@@ -124,16 +148,24 @@ const DashboardLayout = () => {
 
 type DashboardSidebarProps = {
 	agency: Agency;
+	membership: typeof authClient.$Infer.Member;
 	user: {
 		name: string;
 		email: string;
 		image?: string | null;
 	};
+
 	pathname: string;
 	onSignOut: () => Promise<void>;
 };
 
-function DashboardSidebar({ agency, user, pathname, onSignOut }: DashboardSidebarProps) {
+function DashboardSidebar({
+	agency,
+	user,
+	pathname,
+	onSignOut,
+	membership,
+}: DashboardSidebarProps) {
 	return (
 		<Sidebar variant="sidebar" collapsible="icon">
 			<SidebarHeader>
@@ -148,25 +180,27 @@ function DashboardSidebar({ agency, user, pathname, onSignOut }: DashboardSideba
 					<SidebarGroupLabel>Dashboard</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{navigation.map(({ label, href, icon: Icon }) => (
-								<SidebarMenuItem key={href}>
-									<SidebarMenuButton
-										isActive={
-											pathname === href || (href !== '/agency' && pathname.startsWith(`${href}/`))
-										}
-										render={<Link to={href} />}
-									>
-										<Icon />
-										<span>{label}</span>
-									</SidebarMenuButton>
-								</SidebarMenuItem>
-							))}
+							{navigation
+								.filter((link) => link.roles.includes(membership.role))
+								.map(({ label, href, icon: Icon }) => (
+									<SidebarMenuItem key={href}>
+										<SidebarMenuButton
+											isActive={
+												pathname === href || (href !== '/agency' && pathname.startsWith(`${href}/`))
+											}
+											render={<Link to={href} />}
+										>
+											<Icon />
+											<span>{label}</span>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
+								))}
 						</SidebarMenu>
 					</SidebarGroupContent>
 				</SidebarGroup>
 			</SidebarContent>
 			<SidebarFooter>
-				<UserMenu user={user} onSignOut={onSignOut} />
+				<UserMenu membership={membership} user={user} onSignOut={onSignOut} />
 			</SidebarFooter>
 		</Sidebar>
 	);
@@ -174,13 +208,13 @@ function DashboardSidebar({ agency, user, pathname, onSignOut }: DashboardSideba
 
 type UserMenuProps = {
 	user: DashboardSidebarProps['user'];
+	membership: typeof authClient.$Infer.Member;
 	onSignOut: () => Promise<void>;
 };
 
-function UserMenu({ user, onSignOut }: UserMenuProps) {
-	const membership = useMembership();
+function UserMenu({ user, membership, onSignOut }: UserMenuProps) {
 	const { isMobile } = useSidebar();
-	const role = membership.data.data?.role ?? 'member';
+	const role = membership.role;
 	const roleConfig = {
 		owner: { label: 'Owner', icon: CrownIcon },
 		admin: { label: 'Admin', icon: ShieldStarIcon },

@@ -27,7 +27,11 @@ export function useAgency() {
 export function useMembership() {
 	return useSuspenseQuery({
 		queryKey: QUERY_KEYS.membership,
-		queryFn: () => authClient.organization.getActiveMember(),
+		queryFn: async () => {
+			const { data, error } = await authClient.organization.getActiveMember();
+			if (error) throw new Error(error.message || 'Failed to get membership');
+			return data;
+		},
 	});
 }
 

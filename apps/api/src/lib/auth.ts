@@ -10,6 +10,7 @@ import { z } from 'zod';
 import agencyService from '../modules/agency/agency.service';
 import { internalServerError, unauthorized } from '../errors';
 import { tryCatch } from './result';
+import { ac, adminRole, memberRole, ownerRole } from './access-control';
 
 let authInstance: ReturnType<typeof initializeAuthInstance> | null = null;
 
@@ -96,7 +97,7 @@ export function initializeAuthInstance(db: mongo.Db) {
 		hooks: {
 			before: createAuthMiddleware(async (ctx) => {
 				if (ctx.path !== '/sign-up/email') return;
-				const body = (ctx.body ?? {}) as Record<string, unknown>;
+				const body = ctx.body ?? {};
 				return {
 					context: {
 						...ctx,
@@ -111,7 +112,6 @@ export function initializeAuthInstance(db: mongo.Db) {
 				emailService.emit('verification', {
 					verificationUrl: new URL(
 						`/verify-email?token=${data.token}`,
-
 						process.env.FRONTEND_URL,
 					).toString(),
 					userName: data.user.name || data.user.email,
@@ -129,6 +129,12 @@ export function initializeAuthInstance(db: mongo.Db) {
 		},
 		plugins: [
 			organization({
+				ac,
+				roles: {
+					owner: ownerRole,
+					admin: adminRole,
+					member: memberRole,
+				},
 				sendInvitationEmail: async (data) => {
 					if (useTesting) return;
 					const {
