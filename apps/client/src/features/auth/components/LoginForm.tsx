@@ -29,8 +29,7 @@ type LoginFormProps = {
 
 export default function LoginForm({ initialMessage }: LoginFormProps) {
 	const navigate = useNavigate();
-	const params = new URLSearchParams(window.location.search);
-	const redirectTo = params.get('redirectTo');
+	const redirectTo = localStorage.getItem('redirectTo') || '/';
 	const {
 		register,
 		handleSubmit,
@@ -42,7 +41,7 @@ export default function LoginForm({ initialMessage }: LoginFormProps) {
 
 	async function onSubmit(data: LoginFormData) {
 		setSubmitError(null);
-		const { error, data: session } = await authClient.signIn.email({
+		const { error } = await authClient.signIn.email({
 			email: data.email,
 			password: data.password,
 		});
@@ -51,11 +50,9 @@ export default function LoginForm({ initialMessage }: LoginFormProps) {
 			setSubmitError(getAuthErrorMessage(error, 'Unable to sign in.'));
 			return;
 		}
-		const user = session.user;
-
 		await queryClient.invalidateQueries({ queryKey: ['session'] });
 		if (redirectTo) return navigate(redirectTo);
-		navigate((user as any).type === 'customer' ? '/profile' : '/agency');
+		navigate('/agency');
 	}
 
 	return (
@@ -115,7 +112,7 @@ export default function LoginForm({ initialMessage }: LoginFormProps) {
 
 			<Typography variant="caption" className="text-center">
 				Need an account?{' '}
-				<Link to="/register" className="font-medium text-primary hover:underline">
+				<Link to={`/register`} className="font-medium text-primary hover:underline">
 					Choose signup type
 				</Link>
 			</Typography>

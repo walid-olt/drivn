@@ -79,6 +79,10 @@ describe('createCarSchema', () => {
 		expect(() => createCarSchema.parse({ ...validCar, vin: 'ABC123' })).toThrow();
 	});
 
+	it('rejects non-car categories', () => {
+		expect(() => createCarSchema.parse({ ...validCar, category: 'truck' })).toThrow();
+	});
+
 	it('rejects more than the maximum number of images', () => {
 		const images = Array.from(
 			{ length: MAX_CAR_IMAGES + 1 },

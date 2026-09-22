@@ -7,6 +7,10 @@ type AuthResult<T> =
 	| { data: null; error: { code?: string; message?: string } }
 	| undefined;
 function isOk<T>(result: AuthResult<T>): result is { data: T; error: null } {
+	/** HACK: This is a hack to check if the result is ok.
+  /*  The AuthResult type is not discriminated, so we have to check
+  /*  if the error property is null and the data property is not null.
+  */
 	return !!result && !result.error && !!result.data;
 }
 
@@ -34,7 +38,6 @@ export async function resolvePostAuthPath() {
 	});
 
 	if (!isOk(sessionResult)) return '/login';
-	if (sessionResult.data.user.type === 'customer') return '/profile';
 	const orgResult: AuthResult<(typeof authClient.$Infer.Organization)[]> =
 		await queryClient.ensureQueryData({
 			queryKey: QUERY_KEYS.agencies,
@@ -56,5 +59,5 @@ export async function requireAgency(request: Request) {
 		redirectToLogin(request);
 	}
 
-	return result!.data!;
+	return result.data;
 }

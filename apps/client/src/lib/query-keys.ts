@@ -11,5 +11,10 @@ export const QUERY_KEYS = {
 	agencies: ['agencies'],
 	/** Current active agency */
 	agency: ['agency'],
+	/** Current active agency membership (authClient.organization.getMembership) */
 	membership: ['membership'],
+	/** Members of the current organization */
+	organizationMembers: ['organization', 'members'],
+	/** Pending invitations for the current organization */
+	organizationInvitations: ['organization', 'invitations'],
 } as const;

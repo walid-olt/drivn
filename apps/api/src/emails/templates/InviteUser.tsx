@@ -2,7 +2,6 @@ import { Column, Heading, Img, Row, Text } from 'react-email';
 import { ActionButton, baseUrl, EmailLayout, FallbackLink } from '../components/EmailLayout.tsx';
 
 interface InviteUserProps {
-	inviteeName: string;
 	inviterName: string;
 	inviterEmail: string;
 	agencyName: string;
@@ -11,7 +10,6 @@ interface InviteUserProps {
 }
 
 export const AgencyInviteEmail = ({
-	inviteeName,
 	inviterName,
 	inviterEmail,
 	agencyName,
@@ -24,7 +22,7 @@ export const AgencyInviteEmail = ({
 
 	return (
 		<EmailLayout
-			preview={`You're invited to join ${agencyName ?? 'a team'} on Drivn`}
+			preview={`You're invited to join ${agencyName} on Drivn`}
 			eyebrow="Drivn // Team Invite"
 			note={footerNote}
 		>
@@ -54,8 +52,7 @@ export const AgencyInviteEmail = ({
 			</Row>
 
 			<Text className="mt-[16px] mb-0 text-[15px] leading-[24px] text-muted">
-				Hi {inviteeName ?? 'there'}, accept the invitation below to set up your account and get
-				started.
+				Hi {'there'}, accept the invitation below to set up your account and get started.
 			</Text>
 
 			<ActionButton href={inviteLink}>Accept invitation</ActionButton>

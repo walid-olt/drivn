@@ -34,7 +34,7 @@ export const carSchema = z.object({
 		})
 		.default('available'),
 	category: z
-		.enum(['sedan', 'suv', 'hatchback', 'coupe', 'convertible', 'minivan', 'truck', 'luxury'], {
+		.enum(['sedan', 'suv', 'hatchback', 'coupe', 'convertible', 'minivan', 'luxury'], {
 			error: 'Choose a valid car category.',
 		})
 		.default('sedan'),
@@ -88,6 +88,20 @@ export const carImageSchema = z
 	.mime([...ACCEPTED_IMAGE_TYPES], 'Only standard image formats are allowed')
 	.max(MAX_CAR_IMAGE_SIZE_BYTES, 'Individual file size exceeds the limit');
 
+export const carImagesSchema = z
+	.array(carImageSchema)
+	.min(MIN_CAR_IMAGES, 'Each car must have at least one image')
+	.max(MAX_CAR_IMAGES, 'Exceeded maximum number of images')
+	.refine(
+		(files) =>
+			files.reduce((acc, file) => acc + file.size, 0) <= MAX_TOTAL_CAR_IMAGE_UPLOAD_SIZE_BYTE,
+		'Total upload size is too large',
+	)
+	.refine(
+		(files) => new Set(files.map((f) => `${(f as any).name}-${f.size}`)).size === files.length,
+		'Duplicate images are not allowed',
+	);
+
 export const createCarFormSchema = carSchema
 	.omit({
 		images: true,
@@ -96,21 +110,10 @@ export const createCarFormSchema = carSchema
 		agencyId: true,
 	})
 	.extend({
-		images: z
-			.array(carImageSchema)
-			.min(MIN_CAR_IMAGES, 'Each car must have at least one image')
-			.max(MAX_CAR_IMAGES, 'Exceeded maximum number of images')
-			.refine(
-				(files) =>
-					files.reduce((acc, file) => acc + file.size, 0) <= MAX_TOTAL_CAR_IMAGE_UPLOAD_SIZE_BYTE,
-				'Total upload size is too large',
-			)
-			.refine(
-				(files) => new Set(files.map((f) => `${(f as any).name}-${f.size}`)).size === files.length,
-				'Duplicate images are not allowed',
-			),
+		images: carImagesSchema,
 	});
 export const updateCarSchema = carSchema.partial().omit({
 	_id: true,
 	organizationId: true,
+	agencyId: true,
 });

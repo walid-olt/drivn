@@ -7,7 +7,7 @@ import { redirect, type MiddlewareFunction } from 'react-router';
 /**
  * @description
  * Keeps authenticated users away from guest-only pages (login, register, ...).
- * Customers are sent to their profile and agency members to their agency home.
+ * Authenticated agency members are sent to their agency home.
  */
 export const redirectIfAuthenticated: MiddlewareFunction = async (_ctx, next) => {
 	const { data: session } = await queryClient.ensureQueryData({

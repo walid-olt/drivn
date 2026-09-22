@@ -2,7 +2,7 @@ import { Model } from 'mongoose';
 import LocationModel, { type LocationDocument } from './models/location.model';
 import { tryCatch } from '../../lib/result';
 
-class LocationService {
+export class LocationService {
 	constructor(private readonly locationModel: Model<LocationDocument>) {}
 
 	getAll = async () => {

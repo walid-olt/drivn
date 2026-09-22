@@ -11,19 +11,6 @@ interface SignUpResponse {
 	session: { id: string; token: string };
 }
 
-export async function signUpAsCustomer(params: SignUpParams): Promise<SignUpResponse> {
-	const res = await fetch(`${API_URL}/api/auth/sign-up/customer`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		credentials: 'include',
-		body: JSON.stringify(params),
-	});
-
-	const data = await res.json();
-	if (!res.ok) throw new Error(data.message ?? 'Unable to create your account.');
-	return data;
-}
-
 export async function signUpAsAgency(params: SignUpParams): Promise<SignUpResponse> {
 	const res = await fetch(`${API_URL}/api/auth/sign-up/agency`, {
 		method: 'POST',

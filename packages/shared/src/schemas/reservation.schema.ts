@@ -7,7 +7,9 @@ export const reservationSchema = z.object({
 	organizationId: z.string({ error: 'Organization id is required.' }),
 	agencyId: z.string({ error: 'Agency id is required.' }),
 	carId: z.string({ error: 'Select a car.' }),
-	customerId: z.string({ error: 'Customer id is required.' }),
+	renterName: z.string({ error: 'Renter name is required.' }).trim().min(2).max(100),
+	renterEmail: z.email('Enter a valid renter email address.').optional(),
+	renterPhone: z.string().trim().max(30).optional(),
 	pickupLocationId: z.string({ error: 'Select a pickup location.' }),
 	dropoffLocationId: z.string({ error: 'Select a drop-off location.' }),
 

@@ -1,7 +1,7 @@
 import { type Car } from '@drivn/shared';
 import { Document, Schema, model, Types } from 'mongoose';
 
-interface CarDocument
+export interface CarDocument
 	extends
 		Omit<Document, 'model'>,
 		// omit the 'model' property from Document to avoid conflict with Car's 'model' property
@@ -9,6 +9,7 @@ interface CarDocument
 	organizationId: Types.ObjectId;
 	agencyId: Types.ObjectId;
 	model: string;
+	id: string;
 }
 
 const CarSchema = new Schema<CarDocument>({
@@ -28,7 +29,7 @@ const CarSchema = new Schema<CarDocument>({
 	},
 	category: {
 		type: String,
-		enum: ['sedan', 'suv', 'hatchback', 'coupe', 'convertible', 'minivan', 'truck', 'luxury'],
+		enum: ['sedan', 'suv', 'hatchback', 'coupe', 'convertible', 'minivan', 'luxury'],
 		default: 'sedan',
 		required: true,
 	},

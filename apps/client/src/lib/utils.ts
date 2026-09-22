@@ -9,16 +9,14 @@ export function cn(...inputs: ClassValue[]) {
 export function redirectToLogin(request: Request, message?: string): never {
 	const url = new URL(request.url);
 
-	const loginUrl = new URL('/login', url.origin);
+	// check for redirectTo in local storage, if it exists, use that as the redirect url, otherwise use the current path
+	const redirectTo = localStorage.getItem('redirectTo');
 
-	const params = new URLSearchParams({
-		redirectTo: url.pathname + url.search,
-		...(message && { message }),
-	});
+	if (!redirectTo) localStorage.setItem('redirectTo', `${url.pathname}${url.search}`);
 
-	loginUrl.search = params.toString();
-
-	throw redirect(loginUrl.toString());
+	const redirectUrl = new URL('/login', url.origin);
+	redirectUrl.searchParams.set('message', message || 'You must be logged in to access this page.');
+	throw redirect(redirectUrl.toString());
 }
 
 export function unwrap<T>([err, data]: Result<T>): T {

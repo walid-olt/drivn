@@ -6,7 +6,13 @@ const requireVerifiedUser: MiddlewareFunction = async ({ request }, next) => {
 	const user = session.user;
 	const isVerified = user.emailVerified;
 
-	if (!isVerified) throw redirect('/verify-email/request');
+	if (!isVerified) {
+		const url = new URL(request.url);
+		if (!localStorage.getItem('redirectTo')) {
+			localStorage.setItem('redirectTo', `${url.pathname}${url.search}`);
+		}
+		throw redirect('/verify-email/request');
+	}
 	next();
 };
 

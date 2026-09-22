@@ -13,12 +13,7 @@ const Home = () => {
 					<Button nativeButton={false} render={<Link to="/login">Login</Link>} variant="outline" />
 					<Button
 						nativeButton={false}
-						render={<Link to="/register">Register (choose type)</Link>}
-						variant="outline"
-					/>
-					<Button
-						nativeButton={false}
-						render={<Link to="/register/customer">Register as customer</Link>}
+						render={<Link to="/register">Create agency account</Link>}
 						variant="outline"
 					/>
 					<Button
@@ -37,11 +32,6 @@ const Home = () => {
 			<section className="flex flex-col gap-2">
 				<Typography variant="h3">Protected</Typography>
 				<div className="flex flex-col gap-1">
-					<Button
-						nativeButton={false}
-						render={<Link to="/profile">Profile (customer)</Link>}
-						variant="outline"
-					/>
 					<Button
 						nativeButton={false}
 						render={<Link to="/agency">Agency dashboard</Link>}

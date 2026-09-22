@@ -4,7 +4,9 @@ import { createReservationSchema, updateReservationSchema } from './reservation.
 const validReservation = {
 	agencyId: 'agency-1',
 	carId: 'car-1',
-	customerId: 'user-1',
+	renterName: 'Jane Renter',
+	renterEmail: 'jane@example.com',
+	renterPhone: '+1 555 0100',
 	pickupLocationId: 'loc-1',
 	dropoffLocationId: 'loc-2',
 	startDate: '2026-08-01T10:00:00.000Z',

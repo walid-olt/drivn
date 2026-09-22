@@ -56,7 +56,7 @@ const AgencyLocationsForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 				Add your rental locations | available {agencyLocations.length.toLocaleString()} locations
 			</Typography>
 			<Typography variant={'body'}>
-				Tell customers where they can pick up and return their vehicles.
+				Record where renters can pick up and return their vehicles.
 			</Typography>
 
 			<div className="flex gap-2 ">

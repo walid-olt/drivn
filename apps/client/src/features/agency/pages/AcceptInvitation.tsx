@@ -21,10 +21,26 @@ export default function AcceptInvitation() {
 			return;
 		}
 
+		let cancelled = false;
 		setStatus('loading');
-		authClient.organization
-			.acceptInvitation({ invitationId })
-			.then(async ({ error }) => {
+		authClient
+			.getSession()
+			.then(async (sessionResult) => {
+				if (cancelled) return;
+				if (!sessionResult.data) {
+					localStorage.setItem('redirectTo', `/accept-invitation/${invitationId}`);
+					navigate(`/login?redirectTo=${encodeURIComponent(`/accept-invitation/${invitationId}`)}`);
+					return;
+				}
+				if (!sessionResult.data.user.emailVerified) {
+					localStorage.setItem('redirectTo', `/accept-invitation/${invitationId}`);
+					navigate(
+						`/verify-email/request?redirectTo=${encodeURIComponent(`/accept-invitation/${invitationId}`)}`,
+					);
+					return;
+				}
+				const { error } = await authClient.organization.acceptInvitation({ invitationId });
+				if (cancelled) return;
 				if (error) {
 					setStatus('error');
 					setErrorMessage(error.message ?? 'Failed to accept invitation.');
@@ -34,13 +50,19 @@ export default function AcceptInvitation() {
 					queryClient.invalidateQueries({ queryKey: ['session'] }),
 					queryClient.removeQueries({ queryKey: ['agencies'] }),
 				]);
+				localStorage.removeItem('redirectTo');
 				toast.add({ type: 'success', title: 'Invitation accepted!' });
 				navigate('/agency');
 			})
 			.catch(() => {
-				setStatus('error');
-				setErrorMessage('Something went wrong. Please try again.');
+				if (!cancelled) {
+					setStatus('error');
+					setErrorMessage('Something went wrong. Please try again.');
+				}
 			});
+		return () => {
+			cancelled = true;
+		};
 	}, [invitationId, navigate]);
 
 	return (

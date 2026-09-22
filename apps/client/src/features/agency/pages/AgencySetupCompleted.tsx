@@ -2,16 +2,11 @@ import Logo from '@/components/Logo';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/ui/typography';
 import { CheckCircleIcon, ArrowRightIcon } from '@phosphor-icons/react';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 
 export default function AgencySetupCompleted() {
 	const navigate = useNavigate();
-	const { search } = useLocation();
-	const requestedRedirect = new URLSearchParams(search).get('redirectTo');
-	const redirectTo =
-		requestedRedirect?.startsWith('/') && !requestedRedirect.startsWith('//')
-			? requestedRedirect
-			: '/agency';
+	const redirectTo = localStorage.getItem('redirectTo') || '/agency';
 
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center gap-8 px-4 text-center">

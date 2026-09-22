@@ -15,7 +15,7 @@ import {
 } from 'react-email';
 import emailConfig, { emailTokens } from '../tailwind-email.config.ts';
 
-export const baseUrl = process.env.FRONTEND_URL ?? 'http://localhost:5000';
+export const baseUrl = process.env.BACKEND_URL;
 const appLogoUrl = `${baseUrl}/assets/Drivn-logo.svg`;
 
 const { ink } = emailTokens.colors;
