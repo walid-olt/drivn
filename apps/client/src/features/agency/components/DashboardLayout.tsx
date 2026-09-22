@@ -86,7 +86,7 @@ const navigation = [
 ];
 
 const DashboardLayout = () => {
-	const agency = useAgency();
+	const { data: agency } = useAgency();
 	const session = useSession();
 	const location = useLocation();
 	const matches = useMatches();
@@ -101,7 +101,7 @@ const DashboardLayout = () => {
 	const HeaderContent = handle?.headerContent;
 	const title = `Dashboard - ${handle?.title}`;
 
-	const user = session.data.data?.user;
+	const user = session.data?.user;
 	if (!user) {
 		throw new Error('Unable to load the authenticated user.');
 	}
@@ -125,7 +125,7 @@ const DashboardLayout = () => {
 				<div className="flex min-h-0 flex-1 w-full">
 					<DashboardSidebar
 						membership={membership}
-						agency={agency.data}
+						agency={agency}
 						user={user}
 						pathname={location.pathname}
 						onSignOut={handleSignOut}

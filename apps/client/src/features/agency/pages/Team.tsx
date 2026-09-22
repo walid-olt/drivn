@@ -9,7 +9,7 @@ import { useTeamData } from '../hooks/team';
 export const Component = () => {
 	const { data: session } = useSession();
 	const { members, invitations } = useTeamData();
-	const currentUser = session.data?.user;
+	const currentUser = session?.user;
 
 	return (
 		<Tabs defaultValue="members" className="w-full max-w-4xl gap-6">

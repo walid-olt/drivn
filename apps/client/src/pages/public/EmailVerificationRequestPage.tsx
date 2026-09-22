@@ -12,16 +12,16 @@ import { useNavigate } from 'react-router';
 
 export default function EmailVerificationRequestPage() {
 	const redirectTo = localStorage.getItem('redirectTo');
-	const { isError, data: result, error, isPending } = useSession();
+	const { isError, data: session, error, isPending } = useSession();
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		if (result?.data?.user.emailVerified) {
+		if (session?.user.emailVerified) {
 			void (async () => {
 				navigate(redirectTo || (await resolvePostAuthPath()), { replace: true });
 			})();
 		}
-	}, [navigate, redirectTo, result]);
+	}, [navigate, redirectTo, session]);
 
 	const {
 		mutate: sendVerificationEmail,
@@ -47,7 +47,7 @@ export default function EmailVerificationRequestPage() {
 		);
 	}
 
-	if (isError || !result || result.error || !result.data) {
+	if (isError || !session) {
 		return (
 			<AuthLayout>
 				<div className="flex flex-col items-center gap-3 text-center">
@@ -56,14 +56,14 @@ export default function EmailVerificationRequestPage() {
 					</div>
 					<Typography variant="h3">Something went wrong</Typography>
 					<Typography variant="body">
-						{error?.message ?? result?.error?.message ?? 'Unable to check your account.'}
+						{error?.message ?? 'Unable to check your account.'}
 					</Typography>
 				</div>
 			</AuthLayout>
 		);
 	}
 
-	const user = result.data.user;
+	const user = session.user;
 
 	if (user.emailVerified) {
 		return null;
