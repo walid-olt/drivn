@@ -7,7 +7,11 @@ import type { Agency } from '@drivn/shared';
 export function useSession() {
 	return useSuspenseQuery({
 		queryKey: QUERY_KEYS.session,
-		queryFn: () => authClient.getSession(),
+		queryFn: async () => {
+			const { data, error } = await authClient.getSession();
+			if (error) throw new Error(error.message || 'Failed to get session');
+			return data;
+		},
 	});
 }
 
@@ -38,6 +42,10 @@ export function useMembership() {
 export function useAgencies() {
 	return useSuspenseQuery({
 		queryKey: QUERY_KEYS.agencies,
-		queryFn: () => authClient.organization.list(),
+		queryFn: async () => {
+			const { data, error } = await authClient.organization.list();
+			if (error) throw new Error(error.message || 'Failed to list agencies');
+			return data;
+		},
 	});
 }
