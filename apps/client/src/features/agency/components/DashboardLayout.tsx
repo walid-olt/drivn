@@ -101,7 +101,7 @@ const DashboardLayout = () => {
 	const HeaderContent = handle?.headerContent;
 	const title = `Dashboard - ${handle?.title}`;
 
-	const user = session.data?.user;
+	const user = session.data.user;
 	if (!user) {
 		throw new Error('Unable to load the authenticated user.');
 	}

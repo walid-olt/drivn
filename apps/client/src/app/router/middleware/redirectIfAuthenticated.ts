@@ -10,9 +10,13 @@ import { redirect, type MiddlewareFunction } from 'react-router';
  * Authenticated agency members are sent to their agency home.
  */
 export const redirectIfAuthenticated: MiddlewareFunction = async (_ctx, next) => {
-	const { data: session } = await queryClient.ensureQueryData({
+	const session = await queryClient.ensureQueryData({
 		queryKey: QUERY_KEYS.session,
-		queryFn: () => authClient.getSession(),
+		queryFn: async () => {
+			const { data, error } = await authClient.getSession();
+			if (error || !data) return null;
+			return data;
+		},
 	});
 
 	if (!session) return next();
