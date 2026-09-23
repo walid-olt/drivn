@@ -79,18 +79,18 @@ describe('[FLEET CARS]', () => {
 
 	it('creates a car for the authenticated agency and derives its ownership fields', async () => {
 		const { _app, cookies, agency } = await setupAgency();
-		const payload = {
-			make: 'Tesla',
-			model: 'Model 3',
-			year: 2025,
-			dailyRate: 90,
-			images: ['https://example.com/model-3.jpg'],
-		};
 
 		const response = await request(_app)
 			.post(CARS_URL)
 			.set('Cookie', cookies)
-			.send(payload)
+			.field('make', 'Tesla')
+			.field('model', 'Model 3')
+			.field('year', '2025')
+			.field('dailyRate', '90')
+			.attach('images', Buffer.from('fake image'), {
+				filename: 'model-3.jpg',
+				contentType: 'image/jpeg',
+			})
 			.expect(200);
 
 		expect(response.body.data).toMatchObject({
@@ -112,12 +112,13 @@ describe('[FLEET CARS]', () => {
 		const response = await request(_app)
 			.post(CARS_URL)
 			.set('Cookie', cookies)
-			.send({
-				make: '',
-				model: 'Model 3',
-				year: 2025,
-				dailyRate: -1,
-				images: [],
+			.field('make', '')
+			.field('model', 'Model 3')
+			.field('year', '2025')
+			.field('dailyRate', '-1')
+			.attach('images', Buffer.from('fake image'), {
+				filename: 'model-3.jpg',
+				contentType: 'image/jpeg',
 			})
 			.expect(422);
 
