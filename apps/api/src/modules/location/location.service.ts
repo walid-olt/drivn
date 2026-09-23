@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import LocationModel, { type LocationDocument } from './models/location.model';
 import { tryCatch } from '../../lib/result';
 
@@ -11,7 +11,8 @@ export class LocationService {
 
 	getById = (id: string) => tryCatch(this.locationModel.findById(id));
 
-	getManyByIds = (ids: string[]) => tryCatch(this.locationModel.find({ _id: { $in: ids } }));
+	getManyByIds = (ids: (string | Types.ObjectId)[]) =>
+		tryCatch(this.locationModel.find({ _id: { $in: ids } }));
 }
 
 export default new LocationService(LocationModel);
