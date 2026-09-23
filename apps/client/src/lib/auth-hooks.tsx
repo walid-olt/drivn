@@ -9,7 +9,7 @@ export function useSession() {
 		queryKey: QUERY_KEYS.session,
 		queryFn: async () => {
 			const { data, error } = await authClient.getSession();
-			if (error) throw new Error(error.message || 'Failed to get session');
+			if (error || !data) throw new Error(error?.message || 'Failed to get session');
 			return data;
 		},
 	});
