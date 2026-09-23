@@ -6,7 +6,7 @@ import type { Request } from 'express';
 import { toFieldErrors } from '../../lib/utils';
 
 class CarController {
-	constructor(protected readonly carService: CarService) {}
+	constructor(private readonly carService: CarService) {}
 	getAll = async () => {
 		const [err, cars] = await this.carService.findActive();
 		if (err) throw internalServerError('Failed to fetch cars');
@@ -58,8 +58,6 @@ class CarController {
 		let images: string[] | undefined;
 		if (Array.isArray(carImages) && carImages.length > 0) {
 			images = await this.uploadImages(carImages);
-		} else if (Array.isArray(req.body.images)) {
-			images = req.body.images;
 		}
 		if (!images) throw badRequest('No car images provided!');
 
