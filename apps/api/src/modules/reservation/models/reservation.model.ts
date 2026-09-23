@@ -1,7 +1,7 @@
 import { type Reservation } from '@drivn/shared';
 import { Document, Schema, model, Types } from 'mongoose';
 
-interface ReservationDocument
+export interface ReservationDocument
 	extends
 		Omit<
 			Reservation,
@@ -11,9 +11,6 @@ interface ReservationDocument
 	organizationId: Types.ObjectId;
 	agencyId: Types.ObjectId;
 	carId: Types.ObjectId;
-	renterName: string;
-	renterEmail?: string;
-	renterPhone?: string;
 	pickupLocationId: Types.ObjectId;
 	dropoffLocationId: Types.ObjectId;
 }
@@ -41,7 +38,6 @@ const ReservationSchema = new Schema<ReservationDocument>({
 	notes: { type: String, required: false },
 });
 
-// indexes: fast lookup by tenant + agency + car and by status
 ReservationSchema.index({ organizationId: 1, agencyId: 1, carId: 1 });
 ReservationSchema.index({ status: 1 });
 
