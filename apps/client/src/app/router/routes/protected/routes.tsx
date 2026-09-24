@@ -18,6 +18,7 @@ import { FleetNewHeader } from '@/features/fleet/components/FleetNewHeader';
 import TeamHeader from '@/features/agency/components/TeamHeader';
 import AcceptInvitation from '@/features/agency/pages/AcceptInvitation';
 import VerifyEmail from '@/pages/public/VerifyEmail';
+import ReservationsHeader from '@/features/agency/components/ReservationsHeader';
 
 /**
  * @description
@@ -80,6 +81,10 @@ export default [
 									{
 										path: 'reservations',
 										lazy: () => import('@/features/agency/pages/Reservations'),
+										handle: {
+											title: 'Reservations',
+											headerContent: () => <ReservationsHeader />,
+										},
 									},
 									{
 										path: 'locations',
