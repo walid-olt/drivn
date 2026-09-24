@@ -1,4 +1,4 @@
-import { type Reservation } from '@drivn/shared';
+import { RESERVATION_STATUS, type Reservation } from '@drivn/shared';
 import { Document, Schema, model, Types } from 'mongoose';
 
 export interface ReservationDocument
@@ -28,7 +28,7 @@ const ReservationSchema = new Schema<ReservationDocument>({
 	endDate: { type: Date, required: true },
 	status: {
 		type: String,
-		enum: ['pending', 'confirmed', 'cancelled', 'completed', 'rejected'],
+		enum: RESERVATION_STATUS,
 		default: 'pending',
 		required: true,
 	},

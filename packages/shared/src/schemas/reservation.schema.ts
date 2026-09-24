@@ -42,6 +42,7 @@ export const createReservationSchema = reservationSchema
 	.omit({
 		_id: true,
 		organizationId: true,
+		agencyId: true,
 	})
 	.refine((data) => data.endDate > data.startDate, {
 		message: 'End date must be strictly after the start date',
@@ -62,3 +63,7 @@ export const updateReservationSchema = reservationSchema
 			});
 		}
 	});
+
+export const updateReservationStatusSchema = reservationSchema
+	.pick({ status: true })
+	.required();

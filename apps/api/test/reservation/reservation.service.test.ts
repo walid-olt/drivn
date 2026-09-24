@@ -75,7 +75,7 @@ describe('ResevationService', () => {
 		]);
 		reservationModel.create.mockResolvedValue(reservation);
 
-		const result = await service.create(agencyId, data);
+		const result = await service.create(agencyId, agencyId, data);
 
 		expect(result).toEqual([undefined, reservation]);
 		expect(carSevice.findAgencyCarById).toHaveBeenCalledWith(agencyId, expect.any(Types.ObjectId));
@@ -86,6 +86,7 @@ describe('ResevationService', () => {
 		expect(reservationModel.create).toHaveBeenCalledWith({
 			...data,
 			agencyId,
+			organizationId: agencyId,
 			carId: expect.any(Types.ObjectId),
 			pickupLocationId: expect.any(Types.ObjectId),
 			dropoffLocationId: expect.any(Types.ObjectId),
@@ -96,7 +97,7 @@ describe('ResevationService', () => {
 		const { service, carSevice, locationService } = createService();
 		carSevice.findAgencyCarById.mockResolvedValue([new Error('database unavailable'), undefined]);
 
-		const [error, result] = await service.create(agencyId, data);
+		const [error, result] = await service.create(agencyId, agencyId, data);
 
 		expect(error).toMatchObject({
 			status: 'INTERNAL_SERVER_ERROR',
@@ -110,7 +111,7 @@ describe('ResevationService', () => {
 		const { service, carSevice, locationService } = createService();
 		carSevice.findAgencyCarById.mockResolvedValue([undefined, undefined]);
 
-		const [error, result] = await service.create(agencyId, data);
+		const [error, result] = await service.create(agencyId, agencyId, data);
 
 		expect(error).toMatchObject({
 			status: 'NOT_FOUND',
@@ -124,7 +125,7 @@ describe('ResevationService', () => {
 		const { service, carSevice, locationService } = createService();
 		carSevice.findAgencyCarById.mockResolvedValue([undefined, { status: 'rented' }]);
 
-		const [error, result] = await service.create(agencyId, data);
+		const [error, result] = await service.create(agencyId, agencyId, data);
 
 		expect(error).toMatchObject({
 			status: 'CONFLICT',
@@ -145,7 +146,7 @@ describe('ResevationService', () => {
 			carSevice.findAgencyCarById.mockResolvedValue([undefined, { status: 'available' }]);
 			locationService.getManyByIds.mockResolvedValue(locationsResult);
 
-			const [error, result] = await service.create(agencyId, data);
+			const [error, result] = await service.create(agencyId, agencyId, data);
 
 			expect(error).toMatchObject({
 				status: 'INTERNAL_SERVER_ERROR',

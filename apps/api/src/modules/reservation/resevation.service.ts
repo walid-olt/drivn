@@ -30,13 +30,18 @@ export class ResevationService {
 		return tryCatch(promise);
 	}
 
-	async create(agencyId: Id, data: CreateReservationDto): Promise<Result<ReservationDocument>> {
+	async create(
+		agencyId: Id,
+		organizationId: Id,
+		data: CreateReservationDto,
+	): Promise<Result<ReservationDocument>> {
 		const reservationData = {
 			...data,
 			carId: new ObjectId(data.carId),
 			pickupLocationId: new ObjectId(data.pickupLocationId),
 			dropoffLocationId: new ObjectId(data.dropoffLocationId),
 			agencyId,
+			organizationId,
 		};
 
 		// verify if the car exist and is available
