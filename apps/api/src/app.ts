@@ -10,6 +10,7 @@ import appAuthRoutes from './modules/auth/auth.routes.ts';
 import agencyRoutes from './modules/agency/agency.routes.ts';
 import locationRoutes from './modules/location/location.routes.ts';
 import carRoutes from './modules/fleet/car.routes.ts';
+import reservationRoutes from './modules/reservation/reservation.routes.ts';
 
 export function createApp(db: mongo.Db): express.Express {
 	const app = express();
@@ -25,6 +26,7 @@ export function createApp(db: mongo.Db): express.Express {
 	app.use('/api/agency/', agencyRoutes);
 	app.use('/api/locations', locationRoutes);
 	app.use('/api/cars', carRoutes);
+	app.use('/api/reservations', reservationRoutes);
 	app.use('/assets', express.static('assets'));
 	app.use('/uploads', express.static(process.env.UPLOAD_DIR ?? './uploads'));
 	app.use(

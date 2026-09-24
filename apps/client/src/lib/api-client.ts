@@ -12,6 +12,8 @@ import {
 	type UpdateCarDto,
 	type ApiResponse,
 	type CarCreateFormData,
+	type CreateReservationDto,
+	type Reservation,
 } from '@drivn/shared';
 const httpClient = ky.create({
 	baseUrl: API_URL,
@@ -132,6 +134,35 @@ const apiClient = {
 
 		async delete(id: string) {
 			const promise = httpClient.delete(`/cars/${id}`).json<ApiResult<Car>>();
+			return tryCatch(promise);
+		},
+	},
+	reservations: {
+		async getAll() {
+			const promise = httpClient
+				.get('/reservations')
+				.json<ApiResponse<Reservation[]>>();
+			return tryCatch(promise);
+		},
+
+		async getById(id: string) {
+			const promise = httpClient
+				.get(`/reservations/${id}`)
+				.json<ApiResponse<Reservation>>();
+			return tryCatch(promise);
+		},
+
+		async create(data: CreateReservationDto) {
+			const promise = httpClient
+				.post('/reservations', { json: data })
+				.json<ApiResponse<Reservation>>();
+			return tryCatch(promise);
+		},
+
+		async updateStatus(id: string, status: Reservation['status']) {
+			const promise = httpClient
+				.patch(`/reservations/${id}/status`, { json: { status } })
+				.json<ApiResponse<Reservation>>();
 			return tryCatch(promise);
 		},
 	},
