@@ -126,7 +126,7 @@ const AgencyBrandingForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 
 	return (
 		<div>
-			<Typography variant={'h3'}>Make your agency recognizable</Typography>
+			<Typography variant={'h4'}>Make your agency recognizable</Typography>
 			<Typography variant={'body'}>
 				Add your logo and a cover image to keep your agency workspace recognizable.
 			</Typography>
@@ -151,6 +151,7 @@ const AgencyBrandingForm = ({ onSuccess, onSubmit: startSubmit }: Props) => {
 									<ImageUploader
 										id="logo"
 										aspectRatio={1}
+										className="[&_img]:data-[image-type=logo]:rounded-full"
 										maxSize={MAX_AGENCY_LOGO_SIZE_MB * 1024 * 1024}
 										acceptedFileTypes={[...ACCEPTED_IMAGE_TYPES]}
 										copy={logoUploaderCopy}

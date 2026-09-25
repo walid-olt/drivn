@@ -18,7 +18,7 @@ import {
 	type OrganizationRole,
 	useCancelInvitationMutation,
 	useInviteMemberMutation,
-} from '../hooks/team';
+} from '../hooks';
 
 type Invitation = { id: string; email: string };
 
