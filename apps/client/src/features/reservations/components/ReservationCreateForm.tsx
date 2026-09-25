@@ -20,6 +20,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Typography } from '@/components/ui/typography';
 import { useCreateReservationMutation } from '../hooks';
+import { DatePicker } from '@/components/date-picker';
 
 type Props = {
 	locations: AgencyLocation[];
@@ -213,22 +214,22 @@ function ReservationFields({ locations, cars }: Props) {
 				<div className="grid gap-4 md:grid-cols-4">
 					<Field>
 						<Label htmlFor="startDate">Pickup date</Label>
-						<Input
-							id="startDate"
-							type="date"
-							{...register('startDate', { valueAsDate: true })}
-							aria-invalid={!!errors.startDate}
+						<Controller
+							name="startDate"
+							control={control}
+							render={({ field }) => <DatePicker {...field} />}
 						/>
 						<FieldError errors={[errors.startDate]} />
 					</Field>
 					<Field>
 						<Label htmlFor="endDate">Drop-off date</Label>
-						<Input
-							id="endDate"
-							type="date"
-							{...register('endDate')}
-							aria-invalid={!!errors.endDate}
+
+						<Controller
+							name="endDate"
+							control={control}
+							render={({ field }) => <DatePicker {...field} />}
 						/>
+
 						<FieldError errors={[errors.endDate]} />
 					</Field>
 					<Field>

@@ -9,6 +9,8 @@ router.use(authenticate, requireAgency);
 
 router.get('/', handler(agencyController.getAgency));
 
+router.put('/locations', handler(agencyController.updateLocations));
+
 router.put(
 	'/onboarding/branding',
 	uploadBrandingFiles,
