@@ -15,14 +15,17 @@ import { Suspense } from 'react';
 import { Typography } from '@/components/ui/typography';
 import FleetHeader from '@/features/fleet/components/FleetHeader';
 import { FleetNewHeader } from '@/features/fleet/components/FleetNewHeader';
-import TeamHeader from '@/features/agency/components/TeamHeader';
+import TeamHeader from '@/features/team/components/TeamHeader';
 import AcceptInvitation from '@/features/agency/pages/AcceptInvitation';
 import VerifyEmail from '@/pages/public/VerifyEmail';
-import ReservationsHeader from '@/features/agency/components/ReservationsHeader';
+import ReservationsHeader from '@/features/reservations/components/ReservationsHeader';
+import { ReservationCreateHeader } from '@/features/reservations/components/ReservationCreateHeader';
+import LocationsHeader from '@/features/location/components/LocationsHeader';
 
 /**
  * @description
  * These are the protected routes for the agency CRM.
+ * We use a nested route structure to apply middleware to groups of routes.
  */
 export default [
 	{
@@ -80,19 +83,31 @@ export default [
 									},
 									{
 										path: 'reservations',
-										lazy: () => import('@/features/agency/pages/Reservations'),
+										lazy: () => import('@/features/reservations/pages/Reservations'),
 										handle: {
 											title: 'Reservations',
 											headerContent: () => <ReservationsHeader />,
 										},
 									},
 									{
+										path: 'reservations/new',
+										lazy: () => import('@/features/reservations/pages/ReservationCreate'),
+										handle: {
+											title: 'New reservation',
+											headerContent: () => <ReservationCreateHeader />,
+										},
+									},
+									{
 										path: 'locations',
-										lazy: () => import('@/features/agency/pages/Locations'),
+										lazy: () => import('@/features/location/pages/Locations'),
+										handle: {
+											title: 'Locations',
+											headerContent: () => <LocationsHeader />,
+										},
 									},
 									{
 										path: 'team',
-										lazy: () => import('@/features/agency/pages/Team'),
+										lazy: () => import('@/features/team/pages/Team'),
 										handle: {
 											title: 'Team',
 											headerContent: () => <TeamHeader />,

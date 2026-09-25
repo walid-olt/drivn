@@ -1,5 +1,6 @@
 import apiClient from '@/lib/api-client';
 import queryClient from '@/lib/query-client';
+import type { Car } from '@drivn/shared';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 
 export const useAgencyCars = () => {
@@ -35,4 +36,4 @@ export const useUpdateCarStatusMutation = () => {
 	});
 };
 
-type CarStatus = 'available' | 'rented' | 'maintenance' | 'inactive';
+type CarStatus = Car['status'];

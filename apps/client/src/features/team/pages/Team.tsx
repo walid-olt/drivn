@@ -4,8 +4,7 @@ import { Typography } from '@/components/ui/typography';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TeamInvitations } from '../components/TeamInvitations';
 import { TeamMembers } from '../components/TeamMembers';
-import { useTeamData } from '../hooks/team';
-
+import { useTeamData } from '../hooks';
 export const Component = () => {
 	const { data: session } = useSession();
 	const { members, invitations } = useTeamData();
@@ -53,8 +52,6 @@ function TeamOverview({
 }) {
 	return (
 		<div className="relative overflow-hidden rounded-2xl bg-primary px-6 py-7 text-primary-foreground shadow-sm sm:px-8">
-			<div className="pointer-events-none absolute -right-8 -bottom-20 size-56 rounded-full border-[28px] border-primary-foreground/10" />
-			<div className="pointer-events-none absolute right-20 -top-16 size-32 rounded-full border-[18px] border-primary-foreground/10" />
 			<div className="relative max-w-xl">
 				<Typography
 					variant="caption"

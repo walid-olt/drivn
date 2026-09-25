@@ -17,4 +17,8 @@ export const QUERY_KEYS = {
 	organizationMembers: ['organization', 'members'],
 	/** Pending invitations for the current organization */
 	organizationInvitations: ['organization', 'invitations'],
+	/** Agency reservations */
+	reservations: ['reservations'],
+	/** Specific agency reservation */
+	reservation: (reservationId: string) => ['reservation', reservationId],
 } as const;

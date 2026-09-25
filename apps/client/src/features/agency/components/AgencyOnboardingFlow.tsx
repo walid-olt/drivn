@@ -29,7 +29,7 @@ type OnboardingStep = {
 	// lazy load the form component for each step
 	// each form component should accept an onSuccess/onSubmit
 	// callback that will be called when the form is successfully submitted
-	Form?: React.LazyExoticComponent<
+	Form: React.LazyExoticComponent<
 		React.ComponentType<{ onSuccess: VoidFunction; onSubmit: VoidFunction }>
 	>;
 };
@@ -109,7 +109,7 @@ export default function AgencyOnBoardingFlow({ agency }: Props) {
 			<StepperPanel className="text-sm">
 				{steps.map((step, index) => {
 					const Form = step.Form;
-					return Form ? (
+					return (
 						<StepperContent key={index} value={index}>
 							<Suspense fallback={<AgencyFormSkeleton />}>
 								<Form
@@ -129,7 +129,7 @@ export default function AgencyOnBoardingFlow({ agency }: Props) {
 								/>
 							</Suspense>
 						</StepperContent>
-					) : null;
+					);
 				})}
 			</StepperPanel>
 		</Stepper>
