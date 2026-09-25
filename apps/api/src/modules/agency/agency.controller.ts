@@ -6,7 +6,7 @@ import {
 } from '@drivn/shared';
 import type { Request } from 'express';
 import path from 'path';
-import { internalServerError, validationFailed } from '../../errors';
+import { internalServerError, notFound, validationFailed } from '../../errors';
 import agencyService, { AgencyService } from './agency.service';
 import { toFieldErrors } from '../../lib/utils';
 import locationService, { LocationService } from '../location/location.service';
@@ -78,6 +78,26 @@ class AgencyController {
 			parsed.data,
 		);
 		if (error) throw error;
+		return agency;
+	};
+
+	/**
+	 * Updates operating locations for an agency whose onboarding is already
+	 * completed. Unlike `setAgencyLocations`, it never advances onboarding.
+	 */
+	updateLocations = async (req: Request) => {
+		const parsed = updateAgencyLocations.safeParse(req.body);
+		if (!parsed.success) throw validationFailed(toFieldErrors(parsed.error));
+
+		const [fetchError] = await this.locationService.getManyByIds(parsed.data.operatingLocationIds);
+		if (fetchError) throw internalServerError('Failed to validate locations');
+
+		const [error, agency] = await this.agencyService.updateLocations(
+			req.agency!._id.toString(),
+			parsed.data,
+		);
+		if (error) throw error;
+		if (!agency) throw notFound('Agency not found');
 		return agency;
 	};
 }

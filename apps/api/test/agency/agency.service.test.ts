@@ -80,4 +80,38 @@ describe('[AGENCY SERVICE · ONBOARDING]', () => {
 			expect(statusCodeOf(error)).toBe(409);
 		});
 	});
+
+	describe('updateLocations (post-onboarding)', () => {
+		const createCompletedAgency = async () =>
+			Agency.create({
+				organizationId: new Types.ObjectId().toString(),
+				name: 'Acme Rentals',
+				slug: 'acme-rentals',
+				onboardingStatus: 'completed',
+				operatingLocationIds: [],
+			});
+
+		it('updates operating locations without advancing onboarding', async () => {
+			const agency = await createCompletedAgency();
+			const ids = ['507f1f77bcf86cd799439011', '507f1f77bcf86cd799439012'];
+
+			const [error, result] = await agencyService.updateLocations(String(agency._id), {
+				operatingLocationIds: ids,
+			});
+			expect(error).toBeUndefined();
+			expect(result!.onboardingStatus).toBe('completed');
+			expect(result!.operatingLocationIds.map(String)).toEqual(ids);
+		});
+
+		it('works regardless of the current onboarding status', async () => {
+			const agency = await createAgency();
+
+			const [error, result] = await agencyService.updateLocations(String(agency._id), {
+				operatingLocationIds: ['507f1f77bcf86cd799439011'],
+			});
+			expect(error).toBeUndefined();
+			expect(result!.onboardingStatus).toBe('not_started');
+			expect(result!.operatingLocationIds.map(String)).toEqual(['507f1f77bcf86cd799439011']);
+		});
+	});
 });

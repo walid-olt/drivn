@@ -1,6 +1,5 @@
 import {
 	BuildingsIcon,
-	HouseIcon,
 	ListIcon as Menu,
 	SignInIcon,
 	UserPlusIcon,
@@ -15,59 +14,34 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from '@/components/ui/sheet';
-import { Link, NavLink } from 'react-router';
+import { Link } from 'react-router';
 import Logo from './Logo';
-
-const menu = [
-	{ title: 'Home', url: '/', icon: <HouseIcon /> },
-	{ title: 'Agency CRM', url: '/agency', icon: <BuildingsIcon /> },
-];
 
 const Navbar = () => {
 	return (
 		<header className="sticky top-0 z-50 bg-background/80 py-4 backdrop-blur-sm">
 			<nav className="flex items-center justify-between">
-				<div className="flex items-center gap-6">
-					<Logo className="flex items-center gap-2" />
-					<div className="hidden items-center gap-1 lg:flex">
-						{menu.map((item) => (
-							<NavLink
-								key={item.title}
-								to={item.url}
-								className={({ isActive }) =>
-									`rounded-md px-3 py-1.5 text-xs/relaxed font-medium transition-colors hover:bg-muted ${isActive && 'text-primary'}`
-								}
-							>
-								{item.title}
-							</NavLink>
-						))}
-					</div>
-				</div>
+				<Logo className="flex items-center gap-2" />
 
-				<div className="hidden gap-2 lg:flex">
-					<Button
-						variant="ghost"
-						size="lg"
-						render={<Link to="/for-agencies" />}
-						nativeButton={false}
-					>
+				<div className="hidden gap-2 sm:flex">
+					<Button variant="ghost" size="lg" render={<Link to="/agency" />} nativeButton={false}>
 						<BuildingsIcon data-icon="inline-start" />
-						For Agencies
+						Agency Portal
 					</Button>
-					<Button variant="outline" size="lg" render={<Link to="#" />} nativeButton={false}>
+					<Button variant="outline" size="lg" render={<Link to="/login" />} nativeButton={false}>
 						<SignInIcon data-icon="inline-start" />
 						Login
 					</Button>
-					<Button size="lg" render={<Link to="/login" />} nativeButton={false}>
+					<Button size="lg" render={<Link to="/register/agency" />} nativeButton={false}>
 						<UserPlusIcon data-icon="inline-start" />
-						Sign up
+						Get Started
 					</Button>
 				</div>
 
 				<Sheet>
 					<SheetTrigger
 						render={
-							<Button variant="outline" size="icon-lg" className="lg:hidden">
+							<Button variant="outline" size="icon-lg" className="sm:hidden">
 								<Menu />
 							</Button>
 						}
@@ -89,34 +63,23 @@ const Navbar = () => {
 								/>
 							</div>
 						</SheetHeader>
-						<div className="flex flex-col gap-1 p-4">
-							{menu.map((item) => (
-								<NavLink
-									key={item.title}
-									to={item.url}
-									className={({ isActive }) =>
-										`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground ${isActive && 'text-primary'}`
-									}
-								>
-									{item.icon}
-									{item.title}
-								</NavLink>
-							))}
-							<div className="my-4 h-px bg-border" />
-							<div className="flex flex-col gap-2 *:py-4">
-								<Button variant="default" render={<Link to="/for-agencies" />} nativeButton={false}>
-									<BuildingsIcon data-icon="inline-start" />
-									For Agencies
-								</Button>
-								<Button variant="outline" render={<Link to="#" />} nativeButton={false}>
-									<SignInIcon data-icon="inline-start" />
-									Login
-								</Button>
-								<Button variant={'secondary'} render={<Link to="#" />} nativeButton={false}>
-									<UserPlusIcon data-icon="inline-start" />
-									Sign up
-								</Button>
-							</div>
+						<div className="flex flex-col gap-2 p-4 pt-6">
+							<Button
+								variant="default"
+								render={<Link to="/register/agency" />}
+								nativeButton={false}
+							>
+								<UserPlusIcon data-icon="inline-start" />
+								Get Started
+							</Button>
+							<Button variant="outline" render={<Link to="/login" />} nativeButton={false}>
+								<SignInIcon data-icon="inline-start" />
+								Login
+							</Button>
+							<Button variant="ghost" render={<Link to="/agency" />} nativeButton={false}>
+								<BuildingsIcon data-icon="inline-start" />
+								Agency Portal
+							</Button>
 						</div>
 					</SheetContent>
 				</Sheet>
