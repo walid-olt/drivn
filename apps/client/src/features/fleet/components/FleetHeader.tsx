@@ -6,12 +6,12 @@ import { FleetFilters } from './FleetFilters';
 
 const FleetHeader = () => {
 	return (
-		<div className="relative flex w-full items-center justify-between">
-			<Typography variant={'h4'}>Fleet</Typography>
-			<div className="absolute left-1/2 -translate-x-1/2">
+		<div className="flex w-full min-w-0 flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+			<Typography variant="h4" className="shrink-0">Fleet</Typography>
+			<div className="min-w-0 max-w-full overflow-x-auto">
 				<FleetFilters />
 			</div>
-			<Button role="link" className={'ml-auto'} render={<Link to={'/agency/fleet/new'} />}>
+			<Button role="link" className="w-full shrink-0 lg:ml-auto lg:w-auto" render={<Link to={'/agency/fleet/new'} />}>
 				<CarIcon />
 				Add a car
 			</Button>

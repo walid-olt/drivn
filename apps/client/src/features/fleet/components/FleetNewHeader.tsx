@@ -14,7 +14,7 @@ export function FleetNewHeader() {
 	const navigate = useNavigate();
 	const goBack = () => navigate(-1);
 	return (
-		<div className="flex justify-between w-full items-center">
+		<div className="flex w-full min-w-0 items-center justify-between gap-2">
 			<Breadcrumb>
 				<BreadcrumbList>
 					<BreadcrumbItem>

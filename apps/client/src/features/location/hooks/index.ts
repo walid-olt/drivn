@@ -47,7 +47,6 @@ export function useActiveLocationCount() {
 
 export function useUpdateAgencyLocations() {
 	const queryClient = useQueryClient();
-
 	return useMutation({
 		mutationFn: (operatingLocationIds: string[]) =>
 			apiClient.agency.updateOperatingLocations({ operatingLocationIds }),

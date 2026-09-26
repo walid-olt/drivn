@@ -14,7 +14,7 @@ export function ReservationCreateHeader() {
 	const navigate = useNavigate();
 
 	return (
-		<div className="flex w-full items-center justify-between">
+		<div className="flex w-full min-w-0 items-center justify-between gap-2">
 			<Breadcrumb>
 				<BreadcrumbList>
 					<BreadcrumbItem>

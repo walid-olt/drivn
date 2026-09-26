@@ -41,8 +41,8 @@ export default function LocationsFilters({
 	activeCount,
 }: Props) {
 	return (
-		<div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto">
-			<div className="relative min-w-0 flex-1">
+		<div className="flex min-w-0 flex-col items-stretch gap-2 lg:flex-row lg:items-center lg:overflow-x-auto">
+			<div className="relative w-full min-w-0 lg:flex-1">
 				<MagnifyingGlassIcon className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
 				<Input
 					value={search}
