@@ -1,0 +1,27 @@
+flowchart LR
+    owner([Agency owner])
+    admin([Agency admin])
+    member([Agency member])
+
+    subgraph Drivn[Drivn rental platform]
+        dashboard((View dashboard))
+        fleet((Manage fleet))
+        locations((Manage locations))
+        reservations((Review reservations))
+        users((Manage users))
+    end
+
+    owner --- dashboard
+    owner --- fleet
+    owner --- locations
+    owner --- reservations
+    owner --- users
+    admin --- dashboard
+    admin --- fleet
+    admin --- locations
+    admin --- reservations
+    admin --- users
+    member --- dashboard
+    member --- fleet
+    member --- locations
+    member --- reservations

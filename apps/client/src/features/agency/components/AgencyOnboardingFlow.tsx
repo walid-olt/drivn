@@ -58,6 +58,8 @@ type Props = {
 export default function AgencyOnBoardingFlow({ agency }: Props) {
 	const navigate = useNavigate();
 	const [currentStep, setCurrentStep] = useState(() => {
+		// `completed` maps to no step, so never fall back to branding.
+		if (agency.onboardingStatus === 'completed') return steps.length;
 		const current = steps.findIndex((s) => s.title === agency.onboardingStatus);
 		return current != -1 ? current + 1 : 0;
 	});
@@ -113,12 +115,21 @@ export default function AgencyOnBoardingFlow({ agency }: Props) {
 						<StepperContent key={index} value={index}>
 							<Suspense fallback={<AgencyFormSkeleton />}>
 								<Form
-									onSuccess={() => {
-										queryClient.invalidateQueries({
-											queryKey: QUERY_KEYS.agency,
-										});
+									onSuccess={async () => {
 										setCurrentStep(index + 1);
 										setcurrentLoading(-1);
+
+										/**
+										 * Nothing on this route observes the active agency, so a
+										 * plain invalidation would only mark the entry stale and
+										 * leave the previous `onboardingStatus` in the cache for
+										 * the route guards to read. Refetch eagerly and wait for
+										 * it before navigating.
+										 */
+										await queryClient.invalidateQueries({
+											queryKey: QUERY_KEYS.agency,
+											refetchType: 'all',
+										});
 
 										if (index === steps.length - 1) {
 											navigate(`/agency/setup-completed`);

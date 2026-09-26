@@ -6,9 +6,12 @@ import requireVerifiedUser from '../../middleware/requireVerifiedUser';
 import requireAgencyMembership from '../../middleware/requireAgencyMembership';
 import requireNoAgency from '../../middleware/requireNoAgency';
 import requireAgencyOnboarding from '../../middleware/requireAgencyOnBoarding';
+import requirePendingOnboarding from '../../middleware/requirePendingOnboarding';
 import CreateAgency from '@/features/agency/pages/CreateAgency';
 import Loading from '@/components/ui/Loading';
-import apiClient from '@/lib/api-client';
+import { fetchActiveAgency } from '@/lib/agency';
+import queryClient from '@/lib/query-client';
+import { QUERY_KEYS } from '@/lib/query-keys';
 import AgencySetupCompleted from '@/features/agency/pages/AgencySetupCompleted';
 import DashboardLayout from '@/features/agency/components/DashboardLayout';
 import { Suspense } from 'react';
@@ -121,13 +124,12 @@ export default [
 							},
 							{
 								path: '/agency/onboarding',
-								loader: async () => {
-									const [err, res] = await apiClient.agency.getActive();
-									if (err) throw err;
-									const { success } = res;
-									if (!success) throw new Error(res.message);
-									return res.data;
-								},
+								middleware: [requirePendingOnboarding],
+								loader: () =>
+									queryClient.ensureQueryData({
+										queryKey: QUERY_KEYS.agency,
+										queryFn: fetchActiveAgency,
+									}),
 								lazy: () => import('@/features/agency/pages/AgencyOnboarding'),
 							},
 						],

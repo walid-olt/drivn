@@ -28,12 +28,12 @@ Drivn provides each agency with an isolated CRM workspace and role-based team ac
 | UI                  | [![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-000?logo=shadcnui&logoColor=fff)](#) [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-%2338B2AC.svg?logo=tailwind-css&logoColor=white)](#) |
 | State management    |                                                       [![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?logo=reactquery&logoColor=white)](#)                                                        |
 | Backend             |     [![Node.js](https://img.shields.io/badge/Node.js-6DA55F?logo=node.js&logoColor=white)](#) [![Express.js](https://img.shields.io/badge/Express.js-%23404d59.svg?logo=express&logoColor=%2361DAFB)](#)      |
+| Auth               | ![Better Auth Badge](https://img.shields.io/badge/Better%20Auth-FFF?logo=betterauth&logoColor=000&style=flat) | 
 | Database            |                                                       [![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?logo=mongodb&logoColor=white)](#)                                                        |
 | API testing/docs    |                     ![Bruno](https://img.shields.io/badge/Bruno-F4AA41?logo=Bruno&logoColor=black) ![Swagger](https://img.shields.io/badge/Swagger-85EA2D?logo=swagger&logoColor=173647)                      |
 | Testing             |                                                             [![Vitest](https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=fff)](#)                                                              |
 | CI/CD               |                                                [![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?logo=github-actions&logoColor=white)](#)                                                 |
 | Containerization    |                                                            [![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)](#)                                                             |
-| Deployment          |                                                             [![Render](https://img.shields.io/badge/Render-46E3B7?logo=render&logoColor=000)](#)                                                              |
 | monorepo management |                                                          [![Turborepo](https://img.shields.io/badge/Turborepo-000?logo=turborepo&logoColor=fff)](#)                                                           |
 
 # Repository Structure

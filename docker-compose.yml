@@ -1,23 +1,6 @@
 name: drivn
 
 services:
-  mongodb:
-    image: mongo:8
-    hostname: mongodb
-    restart: unless-stopped
-    environment:
-      MONGO_INITDB_DATABASE: ${MONGODB_DBNAME:-drivn-dev}
-    ports:
-      - "${MONGODB_PORT:-27017}:27017"
-    volumes:
-      - db:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 20s
-
   api:
     build:
       context: .
@@ -29,8 +12,6 @@ services:
       # `environment` wins over `env_file`
       NODE_ENV: ${NODE_ENV:-production}
       PORT: "5000"
-      MONGODB_URI: mongodb://mongodb:27017
-      MONGODB_DBNAME: ${MONGODB_DBNAME:-drivn-dev}
       # URLs the *browser* and emails will hit, so they stay host-facing
       BACKEND_URL: ${BACKEND_URL:-http://localhost:5000}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
@@ -44,9 +25,6 @@ services:
       - "${API_PORT:-5000}:5000"
     volumes:
       - uploads:/app/uploads
-    depends_on:
-      mongodb:
-        condition: service_healthy
 
   client:
     build:
@@ -65,5 +43,4 @@ services:
         condition: service_healthy
 
 volumes:
-  db:
   uploads:
