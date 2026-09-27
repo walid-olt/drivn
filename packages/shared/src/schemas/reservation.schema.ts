@@ -6,12 +6,14 @@ export const reservationSchema = z.object({
 	_id: z.string({ error: 'Reservation id is required.' }),
 	organizationId: z.string({ error: 'Organization id is required.' }),
 	agencyId: z.string({ error: 'Agency id is required.' }),
-	carId: z.string({ error: 'Select a car.' }),
+	carId: z.string({ error: 'Select a car.' }).min(1, 'Select a car.'),
 	renterName: z.string({ error: 'Renter name is required.' }).trim().min(2).max(100),
 	renterEmail: z.email('Enter a valid renter email address.').optional(),
 	renterPhone: z.string().trim().max(30).optional(),
-	pickupLocationId: z.string({ error: 'Select a pickup location.' }),
-	dropoffLocationId: z.string({ error: 'Select a drop-off location.' }),
+	pickupLocationId: z.string({ error: 'Select a pickup location.' }).min(1, 'Select a pickup location.'),
+	dropoffLocationId: z
+		.string({ error: 'Select a drop-off location.' })
+		.min(1, 'Select a drop-off location.'),
 
 	startDate: z.coerce.date({
 		message: 'A valid start date is required',

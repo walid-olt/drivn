@@ -52,6 +52,18 @@ describe('createReservationSchema', () => {
 		expect(() => createReservationSchema.parse({ ...validReservation, totalAmount: -5 })).toThrow();
 	});
 
+	it('rejects empty car and location ids', () => {
+		expect(() => createReservationSchema.parse({ ...validReservation, carId: '' })).toThrow(
+			'Select a car.',
+		);
+		expect(() =>
+			createReservationSchema.parse({ ...validReservation, pickupLocationId: '' }),
+		).toThrow('Select a pickup location.');
+		expect(() =>
+			createReservationSchema.parse({ ...validReservation, dropoffLocationId: '' }),
+		).toThrow('Select a drop-off location.');
+	});
+
 	it('rejects a fractional total days', () => {
 		expect(() => createReservationSchema.parse({ ...validReservation, totalDays: 4.5 })).toThrow();
 	});
