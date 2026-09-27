@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/toast';
 import { getAvatarColor, getInitials } from '@/lib/utils';
 import { Typography } from '@/components/ui/typography';
-import { useRemoveMemberMutation } from '../hooks/team';
+import { useRemoveMemberMutation } from '../hooks';
 import type authClient from '@/lib/auth-client';
 
 type Member = typeof authClient.$Infer.Member;

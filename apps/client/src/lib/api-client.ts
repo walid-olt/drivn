@@ -12,6 +12,8 @@ import {
 	type UpdateCarDto,
 	type ApiResponse,
 	type CarCreateFormData,
+	type CreateReservationDto,
+	type Reservation,
 } from '@drivn/shared';
 const httpClient = ky.create({
 	baseUrl: API_URL,
@@ -36,10 +38,6 @@ const httpClient = ky.create({
 		],
 	},
 });
-
-type UpdateCarRequest = Omit<UpdateCarDto, 'images'> & {
-	images?: File[] | string[];
-};
 
 function appendCarFields(formData: FormData, data: Record<string, unknown>) {
 	Object.entries(data).forEach(([key, value]) => {
@@ -90,6 +88,18 @@ const apiClient = {
 				.json<ApiResult<Agency>>();
 			return tryCatch(promise);
 		},
+
+		/**
+		 * Updates the agency's operating locations outside the onboarding
+		 * flow. The onboarding endpoint rejects requests once onboarding is
+		 * completed, so the management UI must use this one instead.
+		 */
+		async updateOperatingLocations(data: UpdateAgencyLocationsDto) {
+			const promise = httpClient
+				.put<ApiResult<Agency>>('/agency/locations', { json: data })
+				.json<ApiResult<Agency>>();
+			return tryCatch(promise);
+		},
 	},
 	locations: {
 		getAll() {
@@ -114,24 +124,38 @@ const apiClient = {
 			return tryCatch(promise);
 		},
 
-		async update(id: string, data: UpdateCarRequest) {
-			const hasFileUploads = data.images?.some((image) => image instanceof File) ?? false;
-			const promise = hasFileUploads
-				? httpClient
-						.patch(`/cars/${id}`, {
-							body: (() => {
-								const formData = new FormData();
-								appendCarFields(formData, data);
-								return formData;
-							})(),
-						})
-						.json<ApiResult<Car>>()
-				: httpClient.patch(`/cars/${id}`, { json: data }).json<ApiResult<Car>>();
+		async update(id: string, data: UpdateCarDto) {
+			const promise = httpClient.patch(`/cars/${id}`, { json: data }).json<ApiResult<Car>>();
 			return tryCatch(promise);
 		},
 
 		async delete(id: string) {
 			const promise = httpClient.delete(`/cars/${id}`).json<ApiResult<Car>>();
+			return tryCatch(promise);
+		},
+	},
+	reservations: {
+		async getAll() {
+			const promise = httpClient.get('/reservations').json<ApiResponse<Reservation[]>>();
+			return tryCatch(promise);
+		},
+
+		async getById(id: string) {
+			const promise = httpClient.get(`/reservations/${id}`).json<ApiResponse<Reservation>>();
+			return tryCatch(promise);
+		},
+
+		async create(data: CreateReservationDto) {
+			const promise = httpClient
+				.post('/reservations', { json: data })
+				.json<ApiResponse<Reservation>>();
+			return tryCatch(promise);
+		},
+
+		async updateStatus(id: string, status: Reservation['status']) {
+			const promise = httpClient
+				.patch(`/reservations/${id}/status`, { json: { status } })
+				.json<ApiResponse<Reservation>>();
 			return tryCatch(promise);
 		},
 	},

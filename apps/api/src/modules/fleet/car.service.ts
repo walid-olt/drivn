@@ -11,6 +11,7 @@ type CreateCarRecord = CreateCarDto & {
 	agencyId: string | Types.ObjectId;
 };
 
+type Id = string | Types.ObjectId;
 export class CarService {
 	constructor(
 		private readonly carModel: Model<CarDocument>,
@@ -29,6 +30,11 @@ export class CarService {
 
 	async findAgencyCars(agencyId: string) {
 		const promise = this.carModel.find({ agencyId }).lean();
+		return tryCatch(promise);
+	}
+
+	async findAgencyCarById(agencyId: Id, carId: Id) {
+		const promise = this.carModel.findOne({ _id: carId, agencyId }).lean();
 		return tryCatch(promise);
 	}
 

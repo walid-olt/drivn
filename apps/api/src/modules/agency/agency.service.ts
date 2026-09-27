@@ -40,6 +40,19 @@ export class AgencyService {
 	update = (id: string, data: UpdateAgencyDto) =>
 		tryCatch(this.agencyModel.findByIdAndUpdate(id, data, { new: true }));
 
+	/**
+	 * Updates the agency's operating locations outside the onboarding flow
+	 * without touching `onboardingStatus`. Used once onboarding is completed.
+	 */
+	updateLocations = (id: string, data: UpdateAgencyLocationsDto) =>
+		tryCatch(
+			this.agencyModel.findByIdAndUpdate(
+				id,
+				{ $set: { operatingLocationIds: data.operatingLocationIds } },
+				{ returnDocument: 'after' },
+			),
+		);
+
 	getById = (id: string) => tryCatch(this.agencyModel.findById(id));
 	getByOrganizationId = (organizationId: string) =>
 		tryCatch(this.agencyModel.findOne({ organizationId }));

@@ -32,14 +32,7 @@ account [icon: lock, color: purple] {
   updatedAt datetime
 }
 
-verification [icon: check-circle, color: gray] {
-  id string pk
-  identifier string
-  value string
-  expiresAt datetime
-  createdAt datetime
-  updatedAt datetime
-}
+
 
 organization [icon: briefcase, color: green] {
   id string pk
@@ -68,14 +61,6 @@ invitation [icon: mail, color: yellow] {
   inviterId string fk
 }
 
-profile [icon: id-card, color: blue] {
-  _id string pk
-  userId string fk
-  firstName string
-  lastName string
-  birthDate date
-  phone string
-}
 
 agency [icon: house, color: red] {
   _id string pk
@@ -94,7 +79,6 @@ agency [icon: house, color: red] {
 
 location [icon: map-pin, color: teal] {
   _id string pk
-  organizationId string fk
   name string
   address string
   city string
@@ -147,7 +131,6 @@ user.id < session.userId
 user.id <  account.userId
 user.id - member.userId
 user.id - invitation.inviterId
-user.id - profile.userId
 organization.id < member.organizationId
 organization.id < invitation.organizationId
 organization.id < agency.organizationId
