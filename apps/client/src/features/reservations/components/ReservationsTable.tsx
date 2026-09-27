@@ -20,7 +20,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import {
 	CalendarCheckIcon,
-	CarIcon,
 	CheckCircleIcon,
 	ClockCountdownIcon,
 	DotsThreeIcon,
@@ -107,7 +106,7 @@ export function ReservationsTable({
 	emptyMessage = 'No reservations match these filters.',
 }: {
 	reservations: Reservation[];
-	cars?: Car[];
+	cars: Car[];
 	locations?: AgencyLocation[];
 	onChangeStatus?: (reservation: Reservation, status: ReservationStatus) => void;
 	emptyMessage?: string;
@@ -138,7 +137,7 @@ export function ReservationsTable({
 						</TableRow>
 					) : (
 						reservations.map((reservation) => {
-							const car = carsMap.get(reservation.carId);
+							const car = carsMap.get(reservation.carId)!;
 							const pickupLocation = locationsMap.get(reservation.pickupLocationId);
 							const dropoffLocation = locationsMap.get(reservation.dropoffLocationId);
 
