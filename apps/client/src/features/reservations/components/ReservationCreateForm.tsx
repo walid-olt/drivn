@@ -1,15 +1,15 @@
 import { createReservationSchema } from '@drivn/shared';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BuildingOfficeIcon, MapPinIcon, SpinnerIcon } from '@phosphor-icons/react';
-import { useEffect } from 'react';
+import { SpinnerIcon } from '@phosphor-icons/react';
+import { addDays, differenceInCalendarDays, startOfDay } from 'date-fns';
+import { useEffect, useRef } from 'react';
 import { Controller, useForm, FormProvider, useWatch, useFormContext } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 
 import type { CreateReservationDto, Location as AgencyLocation, Car } from '@drivn/shared';
 import { Button } from '@/components/ui/button';
-import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
+import { Field, FieldDescription, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
 	Select,
 	SelectContent,
@@ -21,6 +21,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Typography } from '@/components/ui/typography';
 import { useCreateReservationMutation } from '../hooks';
 import { DatePicker } from '@/components/date-picker';
+import CarSelector from './CarSelector';
+import LocationSelector from './LocationSelector';
 
 type Props = {
 	locations: AgencyLocation[];
@@ -38,25 +40,35 @@ function ReservationFields({ locations, cars }: Props) {
 	const startDate = useWatch({ control, name: 'startDate' });
 	const endDate = useWatch({ control, name: 'endDate' });
 	const selectedCar = cars.find((car) => car._id === carId);
-	const pickupLocationId = useWatch({ control, name: 'pickupLocationId' });
-	const dropoffLocationId = useWatch({ control, name: 'dropoffLocationId' });
-	const pickupLocation = locations.find((location) => location._id === pickupLocationId);
-	const dropoffLocation = locations.find((location) => location._id === dropoffLocationId);
+	const totalDays =
+		startDate && endDate ? Math.max(differenceInCalendarDays(endDate, startDate), 0) : 0;
+
+	const startDateRef = useRef<HTMLButtonElement>(null);
+	const endDateRef = useRef<HTMLButtonElement>(null);
+
+	// Keeping the drop-off strictly after the pickup is a schema requirement, so
+	// nudge it forward instead of leaving the form in an invalid state.
+	useEffect(() => {
+		if (!startDate) return;
+		if (endDate && endDate.getTime() > startDate.getTime()) return;
+		setValue('endDate', addDays(startOfDay(startDate), 1), { shouldValidate: true });
+	}, [endDate, setValue, startDate]);
 
 	useEffect(() => {
 		setValue('dailyRate', selectedCar?.dailyRate ?? 0, {
 			shouldValidate: true,
 		});
+
 		if (!startDate || !endDate) {
 			setValue('totalDays', 0, { shouldValidate: true });
 			setValue('totalAmount', 0, { shouldValidate: true });
 			return;
 		}
 
-		const duration = Math.ceil(
-			(new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24),
-		);
-		setValue('totalDays', duration, { shouldValidate: true });
+		// Calendar days, not milliseconds: a DST boundary would otherwise make a
+		// one-day rental look like two (or zero).
+		const duration = differenceInCalendarDays(endDate, startDate);
+		setValue('totalDays', Math.max(duration, 0), { shouldValidate: true });
 		setValue('totalAmount', duration > 0 ? duration * (selectedCar?.dailyRate ?? 0) : 0, {
 			shouldValidate: true,
 		});
@@ -66,51 +78,47 @@ function ReservationFields({ locations, cars }: Props) {
 		<>
 			<FieldSet>
 				<Typography variant="h4">Reservation details</Typography>
-				<div className="grid gap-4 md:grid-cols-2">
-					<Field>
-						<FieldLabel htmlFor="carId">Car</FieldLabel>
-						<Controller
-							control={control}
-							name="carId"
-							render={({ field }) => (
-								<Select value={field.value ?? null} onValueChange={field.onChange}>
-									<SelectTrigger id="carId" className="w-full" aria-invalid={!!errors.carId}>
-										<SelectValue placeholder={cars.length ? 'Select a car' : 'No cars available'} />
-									</SelectTrigger>
-									<SelectContent>
-										{cars.map((car) => (
-											<SelectItem key={car._id} value={car._id}>
-												{car.year} {car.make} {car.model} — {car.dailyRate.toFixed(2)}/day
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							)}
-						/>
-						<FieldError errors={[errors.carId]} />
-					</Field>
-					<Field>
-						<FieldLabel htmlFor="status">Status</FieldLabel>
-						<Controller
-							control={control}
-							name="status"
-							render={({ field }) => (
-								<Select value={field.value} onValueChange={field.onChange}>
-									<SelectTrigger id="status" className="w-full">
-										<SelectValue />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectItem value="pending">Pending</SelectItem>
-										<SelectItem value="confirmed">Confirmed</SelectItem>
-										<SelectItem value="active">Active</SelectItem>
-										<SelectItem value="completed">Completed</SelectItem>
-										<SelectItem value="cancelled">Cancelled</SelectItem>
-									</SelectContent>
-								</Select>
-							)}
-						/>
-					</Field>
-				</div>
+				<Field>
+					<FieldLabel>Car</FieldLabel>
+					<Controller
+						control={control}
+						name="carId"
+						render={({ field }) => (
+							<CarSelector
+								cars={cars}
+								value={field.value}
+								onChange={field.onChange}
+								invalid={!!errors.carId}
+							/>
+						)}
+					/>
+					<FieldError errors={[errors.carId]} />
+				</Field>
+				<Field className="max-w-xs">
+					<FieldLabel htmlFor="status">Status</FieldLabel>
+					<Controller
+						control={control}
+						name="status"
+						render={({ field }) => (
+							<Select value={field.value} onValueChange={field.onChange}>
+								<SelectTrigger id="status" className="w-full">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="pending">Pending</SelectItem>
+									<SelectItem value="confirmed">Confirmed</SelectItem>
+									<SelectItem value="active">Active</SelectItem>
+									<SelectItem value="completed">Completed</SelectItem>
+									<SelectItem value="cancelled">Cancelled</SelectItem>
+								</SelectContent>
+							</Select>
+						)}
+					/>
+				</Field>
+			</FieldSet>
+
+			<FieldSet>
+				<Typography variant="h4">Locations</Typography>
 				<div className="grid gap-4 md:grid-cols-2">
 					<Field>
 						<FieldLabel htmlFor="pickupLocationId">Pickup location</FieldLabel>
@@ -118,26 +126,14 @@ function ReservationFields({ locations, cars }: Props) {
 							control={control}
 							name="pickupLocationId"
 							render={({ field }) => (
-								<Select value={field.value ?? null} onValueChange={field.onChange}>
-									<SelectTrigger
-										id="pickupLocationId"
-										className="h-auto min-h-7 w-full"
-										aria-invalid={!!errors.pickupLocationId}
-									>
-										{pickupLocation ? (
-											<LocationSummary location={pickupLocation} />
-										) : (
-											<SelectValue placeholder="Select a pickup location" />
-										)}
-									</SelectTrigger>
-									<SelectContent>
-										{locations.map((location) => (
-											<SelectItem key={location._id} value={location._id} className="h-auto py-2">
-												<LocationOption location={location} />
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
+								<LocationSelector
+									id="pickupLocationId"
+									locations={locations}
+									value={field.value}
+									onChange={field.onChange}
+									placeholder="Search pickup location"
+									invalid={!!errors.pickupLocationId}
+								/>
 							)}
 						/>
 						<FieldError errors={[errors.pickupLocationId]} />
@@ -148,26 +144,14 @@ function ReservationFields({ locations, cars }: Props) {
 							control={control}
 							name="dropoffLocationId"
 							render={({ field }) => (
-								<Select value={field.value ?? null} onValueChange={field.onChange}>
-									<SelectTrigger
-										id="dropoffLocationId"
-										className="h-auto min-h-7 w-full"
-										aria-invalid={!!errors.dropoffLocationId}
-									>
-										{dropoffLocation ? (
-											<LocationSummary location={dropoffLocation} />
-										) : (
-											<SelectValue placeholder="Select a drop-off location" />
-										)}
-									</SelectTrigger>
-									<SelectContent>
-										{locations.map((location) => (
-											<SelectItem key={location._id} value={location._id} className="h-auto py-2">
-												<LocationOption location={location} />
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
+								<LocationSelector
+									id="dropoffLocationId"
+									locations={locations}
+									value={field.value}
+									onChange={field.onChange}
+									placeholder="Search drop-off location"
+									invalid={!!errors.dropoffLocationId}
+								/>
 							)}
 						/>
 						<FieldError errors={[errors.dropoffLocationId]} />
@@ -211,29 +195,45 @@ function ReservationFields({ locations, cars }: Props) {
 
 			<FieldSet>
 				<Typography variant="h4">Dates and pricing</Typography>
-				<div className="grid gap-4 md:grid-cols-4">
+				<div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
 					<Field>
-						<Label htmlFor="startDate">Pickup date</Label>
+						<FieldLabel htmlFor="startDate">Pickup date</FieldLabel>
 						<Controller
 							name="startDate"
 							control={control}
-							render={({ field }) => <DatePicker {...field} />}
+							render={({ field }) => (
+								<DatePicker
+									id="startDate"
+									value={field.value}
+									onChange={field.onChange}
+									triggerRef={startDateRef}
+									minDate={startOfDay(new Date())}
+									aria-invalid={!!errors.startDate}
+								/>
+							)}
 						/>
 						<FieldError errors={[errors.startDate]} />
 					</Field>
 					<Field>
-						<Label htmlFor="endDate">Drop-off date</Label>
-
+						<FieldLabel htmlFor="endDate">Drop-off date</FieldLabel>
 						<Controller
 							name="endDate"
 							control={control}
-							render={({ field }) => <DatePicker {...field} />}
+							render={({ field }) => (
+								<DatePicker
+									id="endDate"
+									value={field.value}
+									onChange={field.onChange}
+									triggerRef={endDateRef}
+									minDate={startDate ? addDays(startOfDay(startDate), 1) : undefined}
+									aria-invalid={!!errors.endDate}
+								/>
+							)}
 						/>
-
 						<FieldError errors={[errors.endDate]} />
 					</Field>
 					<Field>
-						<Label htmlFor="dailyRate">Daily rate</Label>
+						<FieldLabel htmlFor="dailyRate">Daily rate</FieldLabel>
 						<Input
 							id="dailyRate"
 							type="number"
@@ -244,7 +244,7 @@ function ReservationFields({ locations, cars }: Props) {
 						<FieldError errors={[errors.dailyRate]} />
 					</Field>
 					<Field>
-						<Label htmlFor="totalAmount">Total amount</Label>
+						<FieldLabel htmlFor="totalAmount">Total amount</FieldLabel>
 						<Input
 							id="totalAmount"
 							type="number"
@@ -252,6 +252,11 @@ function ReservationFields({ locations, cars }: Props) {
 							aria-readonly="true"
 							{...register('totalAmount', { valueAsNumber: true })}
 						/>
+						<FieldDescription>
+							{startDate && endDate
+								? `${totalDays} day${totalDays === 1 ? '' : 's'} × ${selectedCar?.dailyRate ?? 0}/day`
+								: 'Pick both dates to price this reservation.'}
+						</FieldDescription>
 						<FieldError errors={[errors.totalAmount]} />
 					</Field>
 				</div>
@@ -270,35 +275,6 @@ function ReservationFields({ locations, cars }: Props) {
 				<FieldError errors={[errors.notes]} />
 			</Field>
 		</>
-	);
-}
-
-function LocationOption({ location }: { location: AgencyLocation }) {
-	return (
-		<span className="flex min-w-0 items-start gap-2">
-			<MapPinIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-			<span className="flex min-w-0 flex-col">
-				<span className="truncate font-medium">{location.name}</span>
-				<span className="truncate text-muted-foreground">
-					{location.city}, {location.country}
-				</span>
-				<span className="truncate text-muted-foreground">{location.address}</span>
-			</span>
-		</span>
-	);
-}
-
-function LocationSummary({ location }: { location: AgencyLocation }) {
-	return (
-		<span className="flex min-w-0 items-center gap-2">
-			<BuildingOfficeIcon className="size-4 shrink-0 text-muted-foreground" />
-			<span className="flex min-w-0 flex-col text-left">
-				<span className="truncate font-medium">{location.name}</span>
-				<span className="truncate text-muted-foreground">
-					{location.city}, {location.country}
-				</span>
-			</span>
-		</span>
 	);
 }
 
