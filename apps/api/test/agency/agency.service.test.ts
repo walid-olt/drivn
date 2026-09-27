@@ -91,6 +91,15 @@ describe('[AGENCY SERVICE · ONBOARDING]', () => {
 				operatingLocationIds: [],
 			});
 
+		const createAgency = async () =>
+			Agency.create({
+				organizationId: new Types.ObjectId().toString(),
+				name: 'Acme Rentals',
+				slug: 'acme-rentals',
+				onboardingStatus: 'not_started',
+				operatingLocationIds: [],
+			});
+
 		it('updates operating locations without advancing onboarding', async () => {
 			const agency = await createCompletedAgency();
 			const ids = ['507f1f77bcf86cd799439011', '507f1f77bcf86cd799439012'];
