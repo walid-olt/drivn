@@ -1,0 +1,33 @@
+# Build context is the monorepo root, so keep it as small as possible.
+.git
+.gitignore
+.github
+.turbo
+**/.turbo
+node_modules
+**/node_modules
+dist
+**/dist
+build
+**/build
+coverage
+**/coverage
+
+# Local env files — runtime config is injected by compose / --build-arg
+.env
+**/.env
+.env.*
+**/.env.*
+!.env.example
+**/.env.example
+
+# Runtime data & editor cruft
+uploads
+**/uploads
+docs
+**/*.md
+skills-lock.json
+**/*.log
+.DS_Store
+.idea
+.vscode

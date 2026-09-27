@@ -1,12 +1,69 @@
+name: drivn
+
 services:
   mongodb:
-    image: mongo
+    image: mongo:8
     hostname: mongodb
-    env_file:
-      - .env
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGODB_DBNAME:-drivn-dev}
     ports:
-      - 27017:27017
+      - "${MONGODB_PORT:-27017}:27017"
     volumes:
       - db:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # `environment` wins over `env_file`
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: "5000"
+      MONGODB_URI: mongodb://mongodb:27017
+      MONGODB_DBNAME: ${MONGODB_DBNAME:-drivn-dev}
+      # URLs the *browser* and emails will hit, so they stay host-facing
+      BACKEND_URL: ${BACKEND_URL:-http://localhost:5000}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      UPLOAD_DIR: /app/uploads
+      # NOTE: PUBLIC_UPLOAD_URL is intentionally left to `env_file` — the API
+      # validates it as an optional URL, so an empty string would fail.
+      # Set it in .env only when uploads live behind a public domain.
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set BETTER_AUTH_SECRET (32+ chars) in .env}
+      RESEND_API_KEY: ${RESEND_API_KEY:?set RESEND_API_KEY in .env}
+    ports:
+      - "${API_PORT:-5000}:5000"
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  client:
+    build:
+      context: .
+      dockerfile: apps/client/Dockerfile
+      args:
+        # Baked into the bundle — must be reachable from the browser,
+        # not from inside the compose network.
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
+        VITE_FRONTEND_URL: ${VITE_FRONTEND_URL:-http://localhost:3000}
+    restart: unless-stopped
+    ports:
+      - "${CLIENT_PORT:-3000}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
 volumes:
   db:
+  uploads:
