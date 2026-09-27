@@ -157,6 +157,46 @@ describe('ResevationService', () => {
 		}
 	});
 
+	it('allows a round trip where pickup and drop-off are the same location', async () => {
+		const { service, reservationModel, locationService, carSevice } = createService();
+		const reservation = { _id: reservationId } as ReservationDocument;
+		carSevice.findAgencyCarById.mockResolvedValue([undefined, { status: 'available' }]);
+		// `$in` collapses the duplicate id, so only one document comes back.
+		locationService.getManyByIds.mockResolvedValue([undefined, [{ _id: pickupLocationId }]]);
+		reservationModel.create.mockResolvedValue(reservation);
+
+		const result = await service.create(agencyId, agencyId, {
+			...data,
+			dropoffLocationId: data.pickupLocationId,
+		});
+
+		expect(result).toEqual([undefined, reservation]);
+		expect(reservationModel.create).toHaveBeenCalled();
+	});
+
+	it('returns a bad request when an id is not a valid object id', async () => {
+		for (const invalid of ['', 'not-an-object-id']) {
+			const { service, reservationModel, carSevice, locationService } = createService();
+			carSevice.findAgencyCarById.mockResolvedValue([undefined, { status: 'available' }]);
+			locationService.getManyByIds.mockResolvedValue([
+				undefined,
+				[{ _id: pickupLocationId }, { _id: dropoffLocationId }],
+			]);
+
+			const [error, result] = await service.create(agencyId, agencyId, {
+				...data,
+				pickupLocationId: invalid,
+			});
+
+			expect(error).toMatchObject({
+				status: 'BAD_REQUEST',
+				message: 'Invalid car or location id.',
+			});
+			expect(result).toBeUndefined();
+			expect(reservationModel.create).not.toHaveBeenCalled();
+		}
+	});
+
 	it('gets a reservation by agency and id', async () => {
 		const { service, reservationModel } = createService();
 		const reservation = { _id: reservationId } as ReservationDocument;

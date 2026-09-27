@@ -6,7 +6,12 @@ import { tryCatch } from '@drivn/shared';
 import { Types } from 'mongoose';
 import type { LocationService } from '../location/location.service.ts';
 import type { CarService } from '../fleet/car.service.ts';
-import { conflict, internalServerError, notFound } from '../../errors/http.exception.ts';
+import {
+	badRequest,
+	conflict,
+	internalServerError,
+	notFound,
+} from '../../errors/http.exception.ts';
 import carService from '../fleet/car.service.ts';
 import locationService from '../location/location.service.ts';
 
@@ -35,30 +40,43 @@ export class ResevationService {
 		organizationId: Id,
 		data: CreateReservationDto,
 	): Promise<Result<ReservationDocument>> {
+		// `new ObjectId('')` throws a CastError, which would escape as an unhandled
+		// exception instead of a result, so reject malformed ids up front.
+		let carObjectId: Types.ObjectId;
+		let pickupObjectId: Types.ObjectId;
+		let dropoffObjectId: Types.ObjectId;
+		try {
+			carObjectId = new ObjectId(data.carId);
+			pickupObjectId = new ObjectId(data.pickupLocationId);
+			dropoffObjectId = new ObjectId(data.dropoffLocationId);
+		} catch {
+			return [badRequest('Invalid car or location id.'), undefined];
+		}
+
 		const reservationData = {
 			...data,
-			carId: new ObjectId(data.carId),
-			pickupLocationId: new ObjectId(data.pickupLocationId),
-			dropoffLocationId: new ObjectId(data.dropoffLocationId),
+			carId: carObjectId,
+			pickupLocationId: pickupObjectId,
+			dropoffLocationId: dropoffObjectId,
 			agencyId,
 			organizationId,
 		};
 
 		// verify if the car exist and is available
-		const carId = reservationData.carId;
-		const [carErr, car] = await this.carSevice.findAgencyCarById(agencyId, carId);
+		const [carErr, car] = await this.carSevice.findAgencyCarById(agencyId, carObjectId);
 		if (carErr) return [internalServerError("Couldn't get reservation car"), undefined];
 		if (!car) return [notFound("Couldn't find resevation car"), undefined];
 		if (car.status !== 'available')
 			return [conflict('Car is not available for reservation'), undefined];
 
 		// verify if the locations exist
-		const [err, locations] = await this.locationService.getManyByIds([
-			reservationData.pickupLocationId,
-			reservationData.dropoffLocationId,
-		]);
+		const locationIds = [pickupObjectId, dropoffObjectId];
+		const [err, locations] = await this.locationService.getManyByIds(locationIds);
 		if (err) return [internalServerError("Couldn't get Reservation locations"), undefined];
-		if (!locations || locations.length !== 2)
+		// A round trip picks the same location twice, and `$in` collapses duplicates,
+		// so compare against the number of distinct ids rather than the raw count.
+		const distinctLocationIds = new Set(locationIds.map(String)).size;
+		if (!locations || locations.length < distinctLocationIds)
 			return [internalServerError("Couldn't get Reservation locations"), undefined];
 
 		// create the reservation
