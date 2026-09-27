@@ -12,7 +12,7 @@ import apiClient from '@/lib/api-client';
 import AgencySetupCompleted from '@/features/agency/pages/AgencySetupCompleted';
 import DashboardLayout from '@/features/agency/components/DashboardLayout';
 import { Suspense } from 'react';
-import { Typography } from '@/components/ui/typography';
+import DashboardHeader from '@/features/agency/components/DashboardHeader';
 import FleetHeader from '@/features/fleet/components/FleetHeader';
 import { FleetNewHeader } from '@/features/fleet/components/FleetNewHeader';
 import TeamHeader from '@/features/team/components/TeamHeader';
@@ -61,7 +61,7 @@ export default [
 										lazy: () => import('@/features/agency/pages/Agency'),
 										handle: {
 											title: 'overview',
-											headerContent: () => <Typography variant={'h4'}>Dashboard</Typography>,
+											headerContent: () => <DashboardHeader />,
 										},
 									},
 									{
