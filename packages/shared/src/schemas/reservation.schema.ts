@@ -10,7 +10,9 @@ export const reservationSchema = z.object({
 	renterName: z.string({ error: 'Renter name is required.' }).trim().min(2).max(100),
 	renterEmail: z.email('Enter a valid renter email address.').optional(),
 	renterPhone: z.string().trim().max(30).optional(),
-	pickupLocationId: z.string({ error: 'Select a pickup location.' }).min(1, 'Select a pickup location.'),
+	pickupLocationId: z
+		.string({ error: 'Select a pickup location.' })
+		.min(1, 'Select a pickup location.'),
 	dropoffLocationId: z
 		.string({ error: 'Select a drop-off location.' })
 		.min(1, 'Select a drop-off location.'),
@@ -66,6 +68,4 @@ export const updateReservationSchema = reservationSchema
 		}
 	});
 
-export const updateReservationStatusSchema = reservationSchema
-	.pick({ status: true })
-	.required();
+export const updateReservationStatusSchema = reservationSchema.pick({ status: true }).required();
