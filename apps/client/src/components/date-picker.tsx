@@ -104,12 +104,7 @@ export function DatePicker({
 				{value ? (
 					<div className="flex items-center justify-between gap-2 border-t p-2">
 						<Typography variant="caption">{format(value, 'PPP')}</Typography>
-						<Button
-							type="button"
-							variant="ghost"
-							size="xs"
-							onClick={() => handleSelect(undefined)}
-						>
+						<Button type="button" variant="ghost" size="xs" onClick={() => handleSelect(undefined)}>
 							<XIcon />
 							Clear
 						</Button>
